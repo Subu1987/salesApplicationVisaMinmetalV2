@@ -1,0 +1,46 @@
+<edmx:Edmx
+    xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+    xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+    xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema
+            xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="ZFI_FCR_SSC_SRV" xml:lang="en" sap:schema-version="1">
+            <Annotation
+                xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.SchemaVersion" String="1.0.0"/>
+                <EntityType Name="ZLEDGER" sap:content-version="1">
+                    <Key>
+                        <PropertyRef Name="Rldnr"/>
+                    </Key>
+                    <Property Name="Rldnr" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="Ledger" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                </EntityType>
+                <EntityType Name="ZCOMPANY" sap:content-version="1">
+                    <Key>
+                        <PropertyRef Name="Companycode"/>
+                    </Key>
+                    <Property Name="Companycode" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Company Code" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                </EntityType>
+                <EntityType Name="ZYEAR" sap:content-version="1">
+                    <Key>
+                        <PropertyRef Name="Gjahr"/>
+                    </Key>
+                    <Property Name="Gjahr" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Year" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                </EntityType>
+                <EntityType Name="ZPERIOD" sap:content-version="1">
+                    <Key>
+                        <PropertyRef Name="Monat"/>
+                    </Key>
+                    <Property Name="Monat" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="Period" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                </EntityType>
+                <EntityContainer Name="ZFI_FCR_SSC_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
+                    <EntitySet Name="ZLEDGERSet" EntityType="ZFI_FCR_SSC_SRV.ZLEDGER" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                    <EntitySet Name="ZCOMPANYSet" EntityType="ZFI_FCR_SSC_SRV.ZCOMPANY" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                    <EntitySet Name="ZYEARSet" EntityType="ZFI_FCR_SSC_SRV.ZYEAR" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                    <EntitySet Name="ZPERIODSet" EntityType="ZFI_FCR_SSC_SRV.ZPERIOD" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                </EntityContainer>
+                <atom:link
+                    xmlns:atom="http://www.w3.org/2005/Atom" rel="self" href="./sap/ZFI_FCR_SSC_SRV/$metadata"/>
+                    <atom:link
+                        xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version" href="./sap/ZFI_FCR_SSC_SRV/$metadata"/>
+                    </Schema>
+                </edmx:DataServices>
+            </edmx:Edmx>

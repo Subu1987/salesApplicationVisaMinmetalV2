@@ -1,0 +1,16 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <SelectDialog
+        title="Select Ledger"
+        items="{periodData>/}"
+        search="_handleValueFromPeriodSearch"
+        confirm="_handleValueDialogFromPeriodClose"
+        cancel="_handleValueDialogFromPeriodClose"
+        contentWidth="auto"
+        class="sapUiPopupWithPadding">
+        <StandardListItem
+            title="{periodData>Monat}"
+            description="FromPeriod"
+            iconDensityAware="false"
+            iconInset="false" />
+    </SelectDialog>
+</core:FragmentDefinition>

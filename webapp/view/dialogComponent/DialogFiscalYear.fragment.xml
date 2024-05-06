@@ -1,0 +1,16 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <SelectDialog
+        title="Select Ledger"
+        items="{yearData>/}"
+        search="_handleValueFiscalYearSearch"
+        confirm="_handleValueDialogFiscalYearClose"
+        cancel="_handleValueDialogFiscalYearClose"
+        contentWidth="auto"
+        class="sapUiPopupWithPadding">
+        <StandardListItem
+            title="{yearData>Gjahr}"
+            description="FiscalYear"
+            iconDensityAware="false"
+            iconInset="false" />
+    </SelectDialog>
+</core:FragmentDefinition>

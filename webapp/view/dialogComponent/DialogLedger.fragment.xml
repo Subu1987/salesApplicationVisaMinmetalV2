@@ -1,0 +1,16 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <SelectDialog
+        title="Select Ledger"
+        items="{ledgerData>/}"
+        search="_handleValueLedgerSearch"
+        confirm="_handleValueLedgerClose"
+        cancel="_handleValueLedgerClose"
+        contentWidth="auto"
+        class="sapUiPopupWithPadding">
+        <StandardListItem
+            title="{ledgerData>Rldnr}"
+            description="ledger"
+            iconDensityAware="false"
+            iconInset="false" />
+    </SelectDialog>
+</core:FragmentDefinition>

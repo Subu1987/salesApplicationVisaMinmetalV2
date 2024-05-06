@@ -1,0 +1,25 @@
+/* Enter your custom styles here */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+.border-lineRadius {
+    overflow: hidden;
+    border: 1px solid #d1dce7;
+    border-radius: 50px;
+    box-shadow: 10px 7px 73px -35px rgba(30, 43, 179, 0.3) !important;
+}
+
+.smallIcon .sapMBtnIcon {
+    font-size: 1.1rem !important;
+    /* Adjust the font-size as per your preference */
+}
+
+.round {
+    border-radius: 50px !important;
+}
+
+.sapMInputBaseInner {
+    border-radius: 10px;
+}

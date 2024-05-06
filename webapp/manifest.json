@@ -1,0 +1,167 @@
+{
+	"_version": "1.7.0",
+	"sap.app": {
+		"id": "com.infocus.dataListApplication",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"applicationVersion": {
+			"version": "1.0.0"
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"sourceTemplate": {
+			"id": "servicecatalog.connectivityComponent",
+			"version": "0.0.0"
+		},
+		"dataSources": {
+			"mainService": {
+				"uri": "/sap/opu/odata/sap/ZFI_FCR_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/metadata.xml"
+				}
+			},
+			"parameterService": {
+				"uri": "/sap/opu/odata/sap/ZFI_FCR_SSC_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/ZFI_FCR_SSC_SRV/metadata.xml"
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		},
+		"supportedThemes": [
+			"sap_hcb",
+			"sap_belize"
+		]
+	},
+	"sap.ui5": {
+		"rootView": {
+			"viewName": "com.infocus.dataListApplication.view.App",
+			"type": "XML"
+		},
+		"dependencies": {
+			"minUI5Version": "1.30.0",
+			"libs": {
+				"sap.ui.core": {},
+				"sap.m": {},
+				"sap.ui.layout": {},
+				"sap.ushell": {},
+				"sap.collaboration": {},
+				"sap.ui.comp": {},
+				"sap.uxap": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "com.infocus.dataListApplication.i18n.i18n"
+				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true,
+				"settings": {
+					"useBatch": false
+				}
+			},
+			"parameterModel": {
+				"dataSource": "parameterService",
+				"preload": true,
+				"settings": {
+					"useBatch": false
+				}
+			},
+			"globalData": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
+			"listData": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
+			"columnVisible": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
+			"ledgerData": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
+			"companyCodeData": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
+			"yearData": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
+			"periodData": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
+			"chartData": {
+				"type": "sap.ui.model.json.JSONModel"
+			}
+		},
+		"resources": {
+			"css": [{
+				"uri": "css/style.css"
+			}],
+			"js": [{
+				"uri":"libs/jspdf.min.js"
+			},{
+				"uri":"libs/jspdf.plugin.autotable.js"
+			}]
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"async": true,
+				"viewPath": "com.infocus.dataListApplication.view",
+				"controlId": "app",
+				"controlAggregation": "pages",
+				"clearAggregation": false
+			},
+			"routes": [{
+				"name": "home",
+				"pattern": "",
+				"target": "home"
+			},{
+				"name": "chart",
+				"pattern": "chart",
+				"target": "chart"
+			}],
+			"targets": {
+				"home": {
+					"viewName": "Home",
+					"viewLevel": 1
+				},
+				"chart": {
+                    "viewName": "Chart",
+                    "viewLevel": 2
+                }
+			}
+		}
+	},
+	"sap.platform.abap": {
+		"uri": "/sap/bc/ui5_ui5/sap/zlistdata/webapp",
+		"_version": "1.1.0"
+	}
+}

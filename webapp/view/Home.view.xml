@@ -1,0 +1,173 @@
+<mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form"
+	controllerName="com.infocus.dataListApplication.controller.Home">
+	<Panel headerText="" class="sapUiResponsiveMargin border-lineRadius" width="auto">
+		<content>
+			<FlexBox width="100%" id="__box1" height="100%" justifyContent="Center" direction="Column" alignItems="Center">
+				<items>
+					<FlexBox width="90%" direction="Column" height="auto" id="tripView" wrap="Wrap" justifyContent="SpaceAround" alignItems="Center"
+						visible="true">
+						<!--<VBox alignItems="Start" alignContent="Start" width="100%">
+							<Title text="General Data"/>
+						</VBox>-->
+						<VBox width="100%" direction="Row" justifyContent="SpaceBetween" wrap="Wrap">
+							<HBox direction="Column" width="18%">
+								<Label text="Ledger"/>
+								<Input id="inputLedger" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
+									valueHelpRequest="handleValueLedger" value="0L"/>
+							</HBox>
+							<HBox direction="Column" width="18%">
+								<Label text="Company Code"/>
+								<Input id="inputCompanyCode" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
+									valueHelpRequest="handleValueCompanyCode" value="1100"/>
+							</HBox>
+							<HBox direction="Column" width="18%">
+								<Label text="Fiscar Year"/>
+								<Input id="inputFiscalYear" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
+									valueHelpRequest="handleValueDialogFiscalYear"/>
+							</HBox>
+							<HBox direction="Column" width="18%">
+								<Label text="From Period"/>
+								<Input id="inputFromPeriod" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
+									valueHelpRequest="handleValueDialogFromPeriod" value="01"/>
+							</HBox>
+							<HBox direction="Column" width="18%">
+								<Label text="To Period"/>
+								<Input id="inputToPeriod" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
+									valueHelpRequest="handleValueDialogToPeriod" value="12"/>
+							</HBox>
+						</VBox>
+					</FlexBox>
+					<FlexBox width="90%" id="RadioBtn" justifyContent="SpaceAround" class="radioBtnCssRound" alignItems="Center" alignContent="Center"
+						visible="true">
+						<FlexBox justifyContent="Center">
+							<RadioButtonGroup id="company" columns="5" class="sapUiMediumMarginBottom" select="onRadioButtonSelectReports">
+								<RadioButton id="PRS" text="PRS"/>
+								<RadioButton id="FTRS" text="FTRS"/>
+								<RadioButton id="CORP" text="CORP"/>
+								<RadioButton id="companytotal" text="TOTAL"/>
+							</RadioButtonGroup>
+						</FlexBox>
+						<FlexBox>
+							<RadioButtonGroup id="list" columns="5" class="sapUiMediumMarginBottom" select="onRadioButtonSelectList">
+								<RadioButton id="detailedlist" text="Detailed List"/>
+								<RadioButton id="summarylist" text="Summary List"/>
+							</RadioButtonGroup>
+						</FlexBox>
+					</FlexBox>
+					<FlexBox width="90%" justifyContent="Start" visible="true">
+						<Button id="searchData" icon="sap-icon://search" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
+							press="getListData"/>
+						<Button id="saveTripInfo" icon="sap-icon://pdf-attachment" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
+							press="onDownloadPDF"/>
+						<Button id="refreshData" icon="sap-icon://refresh" text="" iconFirst="false" type="Emphasized" class="smallIcon" press="refreshListData"/>
+					</FlexBox>
+				</items>
+			</FlexBox>
+		</content>
+	</Panel>
+	<Panel headerText="{globalData>/reportS} {globalData>/fiscalY}" expandable="false" expanded="false" class="sapUiResponsiveMargin border-lineRadius" width="auto"
+		backgroundDesign="Solid">
+		<content>
+			<ScrollContainer horizontal="true" vertical="true" width="100%" height="220px">
+				<Table id="dynamicTable" items="{listData>/}" fixedLayout="true" width="auto">
+					<columns>
+						<!-- Column definitions -->
+						<Column width="100px" visible="{columnVisible>/glAcct}">
+							<Text text="G/L Acct"/>
+						</Column>
+						<Column width="200px" visible="{columnVisible>/glAcctLongText}">
+							<Text text="G/L Acct Long Text"/>
+						</Column>
+						<Column width="200px">
+							<Text text="G/L Group"/>
+						</Column>
+						<Column width="100px">
+							<Text text="Total"/>
+						</Column>
+						<Column visible="{columnVisible>/l01VFlag}" width="80px">
+							<Text text="Apr"/>
+						</Column>
+						<Column visible="{columnVisible>/l02VFlag}" width="80px">
+							<Text text="May"/>
+						</Column>
+						<Column visible="{columnVisible>/l03VFlag}" width="80px">
+							<Text text="Jun"/>
+						</Column>
+						<Column visible="{columnVisible>/l04VFlag}" width="80px">
+							<Text text="Jul"/>
+						</Column>
+						<Column visible="{columnVisible>/l05VFlag}" width="80px">
+							<Text text="Aug"/>
+						</Column>
+						<Column visible="{columnVisible>/l06VFlag}" width="80px">
+							<Text text="Sep"/>
+						</Column>
+						<Column visible="{columnVisible>/l07VFlag}" width="80px">
+							<Text text="Oct"/>
+						</Column>
+						<Column visible="{columnVisible>/l08VFlag}" width="80px">
+							<Text text="Nov"/>
+						</Column>
+						<Column visible="{columnVisible>/l09VFlag}" width="80px">
+							<Text text="Dec"/>
+						</Column>
+						<Column visible="{columnVisible>/l10VFlag}" width="80px">
+							<Text text="Jan"/>
+						</Column>
+						<Column visible="{columnVisible>/l11VFlag}" width="80px">
+							<Text text="Feb"/>
+						</Column>
+						<Column visible="{columnVisible>/l12VFlag}" width="80px">
+							<Text text="Mar"/>
+						</Column>
+						<Column visible="{columnVisible>/l13VFlag}" width="80px">
+							<Text text="Specl 1"/>
+						</Column>
+						<Column visible="{columnVisible>/l14VFlag}" width="80px">
+							<Text text="Specl 2"/>
+						</Column>
+						<Column visible="{columnVisible>/l15VFlag}" width="80px">
+							<Text text="Specl 3"/>
+						</Column>
+						<Column visible="{columnVisible>/l16VFlag}" width="80px">
+							<Text text="Specl 4"/>
+						</Column>
+						<Column visible="true" width="80px">
+							<Text text="Graph"/>
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem>
+							<!-- Cell definitions -->
+							<cells>
+								<!-- Bindings for other columns -->
+								<Text text="{listData>Racct}"/>
+								<Text text="{listData>GlText}"/>
+								<Text text="{listData>GlAcGroup}"/>
+								<Text text="{listData>Total}"/>
+								<Text text="{listData>L01}"/>
+								<Text text="{listData>L02}"/>
+								<Text text="{listData>L03}"/>
+								<Text text="{listData>L04}"/>
+								<Text text="{listData>L05}"/>
+								<Text text="{listData>L06}"/>
+								<Text text="{listData>L07}"/>
+								<Text text="{listData>L08}"/>
+								<Text text="{listData>L09}"/>
+								<Text text="{listData>L10}"/>
+								<Text text="{listData>L11}"/>
+								<Text text="{listData>L12}"/>
+								<Text text="{listData>L13}"/>
+								<Text text="{listData>L14}"/>
+								<Text text="{listData>L15}"/>
+								<Text text="{listData>L16}"/>
+								<!-- Add button in the last cell -->
+        						<Button id="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onGraphButtonPress"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</ScrollContainer>
+		</content>
+	</Panel>
+</mvc:View>
