@@ -10,7 +10,7 @@ sap.ui.define([
 	return BaseController.extend("com.infocus.dataListApplication.controller.Home", {
 		onInit: function() {
 			var that = this;
-			
+
 			this.oRouter = this.getOwnerComponent().getRouter();
 
 			// call the input parameters data
@@ -68,39 +68,50 @@ sap.ui.define([
 				oGlobalDataModel.setProperty("/fiscalY", fiscalYearValue);
 				oGlobalDataModel.setProperty("/fromP", fromPeriodValue);
 				oGlobalDataModel.setProperty("/toP", toPeriodValue);
+				oGlobalDataModel.setProperty("/togglePanelVisibility", "X");
+
+				// "X" = Visibility
+				// " " = Non - Visibility
 			}
+
+			/*this._togglePanelVisibility(oGlobalDataModel.getProperty("/togglePanelVisibility"));*/
 		},
 		_columnVisible: function() {
 			var oColumnVisible = this.getOwnerComponent().getModel("columnVisible");
-			/*oColumnVisible.setData({
-				"l01VFlag": false,
-				"l02VFlag": false,
-				"l03VFlag": false,
-				"l04VFlag": false,
-				"l05VFlag": false,
-				"l06VFlag": false,
-				"l07VFlag": false,
-				"l08VFlag": false,
-				"l09VFlag": false,
-				"l10VFlag": false,
-				"l11VFlag": false,
-				"l12VFlag": false,
-				"l13VFlag": false,
-				"l14VFlag": false,
-				"l15VFlag": false,
-				"l16VFlag": false
-
-			});*/
 
 			var data = {};
 			data.glAcct = true;
 			data.glAcctLongText = true;
+			data.graphColumnVisible = false;
 			for (var i = 1; i <= 16; i++) {
 				var key = "l" + (i < 10 ? '0' + i : i) + "VFlag";
 				data[key] = false;
 			}
 
 			oColumnVisible.setData(data);
+		},
+		_togglePanelVisibility: function(bVisible) {
+			var oSplitter = this.byId("splitter");
+			var oDynamicTable = this.byId("dynamicTable");
+			var oChartPanel = this.byId("chartPanel");
+
+			// Set panel visibility
+			/*oChartPanel.setVisible(bVisible);*/
+
+			// Get the content areas of the splitter
+			var aContentAreas = oSplitter.getContentAreas();
+
+			// Adjust the size of the chart panel based on visibility
+			if (bVisible !== "X") {
+				// Panel is visible, adjust size
+				aContentAreas[1].setSize("auto"); // Assuming the panel is the second content area
+			} else {
+				// Panel is hidden, set size to 0
+				aContentAreas[1].setSize("0");
+			}
+
+			// Set the updated content areas back to the splitter
+			oSplitter.setContentAreas(aContentAreas);
 		},
 
 		/*************** get parameters data *****************/
@@ -402,6 +413,7 @@ sap.ui.define([
 			var oColumnVisibleData = then.getOwnerComponent().getModel("columnVisible").getData();
 			oColumnVisibleData.glAcct = oData[0].Racct === "" ? false : true;
 			oColumnVisibleData.glAcctLongText = oData[0].GlText === "" ? false : true;
+			oColumnVisibleData.graphColumnVisible = oData[0].DET_FLAG === "" ? true : false;
 
 			for (var i = 1; i <= 16; i++) {
 				var flagKey = "L" + (i < 10 ? '0' + i : i) + "_FLAG";
@@ -470,13 +482,66 @@ sap.ui.define([
 			});
 
 		},
-		onGraphButtonPress: function(oEvent){
-			var buttonName = oEvent.getSource().sId.split("--")[1].split("-")[0];
-            this.oRouter = this.getOwnerComponent().getRouter();
-            this.oRouter.navTo("chart");
+		onChartButtonPress: function(oEvent) {
+			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
+			var oListData = this.getOwnerComponent().getModel("listData").getData();
+			var oChartDataModel = this.getOwnerComponent().getModel("chartData");
+			var oButton = oEvent.getSource();
+			var oColumnListItem = oButton.getParent();
+			var oTable = this.byId("dynamicTable");
+			var iIndex = oTable.indexOfItem(oColumnListItem);
 
+			var filterChartData = oListData[iIndex];
+
+			var extractChartData = this.extractData(filterChartData);
+
+			oChartDataModel.setData(extractChartData);
+
+			oGlobalData.togglePanelVisibility = oListData[0].DET_FLAG === "" ? "" : "X";
+
+			this.getOwnerComponent().getModel("globalData").setData(oGlobalData);
+		},
+
+		extractData: function(obj) {
+			var result = [];
+			var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+			
+			var oVizFrame = this.byId("oVizFrame");
+			oVizFrame.setVizProperties({
+              title: {
+                visible: true,
+                text: obj.GlAcGroup
+              }
+            });
+
+			// Add total value from the object to the result array
+			if (obj.Total) {
+				result.push({
+					Month: 'Total',
+					Value: obj.Total
+				});
+			}
+
+			for (var i = 1; i <= 16; i++) {
+				var flagKey = "L" + (i < 10 ? '0' + i : i) + "_FLAG";
+				var flag = obj[flagKey];
+				var monthIndex = i - 1 < 9 ? i + 3 : i - 9;
+				var month = months[monthIndex - 1] || 'Total';
+				var valueKey = i < 10 ? "L0" + i : "L" + i;
+				var value = obj[valueKey];
+
+				if (flag === "X") {
+					result.push({
+						Month: month,
+						Value: value
+					});
+				}
+			}
+
+			return result;
 			
 		},
+
 		onDownloadPDF: function() {
 			// Create a new jsPDF instance
 			var doc = new jsPDF();
