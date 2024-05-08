@@ -19,24 +19,30 @@ sap.ui.define([
 			this.getYearParametersData();
 			this.getPeriodParametersData();
 
-			// Register a function to be called before rendering the view
-			this.getView().attachBeforeRendering(this._validateInputFields, this);
+			// Update the global data model
+			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
+			if (oGlobalDataModel) {
+				oGlobalDataModel.setProperty("/reportS", "PRS");
+				oGlobalDataModel.setProperty("/listS", "X");
+				oGlobalDataModel.setProperty("/togglePanelVisibility", "X");
 
-			// Attach liveChange event handlers to input fields
-			var inputLedger = this.byId("inputLedger");
-			var inputCompanyCode = this.byId("inputCompanyCode");
-			var inputFiscalYear = this.byId("inputFiscalYear");
-			var inputFromPeriod = this.byId("inputFromPeriod");
-			var inputToPeriod = this.byId("inputToPeriod");
+				// "X" = Visibility
+				// " " = Non - Visibility
+			}
 
-			inputLedger.attachLiveChange(this._validateInputFields, this);
-			inputCompanyCode.attachLiveChange(this._validateInputFields, this);
-			inputFiscalYear.attachLiveChange(this._validateInputFields, this);
-			inputFromPeriod.attachLiveChange(this._validateInputFields, this);
-			inputToPeriod.attachLiveChange(this._validateInputFields, this);
-			// visible & hide column function
+			/*this._validateInputFields();*/
 			this._columnVisible();
 
+		},
+		onLiveChange: function(oEvent) {
+			var inputField = oEvent.getSource(); // Get the input field
+			var newValue = oEvent.getParameter("newValue");
+
+			if (newValue) {
+				inputField.setValueState(sap.ui.core.ValueState.Success); // Set value state on input field
+			} else {
+				inputField.setValueState(sap.ui.core.ValueState.Error); // Set value state on input field
+			}
 		},
 		_validateInputFields: function() {
 			var inputLedger = this.byId("inputLedger");
@@ -45,37 +51,69 @@ sap.ui.define([
 			var inputFromPeriod = this.byId("inputFromPeriod");
 			var inputToPeriod = this.byId("inputToPeriod");
 
-			var ledgerValue = inputLedger.getValue();
-			var companyCodeValue = inputCompanyCode.getValue();
-			var fiscalYearValue = inputFiscalYear.getValue();
-			var fromPeriodValue = inputFromPeriod.getValue();
-			var toPeriodValue = inputToPeriod.getValue();
+			var isValid = true;
+			var message = '';
 
-			// Set valueState using ternary operators
-			inputLedger.setValueState(ledgerValue === '' ? sap.ui.core.ValueState.Error : sap.ui.core.ValueState.None);
-			inputCompanyCode.setValueState(companyCodeValue === '' ? sap.ui.core.ValueState.Error : sap.ui.core.ValueState.None);
-			inputFiscalYear.setValueState(fiscalYearValue === '' ? sap.ui.core.ValueState.Error : sap.ui.core.ValueState.None);
-			inputFromPeriod.setValueState(fromPeriodValue === '' ? sap.ui.core.ValueState.Error : sap.ui.core.ValueState.None);
-			inputToPeriod.setValueState(toPeriodValue === '' ? sap.ui.core.ValueState.Error : sap.ui.core.ValueState.None);
-
-			// Update the global data model
-			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
-			if (oGlobalDataModel) {
-				oGlobalDataModel.setProperty("/reportS", "PRS");
-				oGlobalDataModel.setProperty("/listS", "X");
-				oGlobalDataModel.setProperty("/ledgrNo", ledgerValue);
-				oGlobalDataModel.setProperty("/cmpnyCode", companyCodeValue);
-				oGlobalDataModel.setProperty("/fiscalY", fiscalYearValue);
-				oGlobalDataModel.setProperty("/fromP", fromPeriodValue);
-				oGlobalDataModel.setProperty("/toP", toPeriodValue);
-				oGlobalDataModel.setProperty("/togglePanelVisibility", "X");
-
-				// "X" = Visibility
-				// " " = Non - Visibility
+			if (!inputLedger.getValue()) {
+				inputLedger.setValueState(sap.ui.core.ValueState.Error);
+				isValid = false;
+				message += 'Ledger, ';
+			} else {
+				inputLedger.setValueState(sap.ui.core.ValueState.None);
 			}
 
-			/*this._togglePanelVisibility(oGlobalDataModel.getProperty("/togglePanelVisibility"));*/
+			if (!inputCompanyCode.getValue()) {
+				inputCompanyCode.setValueState(sap.ui.core.ValueState.Error);
+				isValid = false;
+				message += 'Company Code, ';
+			} else {
+				inputCompanyCode.setValueState(sap.ui.core.ValueState.None);
+			}
+
+			if (!inputFiscalYear.getValue()) {
+				inputFiscalYear.setValueState(sap.ui.core.ValueState.Error);
+				isValid = false;
+				message += 'Fiscal Year, ';
+			} else {
+				inputFiscalYear.setValueState(sap.ui.core.ValueState.None);
+			}
+
+			if (!inputFromPeriod.getValue()) {
+				inputFromPeriod.setValueState(sap.ui.core.ValueState.Error);
+				isValid = false;
+				message += 'From Period, ';
+			} else {
+				inputFromPeriod.setValueState(sap.ui.core.ValueState.None);
+			}
+
+			if (!inputToPeriod.getValue()) {
+				inputToPeriod.setValueState(sap.ui.core.ValueState.Error);
+				isValid = false;
+				message += 'To Period, ';
+			} else {
+				inputToPeriod.setValueState(sap.ui.core.ValueState.None);
+			}
+
+			if (!isValid) {
+				// Remove the last comma and space from the message
+				message = message.slice(0, -2);
+				sap.m.MessageBox.show("Please fill up the following fields: " + message);
+				return false;
+			}
+
+			// Set global data properties
+			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
+			if (oGlobalDataModel) {
+				oGlobalDataModel.setProperty("/ledgrNo", inputLedger.getValue());
+				oGlobalDataModel.setProperty("/cmpnyCode", inputCompanyCode.getValue());
+				oGlobalDataModel.setProperty("/fiscalY", inputFiscalYear.getValue());
+				oGlobalDataModel.setProperty("/fromP", inputFromPeriod.getValue());
+				oGlobalDataModel.setProperty("/toP", inputToPeriod.getValue());
+			}
+
+			return true;
 		},
+
 		_columnVisible: function() {
 			var oColumnVisible = this.getOwnerComponent().getModel("columnVisible");
 
@@ -92,11 +130,6 @@ sap.ui.define([
 		},
 		_togglePanelVisibility: function(bVisible) {
 			var oSplitter = this.byId("splitter");
-			var oDynamicTable = this.byId("dynamicTable");
-			var oChartPanel = this.byId("chartPanel");
-
-			// Set panel visibility
-			/*oChartPanel.setVisible(bVisible);*/
 
 			// Get the content areas of the splitter
 			var aContentAreas = oSplitter.getContentAreas();
@@ -410,10 +443,13 @@ sap.ui.define([
 		/*************** Table column visible on based on flag  *****************/
 
 		_assignVisiblity: function(oData, then) {
+			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
 			var oColumnVisibleData = then.getOwnerComponent().getModel("columnVisible").getData();
+
 			oColumnVisibleData.glAcct = oData[0].Racct === "" ? false : true;
 			oColumnVisibleData.glAcctLongText = oData[0].GlText === "" ? false : true;
-			oColumnVisibleData.graphColumnVisible = oData[0].DET_FLAG === "" ? true : false;
+			oColumnVisibleData.graphColumnVisible = oData[0].DET_FLAG === "X" ? false : true;
+			oGlobalData.togglePanelVisibility = oData[0].DET_FLAG === "X" ? "X" : "";
 
 			for (var i = 1; i <= 16; i++) {
 				var flagKey = "L" + (i < 10 ? '0' + i : i) + "_FLAG";
@@ -422,11 +458,24 @@ sap.ui.define([
 			}
 
 			then.getOwnerComponent().getModel("columnVisible").setData(oColumnVisibleData);
+			then.getOwnerComponent().getModel("globalData").setData(oGlobalData);
+
+			if (oData[0].DET_FLAG === "") {
+				this.loadDefaultGraph();
+			}
+
 		},
 
 		/*************** get the table data from oData service  *****************/
 
 		getListData: function() {
+
+			// Validate input fields
+			if (!this._validateInputFields()) {
+				// Validation failed, return without fetching data
+				return;
+			}
+
 			var that = this;
 			var oModel = this.getOwnerComponent().getModel();
 			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
@@ -482,6 +531,22 @@ sap.ui.define([
 			});
 
 		},
+
+		/*************** chart function & plotting the chart data  *****************/
+
+		loadDefaultGraph: function() {
+			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
+			var oListData = this.getOwnerComponent().getModel("listData").getData();
+			var defaultFilterChartData = oListData[0]; // Assuming default data is at index 0
+			var extractChartData = this.extractData(defaultFilterChartData);
+
+			// Set default chart data
+			this.getOwnerComponent().getModel("chartData").setData(extractChartData);
+
+			// Set default panel visibility
+			oGlobalData.togglePanelVisibility = defaultFilterChartData.DET_FLAG === "X" ? "X" : "";
+			this.getOwnerComponent().getModel("globalData").setData(oGlobalData);
+		},
 		onChartButtonPress: function(oEvent) {
 			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
 			var oListData = this.getOwnerComponent().getModel("listData").getData();
@@ -497,22 +562,21 @@ sap.ui.define([
 
 			oChartDataModel.setData(extractChartData);
 
-			oGlobalData.togglePanelVisibility = oListData[0].DET_FLAG === "" ? "" : "X";
+			oGlobalData.togglePanelVisibility = oListData[0].DET_FLAG === "X" ? "X" : "";
 
 			this.getOwnerComponent().getModel("globalData").setData(oGlobalData);
 		},
-
 		extractData: function(obj) {
 			var result = [];
 			var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-			
+
 			var oVizFrame = this.byId("oVizFrame");
 			oVizFrame.setVizProperties({
-              title: {
-                visible: true,
-                text: obj.GlAcGroup
-              }
-            });
+				title: {
+					visible: true,
+					text: obj.GlAcGroup
+				}
+			});
 
 			// Add total value from the object to the result array
 			if (obj.Total) {
@@ -539,8 +603,10 @@ sap.ui.define([
 			}
 
 			return result;
-			
+
 		},
+
+		/*************** download pdf function  *****************/
 
 		onDownloadPDF: function() {
 			// Create a new jsPDF instance

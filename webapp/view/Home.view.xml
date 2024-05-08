@@ -1,6 +1,6 @@
 <mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core"
 	xmlns:f="sap.ui.layout.form" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
-	xmlns:viz.data="sap.viz.ui5.data" controllerName="com.infocus.dataListApplication.controller.Home">
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.dataListApplication.controller.Home">
 	<Page id="page" title="Fixed Cost Report" enableScrolling="true" showNavButton="true" navButtonPress="onNavBack" showFooter="false">
 		<content>
 			<Panel headerText="" class="sapUiResponsiveMargin border-lineRadius" width="auto">
@@ -13,27 +13,27 @@
 									<HBox direction="Column" width="18%">
 										<Label text="Ledger"/>
 										<Input id="inputLedger" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
-											valueHelpRequest="handleValueLedger" value="0L"/>
+											valueHelpRequest="handleValueLedger" value="0L" required="true" liveChange = "onLiveChange"/>
 									</HBox>
 									<HBox direction="Column" width="18%">
 										<Label text="Company Code"/>
 										<Input id="inputCompanyCode" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
-											valueHelpRequest="handleValueCompanyCode" value="1100"/>
+											valueHelpRequest="handleValueCompanyCode" value="1100" required="true" liveChange = "onLiveChange"/>
 									</HBox>
 									<HBox direction="Column" width="18%">
 										<Label text="Fiscar Year"/>
 										<Input id="inputFiscalYear" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
-											valueHelpRequest="handleValueDialogFiscalYear"/>
+											valueHelpRequest="handleValueDialogFiscalYear" required="true" liveChange = "onLiveChange"/>
 									</HBox>
 									<HBox direction="Column" width="18%">
 										<Label text="From Period"/>
 										<Input id="inputFromPeriod" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
-											valueHelpRequest="handleValueDialogFromPeriod" value="01"/>
+											valueHelpRequest="handleValueDialogFromPeriod" value="01" required="true" liveChange = "onLiveChange"/>
 									</HBox>
 									<HBox direction="Column" width="18%">
 										<Label text="To Period"/>
 										<Input id="inputToPeriod" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
-											valueHelpRequest="handleValueDialogToPeriod" value="12"/>
+											valueHelpRequest="handleValueDialogToPeriod" value="12" required="true" liveChange = "onLiveChange"/>
 									</HBox>
 								</VBox>
 							</FlexBox>
@@ -133,7 +133,7 @@
 										<Text text="Specl 4"/>
 									</Column>
 									<Column width="80px" visible="{columnVisible>/graphColumnVisible}">
-										<Text text="Graph"/>
+										<Text text="Chart"/>
 									</Column>
 								</columns>
 								<items>
@@ -159,8 +159,7 @@
 											<Text text="{listData>L14}"/>
 											<Text text="{listData>L15}"/>
 											<Text text="{listData>L16}"/>
-											<Button visible="{= ${globalData>/togglePanelVisibility} === 'X' ? false : true }" id="chartButton" icon="sap-icon://vertical-bar-chart"
-												text="" press="onChartButtonPress"/>
+											<Button id="chartButton" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>
 										</cells>
 									</ColumnListItem>
 								</items>
@@ -170,27 +169,33 @@
 							</Table>
 							<Panel id="chartPanel" width="100%">
 								<content>
-									<viz:VizFrame id="oVizFrame" busy="false" busyIndicatorDelay="1000" visible="true"
-										vizProperties="{plotArea: { drawingEffect: 'glossy'}, title:{ text:'Data analysis through Reports'},dataLabel:{visible:true,showTotal:true}}"
-										uiConfig="{ 'applicationSet': 'fiori' }" vizType="column" legendVisible="true">
-										<viz:dataset>
-											<viz.data:FlattenedDataset data="{chartData>/}">
-												<viz.data:dimensions>
-													<viz.data:DimensionDefinition name="Month" value="{chartData>Month}"/>
-													<!--<viz.data:DimensionDefinition name="GlAcGroup" value="{chartData>GlAcGroup}"/>-->
-												</viz.data:dimensions>
-												<viz.data:measures>
-													<viz.data:MeasureDefinition name="Value" value="{chartData>Value}"/>
-												</viz.data:measures>
-											</viz.data:FlattenedDataset>
-										</viz:dataset>
-										<!-- sap.viz.ui5.data.Dataset -->
-										<viz:feeds>
-											<viz.feeds:FeedItem id="value1" uid="valueAxis" type="Measure" values="Value"/>
-											<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Month"/>
-											<!--<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="GlAcGroup"/>-->
-										</viz:feeds>
-									</viz:VizFrame>
+									<chart:ChartContainer autoAdjustHeight="true" id="chartContainer" showFullScreen="true" title="Charts">
+										<chart:ChartContainerContent icon="sap-icon://vertical-stacked-chart" title="Stacked_bar Chart">
+											<chart:content>
+												<viz:VizFrame id="oVizFrame" busy="false" busyIndicatorDelay="1000" visible="true"
+													vizProperties="{plotArea: { drawingEffect: 'glossy'}, title:{ text:'Data analysis through Reports'},dataLabel:{visible:true,showTotal:true}}"
+													uiConfig="{ 'applicationSet': 'fiori' }" vizType="column" legendVisible="true">
+													<viz:dataset>
+														<viz.data:FlattenedDataset data="{chartData>/}">
+															<viz.data:dimensions>
+																<viz.data:DimensionDefinition name="Month" value="{chartData>Month}"/>
+																<!--<viz.data:DimensionDefinition name="GlAcGroup" value="{chartData>GlAcGroup}"/>-->
+															</viz.data:dimensions>
+															<viz.data:measures>
+																<viz.data:MeasureDefinition name="Value" value="{chartData>Value}"/>
+															</viz.data:measures>
+														</viz.data:FlattenedDataset>
+													</viz:dataset>
+													<!-- sap.viz.ui5.data.Dataset -->
+													<viz:feeds>
+														<viz.feeds:FeedItem id="value1" uid="valueAxis" type="Measure" values="Value"/>
+														<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Month"/>
+														<!--<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="GlAcGroup"/>-->
+													</viz:feeds>
+												</viz:VizFrame>
+											</chart:content>
+										</chart:ChartContainerContent>
+									</chart:ChartContainer>
 								</content>
 								<layoutData>
 									<l:SplitterLayoutData size="{= ${globalData>/togglePanelVisibility} === 'X' ? '0px' : 'auto' }"
