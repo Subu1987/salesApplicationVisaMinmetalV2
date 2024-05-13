@@ -1,7 +1,8 @@
 sap.ui.define([
 	"com/infocus/dataListApplication/controller/BaseController",
-	"sap/ui/model/json/JSONModel"
-], function(BaseController, JSONModel) {
+	"sap/ui/model/json/JSONModel",
+	"sap/m/MessageBox"
+], function(BaseController, JSONModel, MessageBox) {
 	"use strict";
 
 	return BaseController.extend("com.infocus.dataListApplication.controller.App", {
@@ -23,11 +24,17 @@ sap.ui.define([
 				oViewModel.setProperty("/busy", false);
 				oViewModel.setProperty("/delay", iOriginalBusyDelay);
 			};
+			
+			// Function to handle metadata loading failure
+            var handleMetadataFailed = function(oError) {
+                MessageBox.error("Failed to load metadata: " + oError.getParameter("message"));
+                fnSetAppNotBusy();
+            };
 
 			// disable busy indication when the metadata is loaded and in case of errors
 
-			/*this.getOwnerComponent().getModel().metadataLoaded().then(fnSetAppNotBusy);
-			this.getOwnerComponent().getModel().attachMetadataFailed(fnSetAppNotBusy);*/
+			this.getOwnerComponent().getModel().metadataLoaded().then(fnSetAppNotBusy);
+			this.getOwnerComponent().getModel().attachMetadataFailed(handleMetadataFailed);
 		}
 
 	});

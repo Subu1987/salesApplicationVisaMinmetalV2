@@ -29,3 +29,7 @@
     font-size: 1.5rem !important;
     margin-top: -10px !important;
 }
+/* CSS for zoom in effect */
+.zoomIn {
+    font-size: 16px !important; /* Adjust the font size as needed */
+}

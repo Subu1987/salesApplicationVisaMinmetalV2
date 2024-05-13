@@ -8,8 +8,8 @@ sap.ui.define([
 	"use strict";
 
 	return BaseController.extend("com.infocus.dataListApplication.controller.Home", {
+
 		onInit: function() {
-			var that = this;
 
 			this.oRouter = this.getOwnerComponent().getRouter();
 
@@ -25,24 +25,11 @@ sap.ui.define([
 				oGlobalDataModel.setProperty("/reportS", "PRS");
 				oGlobalDataModel.setProperty("/listS", "X");
 				oGlobalDataModel.setProperty("/togglePanelVisibility", "X");
-
-				// "X" = Visibility
-				// " " = Non - Visibility
 			}
 
 			/*this._validateInputFields();*/
 			this._columnVisible();
 
-		},
-		onLiveChange: function(oEvent) {
-			var inputField = oEvent.getSource(); // Get the input field
-			var newValue = oEvent.getParameter("newValue");
-
-			if (newValue) {
-				inputField.setValueState(sap.ui.core.ValueState.Success); // Set value state on input field
-			} else {
-				inputField.setValueState(sap.ui.core.ValueState.Error); // Set value state on input field
-			}
 		},
 		_validateInputFields: function() {
 			var inputLedger = this.byId("inputLedger");
@@ -171,6 +158,8 @@ sap.ui.define([
 				error: function(error) {
 					sap.ui.core.BusyIndicator.hide();
 					console.log(error);
+					var errorObject = JSON.parse(error.responseText);
+					sap.m.MessageBox.error(errorObject.error.message.value);
 
 				}
 			});
@@ -198,6 +187,8 @@ sap.ui.define([
 				error: function(error) {
 					sap.ui.core.BusyIndicator.hide();
 					console.log(error);
+					var errorObject = JSON.parse(error.responseText);
+					sap.m.MessageBox.error(errorObject.error.message.value);
 				}
 			});
 
@@ -224,6 +215,8 @@ sap.ui.define([
 				error: function(error) {
 					sap.ui.core.BusyIndicator.hide();
 					console.log(error);
+					var errorObject = JSON.parse(error.responseText);
+					sap.m.MessageBox.error(errorObject.error.message.value);
 				}
 			});
 
@@ -250,6 +243,8 @@ sap.ui.define([
 				error: function(error) {
 					sap.ui.core.BusyIndicator.hide();
 					console.log(error);
+					var errorObject = JSON.parse(error.responseText);
+					sap.m.MessageBox.error(errorObject.error.message.value);
 				}
 			});
 
@@ -419,7 +414,7 @@ sap.ui.define([
 			oEvent.getSource().getBinding("items").filter([]);
 		},
 
-		/*************** radio Button selection  *****************/
+		/*************** radio Button & drop down selection  *****************/
 
 		onRadioButtonSelectReports: function(oEvent) {
 			var radioButtonSelectReport = oEvent.getSource();
@@ -437,6 +432,31 @@ sap.ui.define([
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
 			if (oGlobalDataModel) {
 				oGlobalDataModel.setProperty("/listS", selectedButtonListText === "Detailed List" ? 'X' : '');
+			}
+		},
+		onChangeChartType: function(oEvent) {
+			var sSelectedChartType = oEvent.getSource().getSelectedKey();
+			var oVizFrame = this.getView().byId("oVizFrame");
+
+			// Update the vizType property of the VizFrame based on the selected chart type
+			switch (sSelectedChartType) {
+				case "column":
+					oVizFrame.setVizType("column");
+					break;
+				case "pie":
+					oVizFrame.setVizType("pie");
+					break;
+				case "line":
+					oVizFrame.setVizType("line");
+					break;
+				case "donut":
+					oVizFrame.setVizType("donut");
+					break;
+					/*case "scatter":
+						oVizFrame.setVizType("scatter");
+						break;*/
+				default:
+					break;
 			}
 		},
 
@@ -457,13 +477,46 @@ sap.ui.define([
 				oColumnVisibleData[columnKey] = oData[0][flagKey] === 'X' ? true : false;
 			}
 
-			then.getOwnerComponent().getModel("columnVisible").setData(oColumnVisibleData);
-			then.getOwnerComponent().getModel("globalData").setData(oGlobalData);
-
 			if (oData[0].DET_FLAG === "") {
 				this.loadDefaultGraph();
 			}
+			/* else {
 
+							var splitter = this.byId("splitter");
+							splitter.attachResize(this.onSplitterResize, this);
+
+						}*/
+
+			then.getOwnerComponent().getModel("columnVisible").setData(oColumnVisibleData);
+			then.getOwnerComponent().getModel("globalData").setData(oGlobalData);
+
+		},
+		onSplitterResize: function(oEvent) {
+
+			var splitterPosition = oEvent.getParameter("newSizes");
+		},
+		onZoomInPress: function() {
+			var oTable = this.byId("dynamicTable");
+			var aItems = oTable.getItems();
+
+			// Increase font size for each cell in the table
+			aItems.forEach(function(oItem) {
+				oItem.getCells().forEach(function(oCell) {
+					oCell.addStyleClass("zoomIn");
+				});
+			});
+		},
+
+		onZoomOutPress: function() {
+			var oTable = this.byId("dynamicTable");
+			var aItems = oTable.getItems();
+
+			// Decrease font size for each cell in the table
+			aItems.forEach(function(oItem) {
+				oItem.getCells().forEach(function(oCell) {
+					oCell.removeStyleClass("zoomIn");
+				});
+			});
 		},
 
 		/*************** get the table data from oData service  *****************/
@@ -516,10 +569,6 @@ sap.ui.define([
 						// hide the busy indicator
 						sap.ui.core.BusyIndicator.hide();
 					}
-
-					// set the data to employeeModel
-					/*var oEmployeeModel = that.getOwnerComponent().getModel("employeeData");
-					oEmployeeModel.setData(oData);*/
 
 				},
 				error: function(error) {
@@ -579,12 +628,12 @@ sap.ui.define([
 			});
 
 			// Add total value from the object to the result array
-			if (obj.Total) {
+			/*if (obj.Total) {
 				result.push({
 					Month: 'Total',
 					Value: obj.Total
 				});
-			}
+			}*/
 
 			for (var i = 1; i <= 16; i++) {
 				var flagKey = "L" + (i < 10 ? '0' + i : i) + "_FLAG";
