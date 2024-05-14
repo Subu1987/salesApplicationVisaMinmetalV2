@@ -3,8 +3,9 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	'sap/ui/model/json/JSONModel',
-	"sap/m/MessageBox"
-], function(BaseController, Filter, FilterOperator, JSONModel, MessageBox) {
+	"sap/m/MessageBox",
+	"sap/viz/ui5/api/env/Format"
+], function(BaseController, Filter, FilterOperator, JSONModel, MessageBox, Format) {
 	"use strict";
 
 	return BaseController.extend("com.infocus.dataListApplication.controller.Home", {
@@ -433,30 +434,91 @@ sap.ui.define([
 			if (oGlobalDataModel) {
 				oGlobalDataModel.setProperty("/listS", selectedButtonListText === "Detailed List" ? 'X' : '');
 			}
-		},
-		onChangeChartType: function(oEvent) {
-			var sSelectedChartType = oEvent.getSource().getSelectedKey();
-			var oVizFrame = this.getView().byId("oVizFrame");
 
-			// Update the vizType property of the VizFrame based on the selected chart type
-			switch (sSelectedChartType) {
-				case "column":
-					oVizFrame.setVizType("column");
+			// set the split view switch control state to false
+			if (selectedButtonListText === "Summary List") {
+				this.byId("splitViewSwitch").setState(true);
+			} else {
+				this.byId("splitViewSwitch").setState(false);
+			}
+		},
+		onSelectChartType: function(oEvent) {
+			// Get the selected radio button
+			var selectedIndex = oEvent.getParameter("selectedIndex");
+			var oVizFrame = this.byId("oVizFrame");
+			var chartType;
+
+			switch (selectedIndex) {
+				case 0:
+					chartType = "column";
 					break;
-				case "pie":
-					oVizFrame.setVizType("pie");
+				case 1:
+					chartType = "pie";
 					break;
-				case "line":
-					oVizFrame.setVizType("line");
+				case 2:
+					chartType = "line";
 					break;
-				case "donut":
-					oVizFrame.setVizType("donut");
+				case 3:
+					chartType = "donut";
 					break;
-					/*case "scatter":
-						oVizFrame.setVizType("scatter");
-						break;*/
 				default:
-					break;
+					chartType = "column";
+			}
+
+			// Update the vizType of the VizFrame
+			oVizFrame.setVizType(chartType);
+		},
+		onTabularToChartChanged: function(oEvent) {
+			var oSwitch = oEvent.getSource();
+			var sId = oSwitch.getId();
+			var aSwitches = [
+				this.byId("splitViewSwitch"),
+				this.byId("tabularDataSwitch"),
+				this.byId("chartDataSwitch")
+			]; // Array of all switches
+
+			// SplitterLayoutData elements
+			var oSplitterLayoutData1 = this.byId("splitterLayoutData1");
+			var oSplitterLayoutData2 = this.byId("splitterLayoutData2");
+
+			// which switch was toggled and get the corresponding text
+			var sText;
+			if (sId === this.byId("splitViewSwitch").getId()) {
+				sText = "Split View";
+			} else if (sId === this.byId("tabularDataSwitch").getId()) {
+				sText = "Tabular Data";
+			} else if (sId === this.byId("chartDataSwitch").getId()) {
+				sText = "Chart Data";
+			} else {
+				sText = "";
+			}
+
+			// If a valid switch was toggled
+			if (sText) {
+				// Turn off other switches and update SplitterLayoutData sizes
+				aSwitches.forEach(function(s) {
+					if (s.getId() !== sId) {
+						s.setState(false);
+					}
+				});
+
+				// Perform actions based on the text value of the toggled switch
+				switch (sText) {
+					case "Split View":
+						oSplitterLayoutData1.setSize("50%");
+						oSplitterLayoutData2.setSize("50%");
+						break;
+					case "Tabular Data":
+						oSplitterLayoutData1.setSize("100%");
+						oSplitterLayoutData2.setSize("0%");
+						break;
+					case "Chart Data":
+						oSplitterLayoutData1.setSize("0%");
+						oSplitterLayoutData2.setSize("100%");
+						break;
+					default:
+						break;
+				}
 			}
 		},
 
@@ -480,49 +542,14 @@ sap.ui.define([
 			if (oData[0].DET_FLAG === "") {
 				this.loadDefaultGraph();
 			}
-			/* else {
-
-							var splitter = this.byId("splitter");
-							splitter.attachResize(this.onSplitterResize, this);
-
-						}*/
 
 			then.getOwnerComponent().getModel("columnVisible").setData(oColumnVisibleData);
 			then.getOwnerComponent().getModel("globalData").setData(oGlobalData);
-
-		},
-		onSplitterResize: function(oEvent) {
-
-			var splitterPosition = oEvent.getParameter("newSizes");
-		},
-		onZoomInPress: function() {
-			var oTable = this.byId("dynamicTable");
-			var aItems = oTable.getItems();
-
-			// Increase font size for each cell in the table
-			aItems.forEach(function(oItem) {
-				oItem.getCells().forEach(function(oCell) {
-					oCell.addStyleClass("zoomIn");
-				});
-			});
-		},
-
-		onZoomOutPress: function() {
-			var oTable = this.byId("dynamicTable");
-			var aItems = oTable.getItems();
-
-			// Decrease font size for each cell in the table
-			aItems.forEach(function(oItem) {
-				oItem.getCells().forEach(function(oCell) {
-					oCell.removeStyleClass("zoomIn");
-				});
-			});
 		},
 
 		/*************** get the table data from oData service  *****************/
 
 		getListData: function() {
-
 			// Validate input fields
 			if (!this._validateInputFields()) {
 				// Validation failed, return without fetching data
@@ -553,6 +580,11 @@ sap.ui.define([
 					var oData = response.results;
 					console.log(oData);
 
+					// Format decimal properties to 2 digits after the decimal point
+					oData.forEach(function(item) {
+						that._formatDecimalProperties(item, that);
+					});
+
 					var oListDataModel = that.getOwnerComponent().getModel("listData");
 					oListDataModel.setData(oData);
 
@@ -562,7 +594,7 @@ sap.ui.define([
 						// hide the busy indicator
 						sap.ui.core.BusyIndicator.hide();
 						sap.m.MessageBox.information('There are no data available!');
-						this._columnVisible();
+						that._columnVisible();
 					} else {
 						that._assignVisiblity(oData, that);
 
@@ -580,6 +612,19 @@ sap.ui.define([
 			});
 
 		},
+		_formatDecimalProperties: function(obj, then) {
+			for (var key in obj) {
+
+				if (key === 'Racct') {
+					continue;
+				} else if (typeof obj[key] === "object") {
+					continue;
+				} else if (!isNaN(parseFloat(obj[key])) && isFinite(obj[key])) {
+					obj[key] = parseFloat(obj[key]).toFixed(2);
+				}
+			}
+
+		},
 
 		/*************** chart function & plotting the chart data  *****************/
 
@@ -595,45 +640,85 @@ sap.ui.define([
 			// Set default panel visibility
 			oGlobalData.togglePanelVisibility = defaultFilterChartData.DET_FLAG === "X" ? "X" : "";
 			this.getOwnerComponent().getModel("globalData").setData(oGlobalData);
+
+			// highlight the default table 
+			/*var oTable = this.byId("dynamicTable");
+			var aItems = oTable.getItems();*/
+			this._highlightRow(0);
 		},
 		onChartButtonPress: function(oEvent) {
 			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
 			var oListData = this.getOwnerComponent().getModel("listData").getData();
 			var oChartDataModel = this.getOwnerComponent().getModel("chartData");
+
 			var oButton = oEvent.getSource();
-			var oColumnListItem = oButton.getParent();
+			var oRow = oButton.getParent();
 			var oTable = this.byId("dynamicTable");
-			var iIndex = oTable.indexOfItem(oColumnListItem);
+			var iIndex = oTable.indexOfItem(oRow);
+			// Highlight the clicked row
+			this._highlightRow(iIndex);
 
 			var filterChartData = oListData[iIndex];
-
 			var extractChartData = this.extractData(filterChartData);
-
 			oChartDataModel.setData(extractChartData);
 
+			// set the globaldata
 			oGlobalData.togglePanelVisibility = oListData[0].DET_FLAG === "X" ? "X" : "";
-
 			this.getOwnerComponent().getModel("globalData").setData(oGlobalData);
+
+			// SplitterLayoutData elements
+			var oSplitterLayoutData1 = this.byId("splitterLayoutData1");
+			var oSplitterLayoutData2 = this.byId("splitterLayoutData2");
+
+			// set the split view switch state to true
+			this.byId("splitViewSwitch").setState(true);
+			this.byId("tabularDataSwitch").setState(false);
+			this.byId("chartDataSwitch").setState(false);
+
+			// Update SplitterLayoutData sizes for split view
+			oSplitterLayoutData1.setSize("50%");
+			oSplitterLayoutData2.setSize("50%");
+
 		},
 		extractData: function(obj) {
 			var result = [];
 			var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+			var monthColors = {
+				'Jan': '#5B9BD5', // Blue
+				'Feb': '#FF7F0E', // Orange
+				'Mar': '#4CAF50', // Green
+				'Apr': '#F44336', // Red
+				'May': '#9C27B0', // Purple
+				'Jun': '#FFEB3B', // Yellow
+				'Jul': '#00BCD4', // Cyan
+				'Aug': '#607D8B', // Grey
+				'Sep': '#FF5722', // Deep Orange
+				'Oct': '#673AB7', // Deep Purple
+				'Nov': '#8BC34A', // Light Green
+				'Dec': '#FF9800' // Amber
+			};
 
 			var oVizFrame = this.byId("oVizFrame");
 			oVizFrame.setVizProperties({
 				title: {
 					visible: true,
 					text: obj.GlAcGroup
+				},
+				plotArea: {
+					dataPointStyle: {
+						rules: months.map(function(month) {
+							return {
+								dataContext: {
+									Month: month
+								},
+								properties: {
+									color: monthColors[month]
+								}
+							};
+						})
+					}
 				}
 			});
-
-			// Add total value from the object to the result array
-			/*if (obj.Total) {
-				result.push({
-					Month: 'Total',
-					Value: obj.Total
-				});
-			}*/
 
 			for (var i = 1; i <= 16; i++) {
 				var flagKey = "L" + (i < 10 ? '0' + i : i) + "_FLAG";
@@ -652,7 +737,16 @@ sap.ui.define([
 			}
 
 			return result;
-
+		},
+		_highlightRow: function(iIndex) {
+			var oTable = this.byId("dynamicTable");
+			oTable.getItems().forEach(function(item, index) {
+				if (index === iIndex) {
+					item.addStyleClass("highlightedRow");
+				} else {
+					item.removeStyleClass("highlightedRow");
+				}
+			});
 		},
 
 		/*************** download pdf function  *****************/

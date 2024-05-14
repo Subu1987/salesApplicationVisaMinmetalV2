@@ -120,14 +120,19 @@
 			}
 		},
 		"resources": {
-			"css": [{
-				"uri": "css/style.css"
-			}],
-			"js": [{
-				"uri":"libs/jspdf.min.js"
-			},{
-				"uri":"libs/jspdf.plugin.autotable.js"
-			}]
+			"css": [
+				{
+					"uri": "css/style.css"
+				}
+			],
+			"js": [
+				{
+					"uri": "libs/jspdf.min.js"
+				},
+				{
+					"uri": "libs/jspdf.plugin.autotable.js"
+				}
+			]
 		},
 		"routing": {
 			"config": {
@@ -139,24 +144,27 @@
 				"controlAggregation": "pages",
 				"clearAggregation": false
 			},
-			"routes": [{
-				"name": "home",
-				"pattern": "",
-				"target": "home"
-			},{
-				"name": "chart",
-				"pattern": "chart",
-				"target": "chart"
-			}],
+			"routes": [
+				{
+					"name": "home",
+					"pattern": "",
+					"target": "home"
+				},
+				{
+					"name": "chart",
+					"pattern": "chart",
+					"target": "chart"
+				}
+			],
 			"targets": {
 				"home": {
 					"viewName": "Home",
 					"viewLevel": 1
 				},
 				"chart": {
-                    "viewName": "Chart",
-                    "viewLevel": 2
-                }
+					"viewName": "Chart",
+					"viewLevel": 2
+				}
 			}
 		}
 	},

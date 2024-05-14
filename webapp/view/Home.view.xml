@@ -1,9 +1,9 @@
 <mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core"
 	xmlns:f="sap.ui.layout.form" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
 	xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.dataListApplication.controller.Home">
-	<Page id="page" title="Fixed Cost Report" enableScrolling="true" showNavButton="true" navButtonPress="onNavBack" showFooter="false">
+	<Page id="page" title="Fixed Cost Report" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false">
 		<content>
-			<Panel headerText="" class="sapUiResponsiveMargin border-lineRadius" width="auto">
+			<Panel headerText="" class="sapUiResponsiveMargin border-lineRadius" expandable="true" expanded="true" width="auto">
 				<content>
 					<FlexBox width="100%" id="__box1" height="100%" justifyContent="Center" direction="Column" alignItems="Center">
 						<items>
@@ -37,10 +37,10 @@
 									</HBox>
 								</VBox>
 							</FlexBox>
-							<FlexBox width="90%" id="RadioBtn" justifyContent="SpaceAround" class="radioBtnCssRound" alignItems="Center" alignContent="Center"
+							<FlexBox width="90%" id="RadioBtn" justifyContent="SpaceBetween" class="radioBtnCssRound" alignItems="Center" alignContent="Center"
 								visible="true">
-								<FlexBox justifyContent="Center">
-									<RadioButtonGroup id="company" columns="5" class="sapUiMediumMarginBottom" select="onRadioButtonSelectReports">
+								<FlexBox >
+									<RadioButtonGroup id="company" columns="5" select="onRadioButtonSelectReports">
 										<RadioButton id="PRS" text="PRS"/>
 										<RadioButton id="FTRS" text="FTRS"/>
 										<RadioButton id="CORP" text="CORP"/>
@@ -48,217 +48,206 @@
 									</RadioButtonGroup>
 								</FlexBox>
 								<FlexBox>
-									<RadioButtonGroup id="list" columns="5" class="sapUiMediumMarginBottom" select="onRadioButtonSelectList">
+									<RadioButtonGroup id="list" columns="5" select="onRadioButtonSelectList">
 										<RadioButton id="detailedlist" text="Detailed List"/>
 										<RadioButton id="summarylist" text="Summary List"/>
 									</RadioButtonGroup>
 								</FlexBox>
-							</FlexBox>
-							<FlexBox width="90%" justifyContent="Start" visible="true">
-								<Button id="searchData" icon="sap-icon://search" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
-									press="getListData"/>
-								<Button id="saveTripInfo" icon="sap-icon://pdf-attachment" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
-									press="onDownloadPDF"/>
-								<Button id="refreshData" icon="sap-icon://refresh" text="" iconFirst="false" type="Emphasized" class="smallIcon" press="refreshListData"/>
+								<FlexBox>
+									<Button id="searchData" icon="sap-icon://search" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
+										press="getListData"/>
+									<Button id="saveTripInfo" icon="sap-icon://pdf-attachment" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
+										press="onDownloadPDF"/>
+									<Button id="refreshData" icon="sap-icon://decline" text="" iconFirst="false" type="Emphasized" class="smallIcon" press="refreshListData"/>
+								</FlexBox>
 							</FlexBox>
 						</items>
 					</FlexBox>
 				</content>
 			</Panel>
-			<Panel headerText="{globalData>/reportS} {globalData&gt;/fiscalY}" expandable="false" expanded="false"
-				class="sapUiResponsiveMargin border-lineRadius" width="auto" backgroundDesign="Solid">
+			<Panel expandable="false" expanded="false" class="sapUiResponsiveMargin border-lineRadius" width="auto" backgroundDesign="Solid">
+				<headerToolbar>
+					<Toolbar>
+						<FlexBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+							<HBox id="tableTilte" justifyContent="Center" alignItems="Center" class="sapUiTinyMarginBeginEnd">
+								<Title text="{globalData>/reportS} {globalData>/fiscalY}" level="H1" titleStyle="Auto" class="boldText"/>
+							</HBox>
+							<HBox id="tableSwitchBtn" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? false : true }" justifyContent="Center" alignItems="Center" class="sapUiTinyMarginBeginEnd">
+								<VBox alignItems="Center" justifyContent="Center" class="sapUiTinyMarginBeginEnd">
+									<Label text="Split View" design="Bold"/>
+								</VBox>
+								<Switch id="splitViewSwitch" change='onTabularToChartChanged' state="false">
+									<layoutData>
+										<FlexItemData growFactor="1"/>
+									</layoutData>
+								</Switch>
+								<VBox alignItems="Center" justifyContent="Center" class="sapUiTinyMarginBeginEnd">
+									<Label text="Tabular Data" design="Bold"/>
+								</VBox>
+								<Switch id="tabularDataSwitch" change='onTabularToChartChanged' state="false">
+									<layoutData>
+										<FlexItemData growFactor="1"/>
+									</layoutData>
+								</Switch>
+								<VBox alignItems="Center" justifyContent="Center" class="sapUiTinyMarginBeginEnd">
+									<Label text="Chart Data" design="Bold"/>
+								</VBox>
+								<Switch id="chartDataSwitch" change='onTabularToChartChanged' state="false">
+									<layoutData>
+										<FlexItemData growFactor="1"/>
+									</layoutData>
+								</Switch>
+							</HBox>
+						</FlexBox>
+					</Toolbar>
+				</headerToolbar>
 				<content>
 					<ScrollContainer horizontal="true" vertical="true" width="100%" height="auto">
-						<l:Splitter id="splitter" height="400px">
-							<Panel class="panelStyle" expandable="true" expanded="true" headerText="Table" id="tablePanel" width="auto">
-								<content>
-									<Toolbar>
-										<HBox justifyContent="End" width="100%">
-											<Button icon="sap-icon://zoom-in" press="onZoomInPress" tooltip="Zoom In" class="sapUiTinyMarginEnd"/>
-											<Button icon="sap-icon://zoom-out" press="onZoomOutPress" tooltip="Zoom Out"/>
-										</HBox>
-									</Toolbar>
-									<Table id="dynamicTable" items="{listData>/}" fixedLayout="true" width="auto">
-										<columns>
-											<Column width="100px" visible="{columnVisible>/glAcct}">
-												<Text text="G/L Acct"/>
-											</Column>
-											<Column width="200px" visible="{columnVisible>/glAcctLongText}">
-												<Text text="G/L Acct Long Text"/>
-											</Column>
-											<Column width="200px">
-												<Text text="G/L Group"/>
-											</Column>
-											<Column width="100px">
-												<Text text="Total"/>
-											</Column>
-											<Column visible="{columnVisible>/l01VFlag}" width="80px">
-												<Text text="Apr"/>
-											</Column>
-											<Column visible="{columnVisible>/l02VFlag}" width="80px">
-												<Text text="May"/>
-											</Column>
-											<Column visible="{columnVisible>/l03VFlag}" width="80px">
-												<Text text="Jun"/>
-											</Column>
-											<Column visible="{columnVisible>/l04VFlag}" width="80px">
-												<Text text="Jul"/>
-											</Column>
-											<Column visible="{columnVisible>/l05VFlag}" width="80px">
-												<Text text="Aug"/>
-											</Column>
-											<Column visible="{columnVisible>/l06VFlag}" width="80px">
-												<Text text="Sep"/>
-											</Column>
-											<Column visible="{columnVisible>/l07VFlag}" width="80px">
-												<Text text="Oct"/>
-											</Column>
-											<Column visible="{columnVisible>/l08VFlag}" width="80px">
-												<Text text="Nov"/>
-											</Column>
-											<Column visible="{columnVisible>/l09VFlag}" width="80px">
-												<Text text="Dec"/>
-											</Column>
-											<Column visible="{columnVisible>/l10VFlag}" width="80px">
-												<Text text="Jan"/>
-											</Column>
-											<Column visible="{columnVisible>/l11VFlag}" width="80px">
-												<Text text="Feb"/>
-											</Column>
-											<Column visible="{columnVisible>/l12VFlag}" width="80px">
-												<Text text="Mar"/>
-											</Column>
-											<Column visible="{columnVisible>/l13VFlag}" width="80px">
-												<Text text="Specl 1"/>
-											</Column>
-											<Column visible="{columnVisible>/l14VFlag}" width="80px">
-												<Text text="Specl 2"/>
-											</Column>
-											<Column visible="{columnVisible>/l15VFlag}" width="80px">
-												<Text text="Specl 3"/>
-											</Column>
-											<Column visible="{columnVisible>/l16VFlag}" width="80px">
-												<Text text="Specl 4"/>
-											</Column>
-											<Column width="80px" visible="{columnVisible>/graphColumnVisible}">
-												<Text text="Chart"/>
-											</Column>
-										</columns>
-										<items>
-											<ColumnListItem>
-												<cells>
-													<Text text="{listData>Racct}"/>
-													<Text text="{listData>GlText}"/>
-													<Text text="{listData>GlAcGroup}"/>
-													<Text text="{listData>Total}"/>
-													<Text text="{listData>L01}"/>
-													<Text text="{listData>L02}"/>
-													<Text text="{listData>L03}"/>
-													<Text text="{listData>L04}"/>
-													<Text text="{listData>L05}"/>
-													<Text text="{listData>L06}"/>
-													<Text text="{listData>L07}"/>
-													<Text text="{listData>L08}"/>
-													<Text text="{listData>L09}"/>
-													<Text text="{listData>L10}"/>
-													<Text text="{listData>L11}"/>
-													<Text text="{listData>L12}"/>
-													<Text text="{listData>L13}"/>
-													<Text text="{listData>L14}"/>
-													<Text text="{listData>L15}"/>
-													<Text text="{listData>L16}"/>
-													<Button id="chartButton" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>
-												</cells>
-											</ColumnListItem>
-										</items>
-										<layoutData>
-											<l:SplitterLayoutData id="splitterLayoutData1" size="{= ${globalData>/togglePanelVisibility} === 'X' ? '100%' : '50%' }"
-										resizable="false"/>
-										</layoutData>
-									</Table>
-								</content>
-							</Panel>
-							<Panel id="chartPanel" width="100%">
-								<content>
-									<Panel class="panelStyle" expandable="true" expanded="true" headerText="Settings" id='settingsPanel' width="auto">
-										<content>
-											<HBox class="sapUiSmallMarginBegin">
-												<VBox class='settingsBox'>
-													<Label design="Bold" text="{i18n>valueLabel}"></Label>
-													<Switch change='onDataLabelChanged' state="true">
-														<layoutData>
-															<FlexItemData growFactor="1"/>
-														</layoutData>
-													</Switch>
-												</VBox>
-												<VBox class="sapUiMediumMarginBegin">
-													<Label design="Bold" text="{i18n>sumValueLabel}"></Label>
-													<Switch change='onSumLabelChanged' state="false">
-														<layoutData>
-															<FlexItemData growFactor="1"/>
-														</layoutData>
-													</Switch>
-												</VBox>
-												<VBox class="sapUiMediumMarginBegin">
-													<Label design="Bold" text="{i18n>axisTitleLabel}"></Label>
-													<Switch change='onAxisTitleChanged' state="false">
-														<layoutData>
-															<FlexItemData growFactor="1"/>
-														</layoutData>
-													</Switch>
-												</VBox>
-												<VBox class="sapUiMediumMarginBegin">
-													<Label design="Bold" text="{i18n>stackedType}"></Label>
-													<RadioButtonGroup select="onTypeSelected">
-														<buttons>
-															<RadioButton text="{i18n>regular}"/>
-															<RadioButton text="{i18n>percentage}"/>
-														</buttons>
-													</RadioButtonGroup>
-												</VBox>
-												<VBox class="sapUiMediumMarginBegin">
-													<Label design="Bold" text="{i18n>chartType}"></Label>
-													<Select id="chartTypeSelect" change="onChangeChartType">
-														<core:ListItem key="column" text="Column Chart"/>
-														<core:ListItem key="pie" text="Pie Chart"/>
-														<core:ListItem key="line" text="Line Chart"/>
-														<core:ListItem key="donut" text="Donut Chart"/>
-													</Select>
-												</VBox>
-											</HBox>
-										</content>
-									</Panel>
-									<chart:ChartContainer autoAdjustHeight="true" id="chartContainer" showFullScreen="true" title="Charts">
-										<chart:ChartContainerContent icon="sap-icon://vertical-stacked-chart" title="Stacked_bar Chart">
-											<chart:content>
-												<viz:VizFrame id="oVizFrame" busy="false" busyIndicatorDelay="1000" visible="true"
-													vizProperties="{plotArea: { drawingEffect: 'glossy'}, title:{ text:'Data analysis through Reports'},dataLabel:{visible:true,showTotal:true}}"
-													uiConfig="{ 'applicationSet': 'fiori' }" vizType="column" legendVisible="true">
-													<viz:dataset>
-														<viz.data:FlattenedDataset data="{chartData>/}">
-															<viz.data:dimensions>
-																<viz.data:DimensionDefinition name="Month" value="{chartData>Month}"/>
-																<!--<viz.data:DimensionDefinition name="GlAcGroup" value="{chartData>GlAcGroup}"/>-->
-															</viz.data:dimensions>
-															<viz.data:measures>
-																<viz.data:MeasureDefinition name="Value" value="{chartData>Value}"/>
-															</viz.data:measures>
-														</viz.data:FlattenedDataset>
-													</viz:dataset>
-													<!-- sap.viz.ui5.data.Dataset -->
-													<viz:feeds>
-														<viz.feeds:FeedItem id="value1" uid="valueAxis" type="Measure" values="Value"/>
-														<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Month"/>
-														<!--<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="GlAcGroup"/>-->
-													</viz:feeds>
-												</viz:VizFrame>
-											</chart:content>
-										</chart:ChartContainerContent>
-									</chart:ChartContainer>
-								</content>
+						<l:Splitter id="splitter" height="450px">
+							<FlexBox width="100%">
+								<Table headerText="Tabular Data(in Lacs)" id="dynamicTable" items="{listData>/}" fixedLayout="true" width="auto">
+									<columns>
+										<Column width="100px" visible="{columnVisible>/glAcct}">
+											<Text text="G/L Acct"/>
+										</Column>
+										<Column width="200px" visible="{columnVisible>/glAcctLongText}">
+											<Text text="G/L Acct Long Text"/>
+										</Column>
+										<Column width="200px">
+											<Text text="G/L Group"/>
+										</Column>
+										<Column width="80px" visible="{columnVisible>/graphColumnVisible}">
+											<Text text="Chart"/>
+										</Column>
+										<Column width="100px">
+											<Text text="Total"/>
+										</Column>
+										<Column visible="{columnVisible>/l01VFlag}" width="80px">
+											<Text text="Apr"/>
+										</Column>
+										<Column visible="{columnVisible>/l02VFlag}" width="80px">
+											<Text text="May"/>
+										</Column>
+										<Column visible="{columnVisible>/l03VFlag}" width="80px">
+											<Text text="Jun"/>
+										</Column>
+										<Column visible="{columnVisible>/l04VFlag}" width="80px">
+											<Text text="Jul"/>
+										</Column>
+										<Column visible="{columnVisible>/l05VFlag}" width="80px">
+											<Text text="Aug"/>
+										</Column>
+										<Column visible="{columnVisible>/l06VFlag}" width="80px">
+											<Text text="Sep"/>
+										</Column>
+										<Column visible="{columnVisible>/l07VFlag}" width="80px">
+											<Text text="Oct"/>
+										</Column>
+										<Column visible="{columnVisible>/l08VFlag}" width="80px">
+											<Text text="Nov"/>
+										</Column>
+										<Column visible="{columnVisible>/l09VFlag}" width="80px">
+											<Text text="Dec"/>
+										</Column>
+										<Column visible="{columnVisible>/l10VFlag}" width="80px">
+											<Text text="Jan"/>
+										</Column>
+										<Column visible="{columnVisible>/l11VFlag}" width="80px">
+											<Text text="Feb"/>
+										</Column>
+										<Column visible="{columnVisible>/l12VFlag}" width="80px">
+											<Text text="Mar"/>
+										</Column>
+										<Column visible="{columnVisible>/l13VFlag}" width="80px">
+											<Text text="Specl 1"/>
+										</Column>
+										<Column visible="{columnVisible>/l14VFlag}" width="80px">
+											<Text text="Specl 2"/>
+										</Column>
+										<Column visible="{columnVisible>/l15VFlag}" width="80px">
+											<Text text="Specl 3"/>
+										</Column>
+										<Column visible="{columnVisible>/l16VFlag}" width="80px">
+											<Text text="Specl 4"/>
+										</Column>
+										
+									</columns>
+									<items>
+										<ColumnListItem class="sapMListTblRow">
+											<cells>
+												<Text text="{listData>Racct}"/>
+												<Text text="{listData>GlText}"/>
+												<Text text="{listData>GlAcGroup}"/>
+												<Button id="chartButton" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>
+												<Text text="{listData>Total}"/>
+												<Text text="{listData>L01}"/>
+												<Text text="{listData>L02}"/>
+												<Text text="{listData>L03}"/>
+												<Text text="{listData>L04}"/>
+												<Text text="{listData>L05}"/>
+												<Text text="{listData>L06}"/>
+												<Text text="{listData>L07}"/>
+												<Text text="{listData>L08}"/>
+												<Text text="{listData>L09}"/>
+												<Text text="{listData>L10}"/>
+												<Text text="{listData>L11}"/>
+												<Text text="{listData>L12}"/>
+												<Text text="{listData>L13}"/>
+												<Text text="{listData>L14}"/>
+												<Text text="{listData>L15}"/>
+												<Text text="{listData>L16}"/>
+												
+											</cells>
+										</ColumnListItem>
+									</items>
+									<layoutData>
+										<l:SplitterLayoutData id="splitterLayoutData1" size="{= ${globalData>/togglePanelVisibility} === 'X' ? '100%' : '50%' }" resizable="false"/>
+									</layoutData>
+								</Table>
+							</FlexBox>
+							<Panel id="chartPanel" width="100%" height="100%">
+								<FlexBox>
+									<RadioButtonGroup id="onSelectChartType" columns="5" select="onSelectChartType">
+										<RadioButton id="columnChart" text="Column Chart"/>
+										<RadioButton id="pieChart" text="Pie Chart"/>
+										<RadioButton id="lineChart" text="Line Chart"/>
+										<RadioButton id="donutChart" text="Donut Chart"/>
+									</RadioButtonGroup>
+								</FlexBox>
+								<chart:ChartContainer showLegendButton="false" autoAdjustHeight="true"
+									id="chartContainer" showFullScreen="true" title="Chart Data">
+									<chart:ChartContainerContent>
+										<chart:content>
+											<viz:VizFrame id="oVizFrame" busy="false" busyIndicatorDelay="1000" visible="true"
+												vizProperties="{ plotArea: { drawingEffect: 'glossy' }, 
+												title: { text: 'Data analysis through Reports' }, 
+												dataLabel: { visible: true, showTotal: true }, 
+												interaction: { selectability: { mode: 'none' }}}"
+												uiConfig="{ 'applicationSet': 'fiori' }" 
+												vizType="column">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{chartData>/}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="Month" value="{chartData>Month}"/>
+															<!--<viz.data:DimensionDefinition name="GlAcGroup" value="{chartData>GlAcGroup}"/>-->
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Value" value="{chartData>Value}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>
+												</viz:dataset>
+												<!-- sap.viz.ui5.data.Dataset -->
+												<viz:feeds>
+													<viz.feeds:FeedItem id="value1" uid="valueAxis" type="Measure" values="Value"/>
+													<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Month"/>
+													<!--<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="GlAcGroup"/>-->
+												</viz:feeds>
+											</viz:VizFrame>
+										</chart:content>
+									</chart:ChartContainerContent>
+								</chart:ChartContainer>
 								<layoutData>
-									<l:SplitterLayoutData id="splitterLayoutData2" size="{= ${globalData>/togglePanelVisibility} === 'X' ? '0%' : '50%' }"
-										resizable="false"/>
+									<l:SplitterLayoutData id="splitterLayoutData2" size="{= ${globalData>/togglePanelVisibility} === 'X' ? '0%' : '50%' }" resizable="false"/>
 								</layoutData>
 							</Panel>
 						</l:Splitter>

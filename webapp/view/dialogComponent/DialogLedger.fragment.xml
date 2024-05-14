@@ -9,7 +9,7 @@
         class="sapUiPopupWithPadding">
         <StandardListItem
             title="{ledgerData>Rldnr}"
-            description="ledger"
+            description=""
             iconDensityAware="false"
             iconInset="false" />
     </SelectDialog>
