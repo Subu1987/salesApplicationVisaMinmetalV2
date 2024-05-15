@@ -101,6 +101,33 @@ sap.ui.define([
 
 			return true;
 		},
+		onLiveChange: function(oEvent) {
+			var oInput = oEvent.getSource();
+			var sInputId = oInput.getId();
+			var sInputValue = oInput.getValue();
+			var sProperty;
+
+			// update based on the input field ID
+			if (sInputId.endsWith("--inputLedger")) {
+				sProperty = "/ledgrNo";
+			} else if (sInputId.endsWith("--inputCompanyCode")) {
+				sProperty = "/cmpnyCode";
+			} else if (sInputId.endsWith("--inputFiscalYear")) {
+				sProperty = "/fiscalY";
+			} else if (sInputId.endsWith("--inputFromPeriod")) {
+				sProperty = "/fromP";
+			} else if (sInputId.endsWith("--inputToPeriod")) {
+				sProperty = "/toP";
+			}
+
+			// Update the global data model property
+			if (sProperty) {
+				var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
+				if (oGlobalDataModel) {
+					oGlobalDataModel.setProperty(sProperty, sInputValue);
+				}
+			}
+		},
 
 		_columnVisible: function() {
 			var oColumnVisible = this.getOwnerComponent().getModel("columnVisible");
@@ -115,24 +142,6 @@ sap.ui.define([
 			}
 
 			oColumnVisible.setData(data);
-		},
-		_togglePanelVisibility: function(bVisible) {
-			var oSplitter = this.byId("splitter");
-
-			// Get the content areas of the splitter
-			var aContentAreas = oSplitter.getContentAreas();
-
-			// Adjust the size of the chart panel based on visibility
-			if (bVisible !== "X") {
-				// Panel is visible, adjust size
-				aContentAreas[1].setSize("auto"); // Assuming the panel is the second content area
-			} else {
-				// Panel is hidden, set size to 0
-				aContentAreas[1].setSize("0");
-			}
-
-			// Set the updated content areas back to the splitter
-			oSplitter.setContentAreas(aContentAreas);
 		},
 
 		/*************** get parameters data *****************/
@@ -253,7 +262,7 @@ sap.ui.define([
 
 		/*************** set the inputId & create the fragment *****************/
 
-		handleValueLedger: function(oEvent) {
+		/*handleValueLedger: function(oEvent) {
 			this._ledgerInputId = oEvent.getSource().getId();
 			// open fragment
 			if (!this.oOpenDialogLedger) {
@@ -261,7 +270,7 @@ sap.ui.define([
 				this.getView().addDependent(this.oOpenDialogLedger);
 			}
 			this.oOpenDialogLedger.open();
-		},
+		},*/
 		handleValueCompanyCode: function(oEvent) {
 			this._companyCodeInputId = oEvent.getSource().getId();
 			// open fragment
@@ -435,12 +444,6 @@ sap.ui.define([
 				oGlobalDataModel.setProperty("/listS", selectedButtonListText === "Detailed List" ? 'X' : '');
 			}
 
-			// set the split view switch control state to false
-			if (selectedButtonListText === "Summary List") {
-				this.byId("splitViewSwitch").setState(true);
-			} else {
-				this.byId("splitViewSwitch").setState(false);
-			}
 		},
 		onSelectChartType: function(oEvent) {
 			// Get the selected radio button
@@ -541,6 +544,13 @@ sap.ui.define([
 
 			if (oData[0].DET_FLAG === "") {
 				this.loadDefaultGraph();
+				this.byId("panelForm").setExpanded(false);
+				this.byId("splitViewSwitch").setState(true);
+			} else {
+
+				this.byId("panelForm").setExpanded(false);
+				this.byId("splitViewSwitch").setState(false);
+				this._removeHighlight();
 			}
 
 			then.getOwnerComponent().getModel("columnVisible").setData(oColumnVisibleData);
@@ -625,6 +635,45 @@ sap.ui.define([
 			}
 
 		},
+		clearListData: function() {
+			var that = this;
+
+			sap.m.MessageBox.confirm(
+				"Are you sure you want to clear all data?", {
+					onClose: function(oAction) {
+						if (oAction === sap.m.MessageBox.Action.OK) {
+							// Clear input fields
+							that.byId("inputLedger").setValue("0L");
+							that.byId("inputCompanyCode").setValue("1100");
+							that.byId("inputFiscalYear").setValue("");
+							that.byId("inputFromPeriod").setValue("01");
+							that.byId("inputToPeriod").setValue("12");
+
+							// Deselect radio buttons
+							that.byId("PRS").setSelected(true);
+							that.byId("FTRS").setSelected(false);
+							that.byId("CORP").setSelected(false);
+							that.byId("companytotal").setSelected(false);
+							that.byId("detailedlist").setSelected(true);
+							that.byId("summarylist").setSelected(false);
+
+							// Clear list data
+							var oListDataModel = that.getOwnerComponent().getModel("listData");
+							oListDataModel.setData({});
+
+							// Update global data model properties
+							var oGlobalDataModel = that.getOwnerComponent().getModel("globalData");
+							if (oGlobalDataModel) {
+								oGlobalDataModel.setProperty("/listS", "X");
+								oGlobalDataModel.setProperty("/togglePanelVisibility", "X");
+							}
+
+							that._columnVisible();
+						}
+					}
+				}
+			);
+		},
 
 		/*************** chart function & plotting the chart data  *****************/
 
@@ -704,6 +753,12 @@ sap.ui.define([
 					visible: true,
 					text: obj.GlAcGroup
 				},
+				legend: {
+					title: {
+						visible: true,
+						text: 'Months'
+					}
+				},
 				plotArea: {
 					dataPointStyle: {
 						rules: months.map(function(month) {
@@ -746,6 +801,12 @@ sap.ui.define([
 				} else {
 					item.removeStyleClass("highlightedRow");
 				}
+			});
+		},
+		_removeHighlight: function() {
+			var oTable = this.byId("dynamicTable");
+			oTable.getItems().forEach(function(item) {
+				item.removeStyleClass("highlightedRow");
 			});
 		},
 

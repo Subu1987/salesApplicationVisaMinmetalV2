@@ -29,10 +29,10 @@
     font-weight: bold !important;
 }
 #dynamicTable{
-	border: 1.2px solid #34618747 !important;
+	border-right: 1.2px solid #34618747 !important;
 }
 #chartPanel{
-	border: 1.2px solid #34618747 !important;
+	border-left: 1.2px solid #34618747 !important;
 }
 
 .highlightedRow {
