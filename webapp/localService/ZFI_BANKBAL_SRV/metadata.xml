@@ -1,0 +1,35 @@
+<edmx:Edmx
+    xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+    xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+    xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema
+            xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="ZFI_BANKBAL_SRV" xml:lang="en" sap:schema-version="1">
+            <Annotation
+                xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.SchemaVersion" String="1.0.0"/>
+                <EntityType Name="ZFI_BANK" sap:content-version="1">
+                    <Key>
+                        <PropertyRef Name="Bukrs"/>
+                    </Key>
+                    <Property Name="Bukrs" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Company Code" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                    <Property Name="Hkont" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="G/L" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                    <Property Name="GlText" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="Long Text" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                    <Property Name="PrctrGr" Type="Edm.String" Nullable="false" MaxLength="8" sap:unicode="false" sap:label="char8" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                    <Property Name="DET_FLAG" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:label="Detail Flag" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                    <Property Name="FmDate" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="From_Date" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                    <Property Name="ToDate" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="To_Date" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                    <Property Name="OpenBal" Type="Edm.Decimal" Nullable="false" Precision="24" Scale="3" sap:unicode="false" sap:label="OPEN_BAL" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                    <Property Name="IncomBal" Type="Edm.Decimal" Nullable="false" Precision="24" Scale="3" sap:unicode="false" sap:label="Amnt in CompCd Crcy" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                    <Property Name="OutgoBal" Type="Edm.Decimal" Nullable="false" Precision="24" Scale="3" sap:unicode="false" sap:label="Amnt in CompCd Crcy" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                    <Property Name="CloseBal" Type="Edm.Decimal" Nullable="false" Precision="24" Scale="3" sap:unicode="false" sap:label="CLOSE_BAL" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                </EntityType>
+                <EntityContainer Name="ZFI_BANKBAL_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
+                    <EntitySet Name="ZFI_BANKSet" EntityType="ZFI_BANKBAL_SRV.ZFI_BANK" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                </EntityContainer>
+                <atom:link
+                    xmlns:atom="http://www.w3.org/2005/Atom" rel="self" href="./sap/ZFI_BANKBAL_SRV/$metadata"/>
+                    <atom:link
+                        xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version" href="./sap/ZFI_BANKBAL_SRV/$metadata"/>
+                    </Schema>
+                </edmx:DataServices>
+            </edmx:Edmx>

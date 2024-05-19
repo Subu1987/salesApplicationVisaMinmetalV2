@@ -1,7 +1,7 @@
 {
 	"_version": "1.7.0",
 	"sap.app": {
-		"id": "com.infocus.dataListApplication",
+		"id": "com.infocus.bankFioriApp",
 		"type": "application",
 		"i18n": "i18n/i18n.properties",
 		"applicationVersion": {
@@ -15,11 +15,11 @@
 		},
 		"dataSources": {
 			"mainService": {
-				"uri": "/sap/opu/odata/sap/ZFI_FCR_SRV/",
+				"uri": "/sap/opu/odata/sap/ZFI_BANKBAL_SRV/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",
-					"localUri": "localService/metadata.xml"
+					"localUri": "localService/ZFI_BANKBAL_SRV/metadata.xml"
 				}
 			},
 			"parameterService": {
@@ -120,19 +120,10 @@
 			}
 		},
 		"resources": {
-			"css": [
-				{
-					"uri": "css/style.css"
-				}
-			],
-			"js": [
-				{
-					"uri": "libs/jspdf.min.js"
-				},
-				{
-					"uri": "libs/jspdf.plugin.autotable.js"
-				}
-			]
+			"css": [{
+				"uri": "css/style.css"
+			}],
+			"js": []
 		},
 		"routing": {
 			"config": {
@@ -144,18 +135,15 @@
 				"controlAggregation": "pages",
 				"clearAggregation": false
 			},
-			"routes": [
-				{
-					"name": "home",
-					"pattern": "",
-					"target": "home"
-				},
-				{
-					"name": "chart",
-					"pattern": "chart",
-					"target": "chart"
-				}
-			],
+			"routes": [{
+				"name": "home",
+				"pattern": "",
+				"target": "home"
+			}, {
+				"name": "chart",
+				"pattern": "chart",
+				"target": "chart"
+			}],
 			"targets": {
 				"home": {
 					"viewName": "Home",

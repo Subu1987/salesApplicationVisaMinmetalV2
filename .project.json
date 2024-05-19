@@ -17,7 +17,7 @@
     {
       "templateId": "servicecatalog.connectivityComponent",
       "templateVersion": "0.0.0",
-      "dateTimeStamp": "Mon, 29 Apr 2024 09:14:19 GMT"
+      "dateTimeStamp": "Sun, 19 May 2024 14:09:18 GMT"
     }
   ],
   "translation": {
@@ -45,10 +45,107 @@
     "targetFolder": "dist",
     "excludedFolders": [],
     "excludedFiles": [],
-    "lastBuildDateTime": "Wed, 15 May 2024 09:28:59 GMT"
+    "lastBuildDateTime": "Wed, 15 May 2024 09:28:59 GMT",
+    "availableFoldersComboBox": [
+      {
+        "text": "localService"
+      },
+      {
+        "text": "localService/ZFI_FCR_SSC_SRV"
+      },
+      {
+        "text": "model"
+      },
+      {
+        "text": "i18n"
+      },
+      {
+        "text": "view"
+      },
+      {
+        "text": "view/dialogComponent"
+      },
+      {
+        "text": "libs"
+      },
+      {
+        "text": "controller"
+      },
+      {
+        "text": "css"
+      }
+    ],
+    "availableFilesComboBox": [
+      {
+        "text": "index.html"
+      },
+      {
+        "text": "localService/ZFI_FCR_SSC_SRV/metadata.xml"
+      },
+      {
+        "text": "localService/metadata.xml"
+      },
+      {
+        "text": "Component.js"
+      },
+      {
+        "text": "model/models.js"
+      },
+      {
+        "text": "i18n/i18n.properties"
+      },
+      {
+        "text": "view/dialogComponent/DialogToPeriod.fragment.xml"
+      },
+      {
+        "text": "view/dialogComponent/DialogFiscalYear.fragment.xml"
+      },
+      {
+        "text": "view/dialogComponent/DialogLedger.fragment.xml"
+      },
+      {
+        "text": "view/dialogComponent/DialogComapanyCode.fragment.xml"
+      },
+      {
+        "text": "view/dialogComponent/DialogFromPeriod.fragment.xml"
+      },
+      {
+        "text": "view/Chart.view.xml"
+      },
+      {
+        "text": "view/App.view.xml"
+      },
+      {
+        "text": "view/Home.view.xml"
+      },
+      {
+        "text": "manifest.json"
+      },
+      {
+        "text": "libs/jspdf.min.js"
+      },
+      {
+        "text": "libs/jspdf.plugin.autotable.js"
+      },
+      {
+        "text": "controller/App.controller.js"
+      },
+      {
+        "text": "controller/Home.controller.js"
+      },
+      {
+        "text": "controller/BaseController.js"
+      },
+      {
+        "text": "controller/Chart.controller.js"
+      },
+      {
+        "text": "css/style.css"
+      }
+    ]
   },
   "mockpreview": {
-    "mockUri": "/sap/opu/odata/sap/ZFI_FCR_SSC_SRV",
+    "mockUri": "/sap/opu/odata/sap/ZFI_BANKBAL_SRV",
     "metadataFilePath": "",
     "loadJSONFiles": false,
     "loadCustomRequests": false,

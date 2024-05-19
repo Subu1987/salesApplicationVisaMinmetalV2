@@ -1,28 +1,28 @@
 <mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core"
 	xmlns:f="sap.ui.layout.form" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
 	xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.dataListApplication.controller.Home">
-	<Page id="page" title="Fixed Cost Report" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false">
+	<Page id="page" title="Bank Balance Application" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false">
 		<content>
 			<Panel id="panelForm" headerText="" class="sapUiResponsiveMargin border-lineRadius" expandable="true" expanded="true" width="auto">
 				<content>
 					<FlexBox width="100%" id="panelFormBox" height="auto" justifyContent="Center" direction="Column" alignItems="Center">
 						<items>
 							<FlexBox width="90%" direction="Row" height="auto" id="tripView" wrap="Wrap" justifyContent="SpaceAround" alignItems="Center" visible="true">
-								<HBox direction="Column" width="18%">
+								<!--<HBox direction="Column" width="18%">
 									<Label text="Ledger" design="Bold"/>
 									<Input id="inputLedger" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="false"
 										valueHelpRequest="handleValueLedger" value="0L" required="true" liveChange="onLiveChange"/>
-								</HBox>
+								</HBox>-->
 								<HBox direction="Column" width="18%">
 									<Label text="Company Code" design="Bold"/>
 									<Input id="inputCompanyCode" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
 										valueHelpRequest="handleValueCompanyCode" value="1100" required="true" liveChange="onLiveChange"/>
 								</HBox>
-								<HBox direction="Column" width="18%">
+								<!--<HBox direction="Column" width="18%">
 									<Label text="Fiscar Year" design="Bold"/>
 									<Input id="inputFiscalYear" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
 										valueHelpRequest="handleValueDialogFiscalYear" required="true" liveChange="onLiveChange"/>
-								</HBox>
+								</HBox>-->
 								<HBox direction="Column" width="18%">
 									<Label text="From Period" design="Bold"/>
 									<Input id="inputFromPeriod" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
@@ -34,8 +34,7 @@
 										valueHelpRequest="handleValueDialogToPeriod" value="12" required="true" liveChange="onLiveChange"/>
 								</HBox>
 							</FlexBox>
-							<FlexBox width="90%" id="RadioBtn" justifyContent="SpaceAround" class="radioBtnCssRound" alignItems="Center"
-								visible="true">
+							<FlexBox width="90%" id="RadioBtn" justifyContent="SpaceAround" class="radioBtnCssRound" alignItems="Center" visible="true">
 								<FlexBox>
 									<RadioButtonGroup id="company" columns="5" select="onRadioButtonSelectReports">
 										<RadioButton id="PRS" text="PRS"/>
@@ -53,8 +52,8 @@
 								<FlexBox>
 									<Button id="searchData" icon="sap-icon://search" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
 										press="getListData"/>
-									<Button id="saveTripInfo" icon="sap-icon://pdf-attachment" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
-										press="onDownloadPDF"/>
+									<!--<Button id="saveTripInfo" icon="sap-icon://pdf-attachment" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
+										press="onDownloadPDF"/>-->
 									<Button id="clearData" icon="sap-icon://decline" text="" iconFirst="false" type="Emphasized" class="smallIcon" press="clearListData"/>
 								</FlexBox>
 							</FlexBox>
@@ -105,19 +104,19 @@
 							<Table headerText="Tabular Data(in Lacs)" id="dynamicTable" items="{listData>/}" fixedLayout="true" width="auto">
 								<columns>
 									<Column width="100px" visible="{columnVisible>/glAcct}">
-										<Text text="G/L Acct"/>
+										<Text text="Opening Balance"/>
 									</Column>
 									<Column width="200px" visible="{columnVisible>/glAcctLongText}">
-										<Text text="G/L Acct Long Text"/>
+										<Text text="Incoming Balance"/>
 									</Column>
 									<Column width="200px">
-										<Text text="G/L Group"/>
+										<Text text="Outgoing Balance"/>
 									</Column>
 									<Column width="80px" visible="{columnVisible>/graphColumnVisible}">
 										<Text text="Chart"/>
 									</Column>
 									<Column width="100px">
-										<Text text="Total"/>
+										<Text text="Closing Balance"/>
 									</Column>
 									<Column visible="{columnVisible>/l01VFlag}" width="80px">
 										<Text text="Apr"/>
@@ -208,8 +207,7 @@
 										<RadioButton id="donutChart" text="Donut Chart"/>
 									</RadioButtonGroup>
 								</FlexBox>
-								<chart:ChartContainer showLegend="false" showLegendButton="false" autoAdjustHeight="true" id="chartContainer" showFullScreen="true"
-									title="">
+								<chart:ChartContainer showLegend="false" showLegendButton="false" autoAdjustHeight="true" id="chartContainer" showFullScreen="true" title="">
 									<chart:ChartContainerContent icon="sap-icon://horizontal-stacked-chart" title="Stacked_bar Chart">
 										<chart:content>
 											<viz:VizFrame id="oVizFrame" busy="false" busyIndicatorDelay="1000" visible="true"

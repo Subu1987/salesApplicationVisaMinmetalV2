@@ -10,6 +10,7 @@ sap.ui.define([
 
 	return BaseController.extend("com.infocus.dataListApplication.controller.Home", {
 
+		/*************** on Load Functions *****************/
 		onInit: function() {
 
 			this.oRouter = this.getOwnerComponent().getRouter();
@@ -561,10 +562,9 @@ sap.ui.define([
 
 		getListData: function() {
 			// Validate input fields
-			if (!this._validateInputFields()) {
-				// Validation failed, return without fetching data
+			/*if (!this._validateInputFields()) {
 				return;
-			}
+			}*/
 
 			var that = this;
 			var oModel = this.getOwnerComponent().getModel();
@@ -580,37 +580,39 @@ sap.ui.define([
 			var listS = new Filter('DET_FLAG', FilterOperator.EQ, oGlobalData.listS);
 
 			sap.ui.core.BusyIndicator.show();
+			
+			var bURL = "/ZFI_BANKBAL_SRV/ZFI_BANKSet?$filter=Bukrs eq '1100' and PrctrGr eq 'PRS' and FmDate eq '20230401' and ToDate eq '20240515' and DET_FLAG eq 'X'";
 
-			oModel.read(oUrl, {
+			oModel.read(bURL, {
 				urlParameters: {
 					"sap-client": "400"
 				},
-				filters: [ledgrNo, cmpnyCode, fiscalY, reportS, fromP, toP, listS],
+				/*filters: [ledgrNo, cmpnyCode, fiscalY, reportS, fromP, toP, listS],*/
 				success: function(response) {
 					var oData = response.results;
 					console.log(oData);
 
 					// Format decimal properties to 2 digits after the decimal point
-					oData.forEach(function(item) {
+					/*oData.forEach(function(item) {
 						that._formatDecimalProperties(item, that);
-					});
+					});*/
 
 					var oListDataModel = that.getOwnerComponent().getModel("listData");
 					oListDataModel.setData(oData);
 
 					// check in oData value is available or not 
-					if (typeof oData !== 'undefined' && oData.length === 0) {
+					/*if (typeof oData !== 'undefined' && oData.length === 0) {
 
-						// hide the busy indicator
+						
 						sap.ui.core.BusyIndicator.hide();
 						sap.m.MessageBox.information('There are no data available!');
 						that._columnVisible();
 					} else {
 						that._assignVisiblity(oData, that);
 
-						// hide the busy indicator
+						
 						sap.ui.core.BusyIndicator.hide();
-					}
+					}*/
 
 				},
 				error: function(error) {
