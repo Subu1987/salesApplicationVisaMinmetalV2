@@ -8,30 +8,24 @@
 					<FlexBox width="100%" id="panelFormBox" height="auto" justifyContent="Center" direction="Column" alignItems="Center">
 						<items>
 							<FlexBox width="90%" direction="Row" height="auto" id="tripView" wrap="Wrap" justifyContent="SpaceAround" alignItems="Center" visible="true">
-								<!--<HBox direction="Column" width="18%">
+								<HBox direction="Column" width="18%">
 									<Label text="Ledger" design="Bold"/>
-									<Input id="inputLedger" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="false"
+									<Input id="inputLedger" editable="false" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="false"
 										valueHelpRequest="handleValueLedger" value="0L" required="true" liveChange="onLiveChange"/>
-								</HBox>-->
+								</HBox>
 								<HBox direction="Column" width="18%">
 									<Label text="Company Code" design="Bold"/>
 									<Input id="inputCompanyCode" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
 										valueHelpRequest="handleValueCompanyCode" value="1100" required="true" liveChange="onLiveChange"/>
 								</HBox>
-								<!--<HBox direction="Column" width="18%">
-									<Label text="Fiscar Year" design="Bold"/>
-									<Input id="inputFiscalYear" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
-										valueHelpRequest="handleValueDialogFiscalYear" required="true" liveChange="onLiveChange"/>
-								</HBox>-->
+								
 								<HBox direction="Column" width="18%">
-									<Label text="From Period" design="Bold"/>
-									<Input id="inputFromPeriod" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
-										valueHelpRequest="handleValueDialogFromPeriod" value="01" required="true" liveChange="onLiveChange"/>
+									<Label text="From Date" design="Bold"/>
+									<DatePicker id="fromDate" displayFormat="long" value="" class="round"/>
 								</HBox>
 								<HBox direction="Column" width="18%">
-									<Label text="To Period" design="Bold"/>
-									<Input id="inputToPeriod" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
-										valueHelpRequest="handleValueDialogToPeriod" value="12" required="true" liveChange="onLiveChange"/>
+									<Label text="To Date" design="Bold"/>
+									<DatePicker id="toDate" displayFormat="long" value="" class="round"/>
 								</HBox>
 							</FlexBox>
 							<FlexBox width="90%" id="RadioBtn" justifyContent="SpaceAround" class="radioBtnCssRound" alignItems="Center" visible="true">
@@ -52,8 +46,8 @@
 								<FlexBox>
 									<Button id="searchData" icon="sap-icon://search" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
 										press="getListData"/>
-									<!--<Button id="saveTripInfo" icon="sap-icon://pdf-attachment" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
-										press="onDownloadPDF"/>-->
+									<Button id="saveTripInfo" icon="sap-icon://pdf-attachment" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
+										press="onDownloadPDF"/>
 									<Button id="clearData" icon="sap-icon://decline" text="" iconFirst="false" type="Emphasized" class="smallIcon" press="clearListData"/>
 								</FlexBox>
 							</FlexBox>
@@ -101,96 +95,43 @@
 				<content>
 					<ScrollContainer horizontal="true" vertical="true" width="100%" height="auto">
 						<l:Splitter id="splitter" height="450px">
-							<Table headerText="Tabular Data(in Lacs)" id="dynamicTable" items="{listData>/}" fixedLayout="true" width="auto">
+							<Table headerText="Tabular Data" id="dynamicTable" items="{listData>/}" fixedLayout="true" width="auto">
 								<columns>
-									<Column width="100px" visible="{columnVisible>/glAcct}">
+									<Column width="80px" visible="{columnVisible>/glAcct}">
+										<Text text="GL"/>
+									</Column>
+									<Column width="250px" visible="{columnVisible>/glAcctLongText}">
+										<Text text="GL Description"/>
+									</Column>
+									<Column width="100px">
 										<Text text="Opening Balance"/>
 									</Column>
-									<Column width="200px" visible="{columnVisible>/glAcctLongText}">
-										<Text text="Incoming Balance"/>
+									
+									<Column width="100px">
+										<Text text="Incoming Balance(DR.)"/>
 									</Column>
-									<Column width="200px">
-										<Text text="Outgoing Balance"/>
-									</Column>
-									<Column width="80px" visible="{columnVisible>/graphColumnVisible}">
-										<Text text="Chart"/>
+									<Column width="100px">
+										<Text text="Outgoing Balance(CR.)"/>
 									</Column>
 									<Column width="100px">
 										<Text text="Closing Balance"/>
 									</Column>
-									<Column visible="{columnVisible>/l01VFlag}" width="80px">
-										<Text text="Apr"/>
-									</Column>
-									<Column visible="{columnVisible>/l02VFlag}" width="80px">
-										<Text text="May"/>
-									</Column>
-									<Column visible="{columnVisible>/l03VFlag}" width="80px">
-										<Text text="Jun"/>
-									</Column>
-									<Column visible="{columnVisible>/l04VFlag}" width="80px">
-										<Text text="Jul"/>
-									</Column>
-									<Column visible="{columnVisible>/l05VFlag}" width="80px">
-										<Text text="Aug"/>
-									</Column>
-									<Column visible="{columnVisible>/l06VFlag}" width="80px">
-										<Text text="Sep"/>
-									</Column>
-									<Column visible="{columnVisible>/l07VFlag}" width="80px">
-										<Text text="Oct"/>
-									</Column>
-									<Column visible="{columnVisible>/l08VFlag}" width="80px">
-										<Text text="Nov"/>
-									</Column>
-									<Column visible="{columnVisible>/l09VFlag}" width="80px">
-										<Text text="Dec"/>
-									</Column>
-									<Column visible="{columnVisible>/l10VFlag}" width="80px">
-										<Text text="Jan"/>
-									</Column>
-									<Column visible="{columnVisible>/l11VFlag}" width="80px">
-										<Text text="Feb"/>
-									</Column>
-									<Column visible="{columnVisible>/l12VFlag}" width="80px">
-										<Text text="Mar"/>
-									</Column>
-									<Column visible="{columnVisible>/l13VFlag}" width="80px">
-										<Text text="Specl 1"/>
-									</Column>
-									<Column visible="{columnVisible>/l14VFlag}" width="80px">
-										<Text text="Specl 2"/>
-									</Column>
-									<Column visible="{columnVisible>/l15VFlag}" width="80px">
-										<Text text="Specl 3"/>
-									</Column>
-									<Column visible="{columnVisible>/l16VFlag}" width="80px">
-										<Text text="Specl 4"/>
-									</Column>
+									<!--<Column width="80px" visible="{columnVisible>/graphColumnVisible}">
+										<Text text="Chart"/>
+									</Column>-->
+									
 								</columns>
 								<items>
 									<ColumnListItem class="sapMListTblRow">
 										<cells>
-											<Text text="{listData>Racct}"/>
+											<Text text="{listData>Hkont}"/>
 											<Text text="{listData>GlText}"/>
-											<Text text="{listData>GlAcGroup}"/>
-											<Button id="chartButton" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>
-											<Text text="{listData>Total}"/>
-											<Text text="{listData>L01}"/>
-											<Text text="{listData>L02}"/>
-											<Text text="{listData>L03}"/>
-											<Text text="{listData>L04}"/>
-											<Text text="{listData>L05}"/>
-											<Text text="{listData>L06}"/>
-											<Text text="{listData>L07}"/>
-											<Text text="{listData>L08}"/>
-											<Text text="{listData>L09}"/>
-											<Text text="{listData>L10}"/>
-											<Text text="{listData>L11}"/>
-											<Text text="{listData>L12}"/>
-											<Text text="{listData>L13}"/>
-											<Text text="{listData>L14}"/>
-											<Text text="{listData>L15}"/>
-											<Text text="{listData>L16}"/>
+											<Text text="{listData>OpenBal}"/>
+											
+											<Text text="{listData>IncomBal}"/>
+											<Text text="{listData>OutgoBal}"/>
+											<Text text="{listData>CloseBal}"/>
+											<!--<Button id="chartButton" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>-->
 										</cells>
 									</ColumnListItem>
 								</items>
