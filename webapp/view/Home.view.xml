@@ -60,7 +60,7 @@
 					<Toolbar>
 						<FlexBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
 							<HBox id="tableTilte" justifyContent="Center" alignItems="Center" class="sapUiTinyMarginBeginEnd">
-								<Title text="{globalData>/reportS} {globalData&gt;/fiscalY}" level="H1" titleStyle="Auto" class="boldText"/>
+								<Title text="{globalData>/prfitCentrGrp}" level="H1" titleStyle="Auto" class="boldText"/>
 							</HBox>
 							<HBox id="tableSwitchBtn" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? false : true }" justifyContent="Center"
 								alignItems="Center" class="sapUiTinyMarginBeginEnd">
@@ -106,7 +106,6 @@
 									<Column width="100px">
 										<Text text="Opening Balance"/>
 									</Column>
-									
 									<Column width="100px">
 										<Text text="Incoming Balance(DR.)"/>
 									</Column>
@@ -116,9 +115,9 @@
 									<Column width="100px">
 										<Text text="Closing Balance"/>
 									</Column>
-									<!--<Column width="80px" visible="{columnVisible>/graphColumnVisible}">
+									<Column width="80px" visible="{columnVisible>/graphColumnVisible}">
 										<Text text="Chart"/>
-									</Column>-->
+									</Column>
 									
 								</columns>
 								<items>
@@ -127,11 +126,10 @@
 											<Text text="{listData>Hkont}"/>
 											<Text text="{listData>GlText}"/>
 											<Text text="{listData>OpenBal}"/>
-											
 											<Text text="{listData>IncomBal}"/>
 											<Text text="{listData>OutgoBal}"/>
 											<Text text="{listData>CloseBal}"/>
-											<!--<Button id="chartButton" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>-->
+											<Button id="chartButton" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>
 										</cells>
 									</ColumnListItem>
 								</items>

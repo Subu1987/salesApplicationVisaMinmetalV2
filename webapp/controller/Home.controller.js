@@ -124,10 +124,10 @@ sap.ui.define([
 			data.glAcct = true;
 			data.glAcctLongText = true;
 			data.graphColumnVisible = false;
-			for (var i = 1; i <= 16; i++) {
+			/*for (var i = 1; i <= 16; i++) {
 				var key = "l" + (i < 10 ? '0' + i : i) + "VFlag";
 				data[key] = false;
-			}
+			}*/
 
 			oColumnVisible.setData(data);
 		},
@@ -369,16 +369,16 @@ sap.ui.define([
 			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
 			var oColumnVisibleData = then.getOwnerComponent().getModel("columnVisible").getData();
 
-			oColumnVisibleData.glAcct = oData[0].Racct === "" ? false : true;
+			oColumnVisibleData.glAcct = oData[0].Hkont === "" ? false : true;
 			oColumnVisibleData.glAcctLongText = oData[0].GlText === "" ? false : true;
 			oColumnVisibleData.graphColumnVisible = oData[0].DET_FLAG === "X" ? false : true;
 			oGlobalData.togglePanelVisibility = oData[0].DET_FLAG === "X" ? "X" : "";
 
-			for (var i = 1; i <= 16; i++) {
+			/*for (var i = 1; i <= 16; i++) {
 				var flagKey = "L" + (i < 10 ? '0' + i : i) + "_FLAG";
 				var columnKey = "l" + (i < 10 ? '0' + i : i) + "VFlag";
 				oColumnVisibleData[columnKey] = oData[0][flagKey] === 'X' ? true : false;
-			}
+			}*/
 
 			if (oData[0].DET_FLAG === "") {
 				this.loadDefaultGraph();
@@ -418,7 +418,7 @@ sap.ui.define([
 			
 			/*var bURL = "/ZFI_BANKBAL_SRV/ZFI_BANKSet?$filter=Bukrs eq '1100' and PrctrGr eq 'FTRS' and FmDate eq '20230401' and ToDate eq '20240515' and DET_FLAG eq 'X'";*/
 			
-			var bURL = "/ZFI_BANKSet";
+			var bURL = "/ZFI_BANK_GRSet";
 			
 			oModel.read(bURL, {
 				urlParameters: {
