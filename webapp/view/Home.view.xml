@@ -18,7 +18,6 @@
 									<Input id="inputCompanyCode" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
 										valueHelpRequest="handleValueCompanyCode" value="1100" required="true" liveChange="onLiveChange"/>
 								</HBox>
-								
 								<HBox direction="Column" width="18%">
 									<Label text="From Date" design="Bold"/>
 									<DatePicker id="fromDate" displayFormat="long" value="" class="round"/>
@@ -62,7 +61,7 @@
 							<HBox id="tableTilte" justifyContent="Center" alignItems="Center" class="sapUiTinyMarginBeginEnd">
 								<Title text="{globalData>/prfitCentrGrp}" level="H1" titleStyle="Auto" class="boldText"/>
 							</HBox>
-							<HBox id="tableSwitchBtn" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? false : true }" justifyContent="Center"
+							<HBox id="tableSwitchBtn" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? true : true }" justifyContent="Center"
 								alignItems="Center" class="sapUiTinyMarginBeginEnd">
 								<VBox alignItems="Center" justifyContent="Center" class="sapUiTinyMarginBeginEnd">
 									<Label text="Split View" design="Bold"/>
@@ -118,7 +117,6 @@
 									<Column width="80px" visible="{columnVisible>/graphColumnVisible}">
 										<Text text="Chart"/>
 									</Column>
-									
 								</columns>
 								<items>
 									<ColumnListItem class="sapMListTblRow">
@@ -156,18 +154,17 @@
 													<viz.data:FlattenedDataset data="{chartData>/}">
 														<viz.data:dimensions>
 															<viz.data:DimensionDefinition name="Month" value="{chartData>Month}"/>
-															<!--<viz.data:DimensionDefinition name="GlAcGroup" value="{chartData>GlAcGroup}"/>-->
 														</viz.data:dimensions>
 														<viz.data:measures>
-															<viz.data:MeasureDefinition name="Value" value="{chartData>Value}"/>
+															<!--<viz.data:MeasureDefinition name="IncomingBalance" value="{chartData>IncomingBalance}"/>-->
+															<viz.data:MeasureDefinition name="OutgoingBalance" value="{chartData>OutgoingBalance}"/>
 														</viz.data:measures>
 													</viz.data:FlattenedDataset>
 												</viz:dataset>
-												<!-- sap.viz.ui5.data.Dataset -->
 												<viz:feeds>
-													<viz.feeds:FeedItem id="value1" uid="valueAxis" type="Measure" values="Value"/>
+													<!--<viz.feeds:FeedItem id="value1" uid="valueAxis" type="Measure" values="IncomingBalance"/>-->
+													<viz.feeds:FeedItem id="value2" uid="valueAxis" type="Measure" values="OutgoingBalance"/>
 													<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Month"/>
-													<!--<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="GlAcGroup"/>-->
 												</viz:feeds>
 											</viz:VizFrame>
 										</chart:content>

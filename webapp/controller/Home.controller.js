@@ -40,7 +40,6 @@ sap.ui.define([
 			var isValid = true;
 			var message = '';
 
-
 			if (!inputCompanyCode.getValue()) {
 				inputCompanyCode.setValueState(sap.ui.core.ValueState.Error);
 				isValid = false;
@@ -75,25 +74,25 @@ sap.ui.define([
 			// Set global data properties
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
 			if (oGlobalDataModel) {
-                oGlobalDataModel.setProperty("/cmpnyCode", inputCompanyCode.getValue());
-                oGlobalDataModel.setProperty("/fromDate", this.formatDate(new Date(datePickerFrom.getValue())));
-                oGlobalDataModel.setProperty("/toDate", this.formatDate(new Date(datePickerTo.getValue())));
-            }
+				oGlobalDataModel.setProperty("/cmpnyCode", inputCompanyCode.getValue());
+				oGlobalDataModel.setProperty("/fromDate", this.formatDate(new Date(datePickerFrom.getValue())));
+				oGlobalDataModel.setProperty("/toDate", this.formatDate(new Date(datePickerTo.getValue())));
+			}
 
 			return true;
 		},
-		formatDate: function (oDate) {
-            var iYear = oDate.getFullYear();
-            var iMonth = oDate.getMonth() + 1;
-            var iDay = oDate.getDate();
-            
-            // Pad month and day with leading zeros if necessary
-            var sMonth = iMonth < 10 ? '0' + iMonth : iMonth.toString();
-            var sDay = iDay < 10 ? '0' + iDay : iDay.toString();
-            
-            // Concatenate year, month, and day into 'YYYYMMDD' format
-            return iYear.toString() + sMonth + sDay;
-        },
+		formatDate: function(oDate) {
+			var iYear = oDate.getFullYear();
+			var iMonth = oDate.getMonth() + 1;
+			var iDay = oDate.getDate();
+
+			// Pad month and day with leading zeros if necessary
+			var sMonth = iMonth < 10 ? '0' + iMonth : iMonth.toString();
+			var sDay = iDay < 10 ? '0' + iDay : iDay.toString();
+
+			// Concatenate year, month, and day into 'YYYYMMDD' format
+			return iYear.toString() + sMonth + sDay;
+		},
 		onLiveChange: function(oEvent) {
 			var oInput = oEvent.getSource();
 			var sInputId = oInput.getId();
@@ -213,7 +212,7 @@ sap.ui.define([
 		},
 
 		/*************** search value within fragment *****************/
-		
+
 		_handleValueCompanyCodeSearch: function(oEvent) {
 			var sValue = oEvent.getParameter("value");
 			var oFilter = new Filter(
@@ -232,7 +231,7 @@ sap.ui.define([
 		},
 
 		/*************** set the each property to globalData & reflect data in input field  *****************/
-		
+
 		_handleValueCompanyCodeClose: function(oEvent) {
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 			if (oSelectedItem) {
@@ -374,6 +373,10 @@ sap.ui.define([
 			oColumnVisibleData.graphColumnVisible = oData[0].DET_FLAG === "X" ? false : true;
 			oGlobalData.togglePanelVisibility = oData[0].DET_FLAG === "X" ? "X" : "";
 
+			// SplitterLayoutData elements
+			var oSplitterLayoutData1 = this.byId("splitterLayoutData1");
+			var oSplitterLayoutData2 = this.byId("splitterLayoutData2");
+
 			/*for (var i = 1; i <= 16; i++) {
 				var flagKey = "L" + (i < 10 ? '0' + i : i) + "_FLAG";
 				var columnKey = "l" + (i < 10 ? '0' + i : i) + "VFlag";
@@ -385,9 +388,9 @@ sap.ui.define([
 				this.byId("panelForm").setExpanded(false);
 				this.byId("splitViewSwitch").setState(true);
 			} else {
-
+				this.loadDefaultGraph();
 				this.byId("panelForm").setExpanded(false);
-				this.byId("splitViewSwitch").setState(false);
+				this.byId("splitViewSwitch").setState(true);
 				this._removeHighlight();
 			}
 
@@ -406,7 +409,7 @@ sap.ui.define([
 			var that = this;
 			var oModel = this.getOwnerComponent().getModel();
 			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
-			
+
 			/*var ledgrNo = new Filter('Rldnr', FilterOperator.EQ, oGlobalData.ledgrNo);*/
 			var cmpnyCode = new Filter('Bukrs', FilterOperator.EQ, '1100');
 			var prfitCentrGrp = new Filter('PrctrGr', FilterOperator.EQ, oGlobalData.prfitCentrGrp);
@@ -415,11 +418,11 @@ sap.ui.define([
 			var listFlag = new Filter('DET_FLAG', FilterOperator.EQ, oGlobalData.listFlag);
 
 			sap.ui.core.BusyIndicator.show();
-			
+
 			/*var bURL = "/ZFI_BANKBAL_SRV/ZFI_BANKSet?$filter=Bukrs eq '1100' and PrctrGr eq 'FTRS' and FmDate eq '20230401' and ToDate eq '20240515' and DET_FLAG eq 'X'";*/
-			
+
 			var bURL = "/ZFI_BANK_GRSet";
-			
+
 			oModel.read(bURL, {
 				urlParameters: {
 					"sap-client": "400"
@@ -440,14 +443,12 @@ sap.ui.define([
 					// check in oData value is available or not 
 					if (typeof oData !== 'undefined' && oData.length === 0) {
 
-						
 						sap.ui.core.BusyIndicator.hide();
 						sap.m.MessageBox.information('There are no data available!');
 						that._columnVisible();
 					} else {
 						that._assignVisiblity(oData, that);
 
-						
 						sap.ui.core.BusyIndicator.hide();
 					}
 
@@ -614,20 +615,19 @@ sap.ui.define([
 				}
 			});
 
-			for (var i = 1; i <= 16; i++) {
-				var flagKey = "L" + (i < 10 ? '0' + i : i) + "_FLAG";
-				var flag = obj[flagKey];
-				var monthIndex = i - 1 < 9 ? i + 3 : i - 9;
-				var month = months[monthIndex - 1] || 'Total';
-				var valueKey = i < 10 ? "L0" + i : "L" + i;
-				var value = obj[valueKey];
+			// Combine incoming and outgoing balances for each month
+			for (var i = 0; i < 12; i++) {
+				var month = months[i];
+				var incomingKey = "I" + (i + 1 < 10 ? '0' + (i + 1) : i + 1);
+				var outgoingKey = "U" + (i + 1 < 10 ? '0' + (i + 1) : i + 1);
+				var incomingValue = parseFloat(obj[incomingKey]);
+				var outgoingValue = parseFloat(obj[outgoingKey]);
 
-				if (flag === "X") {
-					result.push({
-						Month: month,
-						Value: value
-					});
-				}
+				result.push({
+					Month: month,
+					IncomingBalance: incomingValue,
+					OutgoingBalance: outgoingValue
+				});
 			}
 
 			return result;
