@@ -43,3 +43,28 @@
 .chartButton {
     font-size: 1.5rem !important;
 }
+
+.pdfTable {
+    width: auto; /* Allow table to expand horizontally */
+    border-collapse: collapse;
+    margin: 0; /* Remove any margin */
+    padding: 0; /* Remove any padding */
+    white-space: nowrap; /* Prevent line breaks within table cells */
+    overflow-x: auto; /* Enable horizontal scrolling */
+}
+
+.pdfTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.pdfTable th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.sapMListTblRow {
+    margin: 0; /* Remove any margin */
+    padding: 0; /* Remove any padding */
+}

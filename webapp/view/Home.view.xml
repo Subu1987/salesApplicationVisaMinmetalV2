@@ -1,6 +1,6 @@
 <mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core"
 	xmlns:f="sap.ui.layout.form" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
-	xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.dataListApplication.controller.Home">
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.bankFioriApp.controller.Home">
 	<Page id="page" title="Bank Balance Application" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false">
 		<content>
 			<Panel id="panelForm" headerText="" class="sapUiResponsiveMargin border-lineRadius" expandable="true" expanded="true" width="auto">
@@ -20,11 +20,11 @@
 								</HBox>
 								<HBox direction="Column" width="18%">
 									<Label text="From Date" design="Bold"/>
-									<DatePicker id="fromDate" displayFormat="long" value="" class="round"/>
+									<DatePicker id="fromDate" displayFormat="long" value="" class="round sapUiSmallMarginBottom"/>
 								</HBox>
 								<HBox direction="Column" width="18%">
 									<Label text="To Date" design="Bold"/>
-									<DatePicker id="toDate" displayFormat="long" value="" class="round"/>
+									<DatePicker id="toDate" displayFormat="long" value="" class="round sapUiSmallMarginBottom"/>
 								</HBox>
 							</FlexBox>
 							<FlexBox width="90%" id="RadioBtn" justifyContent="SpaceAround" class="radioBtnCssRound" alignItems="Center" visible="true">
@@ -45,7 +45,7 @@
 								<FlexBox>
 									<Button id="searchData" icon="sap-icon://search" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
 										press="getListData"/>
-									<Button id="saveTripInfo" icon="sap-icon://pdf-attachment" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
+									<Button id="downloadPdfBtn" icon="sap-icon://pdf-attachment" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
 										press="onDownloadPDF"/>
 									<Button id="clearData" icon="sap-icon://decline" text="" iconFirst="false" type="Emphasized" class="smallIcon" press="clearListData"/>
 								</FlexBox>
@@ -66,7 +66,7 @@
 								<VBox alignItems="Center" justifyContent="Center" class="sapUiTinyMarginBeginEnd">
 									<Label text="Split View" design="Bold"/>
 								</VBox>
-								<Switch id="splitViewSwitch" change="onTabularToChartChanged" state="false">
+								<Switch id="splitViewSwitch" change="onTabularToChartChanged" state="false" enabled="false">
 									<layoutData>
 										<FlexItemData growFactor="1"/>
 									</layoutData>
@@ -74,7 +74,7 @@
 								<VBox alignItems="Center" justifyContent="Center" class="sapUiTinyMarginBeginEnd">
 									<Label text="Tabular Data" design="Bold"/>
 								</VBox>
-								<Switch id="tabularDataSwitch" change="onTabularToChartChanged" state="false">
+								<Switch id="tabularDataSwitch" change="onTabularToChartChanged" state="false" enabled="false">
 									<layoutData>
 										<FlexItemData growFactor="1"/>
 									</layoutData>
@@ -82,7 +82,7 @@
 								<VBox alignItems="Center" justifyContent="Center" class="sapUiTinyMarginBeginEnd">
 									<Label text="Chart Data" design="Bold"/>
 								</VBox>
-								<Switch id="chartDataSwitch" change="onTabularToChartChanged" state="false">
+								<Switch id="chartDataSwitch" change="onTabularToChartChanged" state="false" enabled="false">
 									<layoutData>
 										<FlexItemData growFactor="1"/>
 									</layoutData>
@@ -94,13 +94,16 @@
 				<content>
 					<ScrollContainer horizontal="true" vertical="true" width="100%" height="auto">
 						<l:Splitter id="splitter" height="450px">
-							<Table headerText="Tabular Data" id="dynamicTable" items="{listData>/}" fixedLayout="true" width="auto">
+							<Table headerText="Tabular Data" id="dynamicTable" items="{listData>/}" fixedLayout="true" width="auto" class="pdfTable">
 								<columns>
 									<Column width="80px" visible="{columnVisible>/glAcct}">
 										<Text text="GL"/>
 									</Column>
 									<Column width="250px" visible="{columnVisible>/glAcctLongText}">
 										<Text text="GL Description"/>
+									</Column>
+									<Column width="80px" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? true : false }">
+										<Text text="Chart"/>
 									</Column>
 									<Column width="100px">
 										<Text text="Opening Balance"/>
@@ -114,7 +117,7 @@
 									<Column width="100px">
 										<Text text="Closing Balance"/>
 									</Column>
-									<Column width="80px" visible="{columnVisible>/graphColumnVisible}">
+									<Column width="80px" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? false : true }">
 										<Text text="Chart"/>
 									</Column>
 								</columns>
@@ -123,11 +126,12 @@
 										<cells>
 											<Text text="{listData>Hkont}"/>
 											<Text text="{listData>GlText}"/>
+											<Button id="chartButton1" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>
 											<Text text="{listData>OpenBal}"/>
 											<Text text="{listData>IncomBal}"/>
 											<Text text="{listData>OutgoBal}"/>
 											<Text text="{listData>CloseBal}"/>
-											<Button id="chartButton" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>
+											<Button id="chartButton2" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>
 										</cells>
 									</ColumnListItem>
 								</items>
@@ -139,9 +143,9 @@
 								<FlexBox>
 									<RadioButtonGroup id="onSelectChartType" columns="5" select="onSelectChartType">
 										<RadioButton id="columnChart" text="Column Chart"/>
-										<RadioButton id="pieChart" text="Pie Chart"/>
+										<!--<RadioButton id="pieChart" text="Pie Chart"/>-->
 										<RadioButton id="lineChart" text="Line Chart"/>
-										<RadioButton id="donutChart" text="Donut Chart"/>
+										<!--<RadioButton id="donutChart" text="Donut Chart"/>-->
 									</RadioButtonGroup>
 								</FlexBox>
 								<chart:ChartContainer showLegend="false" showLegendButton="false" autoAdjustHeight="true" id="chartContainer" showFullScreen="true" title="">
@@ -156,15 +160,14 @@
 															<viz.data:DimensionDefinition name="Month" value="{chartData>Month}"/>
 														</viz.data:dimensions>
 														<viz.data:measures>
-															<!--<viz.data:MeasureDefinition name="IncomingBalance" value="{chartData>IncomingBalance}"/>-->
-															<viz.data:MeasureDefinition name="OutgoingBalance" value="{chartData>OutgoingBalance}"/>
+															<viz.data:MeasureDefinition group="1" name="Incoming" value="{chartData>IncomingBalance}"/>
+															<viz.data:MeasureDefinition group="1" name="Outgoing" value="{chartData>OutgoingBalance}"/>
 														</viz.data:measures>
 													</viz.data:FlattenedDataset>
 												</viz:dataset>
 												<viz:feeds>
-													<!--<viz.feeds:FeedItem id="value1" uid="valueAxis" type="Measure" values="IncomingBalance"/>-->
-													<viz.feeds:FeedItem id="value2" uid="valueAxis" type="Measure" values="OutgoingBalance"/>
-													<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Month"/>
+													<viz.feeds:FeedItem id="valueAxis1" uid="valueAxis" type="Measure" values="Incoming,Outgoing"/>
+													<viz.feeds:FeedItem id="categoryAxis" uid="categoryAxis" type="Dimension" values="Month"/>
 												</viz:feeds>
 											</viz:VizFrame>
 										</chart:content>

@@ -1,14 +1,15 @@
 sap.ui.define([
-	"com/infocus/dataListApplication/controller/BaseController",
+	"com/infocus/bankFioriApp/controller/BaseController",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	'sap/ui/model/json/JSONModel',
 	"sap/m/MessageBox",
-	"sap/viz/ui5/api/env/Format"
-], function(BaseController, Filter, FilterOperator, JSONModel, MessageBox, Format) {
+	"sap/viz/ui5/api/env/Format",
+	"com/infocus/bankFioriApp/libs/html2pdf.bundle"
+], function(BaseController, Filter, FilterOperator, JSONModel, MessageBox, Format, html2pdf_bundle) {
 	"use strict";
 
-	return BaseController.extend("com.infocus.dataListApplication.controller.Home", {
+	return BaseController.extend("com.infocus.bankFioriApp.controller.Home", {
 
 		/*************** on Load Functions *****************/
 		onInit: function() {
@@ -25,6 +26,7 @@ sap.ui.define([
 				oGlobalDataModel.setProperty("/prfitCentrGrp", "PRS");
 				oGlobalDataModel.setProperty("/listFlag", "X");
 				oGlobalDataModel.setProperty("/togglePanelVisibility", "X");
+				oGlobalDataModel.setProperty("/pdfTableName", "Detailed List");
 			}
 
 			/*this._validateInputFields();*/
@@ -196,7 +198,7 @@ sap.ui.define([
 			this._companyCodeInputId = oEvent.getSource().getId();
 			// open fragment
 			if (!this.oOpenDialogComapanyCode) {
-				this.oOpenDialogComapanyCode = sap.ui.xmlfragment("com.infocus.dataListApplication.view.dialogComponent.DialogComapanyCode", this);
+				this.oOpenDialogComapanyCode = sap.ui.xmlfragment("com.infocus.bankFioriApp.view.dialogComponent.DialogComapanyCode", this);
 				this.getView().addDependent(this.oOpenDialogComapanyCode);
 			}
 			this.oOpenDialogComapanyCode.open();
@@ -205,7 +207,7 @@ sap.ui.define([
 			this._ledgerInputId = oEvent.getSource().getId();
 			// open fragment
 			if (!this.oOpenDialogLedger) {
-				this.oOpenDialogLedger = sap.ui.xmlfragment("com.infocus.dataListApplication.view.dialogComponent.DialogLedger", this);
+				this.oOpenDialogLedger = sap.ui.xmlfragment("com.infocus.bankFioriApp.view.dialogComponent.DialogLedger", this);
 				this.getView().addDependent(this.oOpenDialogLedger);
 			}
 			this.oOpenDialogLedger.open();
@@ -279,9 +281,19 @@ sap.ui.define([
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
 			if (oGlobalDataModel) {
 				oGlobalDataModel.setProperty("/listFlag", selectedButtonListText === "Detailed List" ? 'X' : '');
+				oGlobalDataModel.setProperty("/pdfTableName", selectedButtonListText);
 			}
 
 		},
+		_toggleSwitches: function (isEnabled) {
+            var splitViewSwitch = this.byId("splitViewSwitch");
+            var tabularDataSwitch = this.byId("tabularDataSwitch");
+            var chartDataSwitch = this.byId("chartDataSwitch");
+
+            splitViewSwitch.setEnabled(isEnabled);
+            tabularDataSwitch.setEnabled(isEnabled);
+            chartDataSwitch.setEnabled(isEnabled);
+        },
 		onSelectChartType: function(oEvent) {
 			// Get the selected radio button
 			var selectedIndex = oEvent.getParameter("selectedIndex");
@@ -293,13 +305,7 @@ sap.ui.define([
 					chartType = "column";
 					break;
 				case 1:
-					chartType = "pie";
-					break;
-				case 2:
 					chartType = "line";
-					break;
-				case 3:
-					chartType = "donut";
 					break;
 				default:
 					chartType = "column";
@@ -383,16 +389,19 @@ sap.ui.define([
 				oColumnVisibleData[columnKey] = oData[0][flagKey] === 'X' ? true : false;
 			}*/
 
-			if (oData[0].DET_FLAG === "") {
-				this.loadDefaultGraph();
-				this.byId("panelForm").setExpanded(false);
-				this.byId("splitViewSwitch").setState(true);
-			} else {
-				this.loadDefaultGraph();
-				this.byId("panelForm").setExpanded(false);
-				this.byId("splitViewSwitch").setState(true);
-				this._removeHighlight();
-			}
+			// set the state
+			this._toggleSwitches(true);
+			this.byId("downloadPdfBtn").setEnabled(true);
+			this.loadDefaultGraph();
+			this.byId("panelForm").setExpanded(false);
+			this.byId("splitViewSwitch").setState(true);
+			this.byId("tabularDataSwitch").setState(false);
+			this.byId("chartDataSwitch").setState(false);
+			
+			
+			// Update SplitterLayoutData sizes for split view
+			oSplitterLayoutData1.setSize("50%");
+			oSplitterLayoutData2.setSize("50%");
 
 			then.getOwnerComponent().getModel("columnVisible").setData(oColumnVisibleData);
 			then.getOwnerComponent().getModel("globalData").setData(oGlobalData);
@@ -433,9 +442,9 @@ sap.ui.define([
 					console.log(oData);
 
 					// Format decimal properties to 2 digits after the decimal point
-					/*oData.forEach(function(item) {
+					oData.forEach(function(item) {
 						that._formatDecimalProperties(item, that);
-					});*/
+					});
 
 					var oListDataModel = that.getOwnerComponent().getModel("listData");
 					oListDataModel.setData(oData);
@@ -465,7 +474,7 @@ sap.ui.define([
 		_formatDecimalProperties: function(obj, then) {
 			for (var key in obj) {
 
-				if (key === 'Racct') {
+				if (key === 'Hkont') {
 					continue;
 				} else if (typeof obj[key] === "object") {
 					continue;
@@ -483,11 +492,10 @@ sap.ui.define([
 					onClose: function(oAction) {
 						if (oAction === sap.m.MessageBox.Action.OK) {
 							// Clear input fields
-							that.byId("inputLedger").setValue("0L");
+							/*that.byId("inputLedger").setValue("0L");*/
 							that.byId("inputCompanyCode").setValue("1100");
-							that.byId("inputFiscalYear").setValue("");
-							that.byId("inputFromPeriod").setValue("01");
-							that.byId("inputToPeriod").setValue("12");
+							that.byId("fromDate").setValue("");
+							that.byId("toDate").setValue("");
 
 							// Deselect radio buttons
 							that.byId("PRS").setSelected(true);
@@ -501,14 +509,32 @@ sap.ui.define([
 							var oListDataModel = that.getOwnerComponent().getModel("listData");
 							oListDataModel.setData({});
 
+							// clear the chart data 
+							var oChartDataModel = that.getOwnerComponent().getModel("chartData");
+							oChartDataModel.setData({});
+
 							// Update global data model properties
 							var oGlobalDataModel = that.getOwnerComponent().getModel("globalData");
 							if (oGlobalDataModel) {
 								oGlobalDataModel.setProperty("/listFlag", "X");
 								oGlobalDataModel.setProperty("/togglePanelVisibility", "X");
 							}
+							// disbaled the switches
+							that._toggleSwitches(false);
+							
+							// change the state of switches 
+							that.byId("splitViewSwitch").setState(false);
+							that.byId("tabularDataSwitch").setState(false);
+							that.byId("chartDataSwitch").setState(false);
+
+							// SplitterLayoutData elements
+							var oSplitterLayoutData1 = that.byId("splitterLayoutData1");
+							var oSplitterLayoutData2 = that.byId("splitterLayoutData2");
+							oSplitterLayoutData1.setSize("100%");
+							oSplitterLayoutData2.setSize("0%");
 
 							that._columnVisible();
+							that.byId("downloadPdfBtn").setEnabled(false);
 						}
 					}
 				}
@@ -572,48 +598,6 @@ sap.ui.define([
 		extractData: function(obj) {
 			var result = [];
 			var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-			var monthColors = {
-				'Jan': '#5B9BD5', // Blue
-				'Feb': '#FF7F0E', // Orange
-				'Mar': '#4CAF50', // Green
-				'Apr': '#F44336', // Red
-				'May': '#9C27B0', // Purple
-				'Jun': '#FFEB3B', // Yellow
-				'Jul': '#00BCD4', // Cyan
-				'Aug': '#607D8B', // Grey
-				'Sep': '#FF5722', // Deep Orange
-				'Oct': '#673AB7', // Deep Purple
-				'Nov': '#8BC34A', // Light Green
-				'Dec': '#FF9800' // Amber
-			};
-
-			var oVizFrame = this.byId("oVizFrame");
-			oVizFrame.setVizProperties({
-				title: {
-					visible: true,
-					text: obj.GlAcGroup
-				},
-				legend: {
-					title: {
-						visible: true,
-						text: 'Months'
-					}
-				},
-				plotArea: {
-					dataPointStyle: {
-						rules: months.map(function(month) {
-							return {
-								dataContext: {
-									Month: month
-								},
-								properties: {
-									color: monthColors[month]
-								}
-							};
-						})
-					}
-				}
-			});
 
 			// Combine incoming and outgoing balances for each month
 			for (var i = 0; i < 12; i++) {
@@ -629,6 +613,27 @@ sap.ui.define([
 					OutgoingBalance: outgoingValue
 				});
 			}
+
+			var oVizFrame = this.byId("oVizFrame");
+			oVizFrame.setVizProperties({
+				title: {
+					visible: true,
+					text: obj.GlText
+				},
+				legend: {
+					title: {
+						visible: true,
+						text: 'Months'
+					}
+				},
+				plotArea: {
+					dataLabel: {
+						visible: true,
+						showTotal: true
+					},
+					colorPalette: ['#5B9BD5', '#FF7F0E'] // Blue for IncomingBalance, Orange for OutgoingBalance
+				}
+			});
 
 			return result;
 		},
@@ -652,36 +657,90 @@ sap.ui.define([
 		/*************** download pdf function  *****************/
 
 		onDownloadPDF: function() {
-			// Create a new jsPDF instance
-			var doc = new jsPDF();
+			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
+			var pdfTableName = oGlobalDataModel.oData.pdfTableName;
+			var oTable = this.byId("dynamicTable");
+			var oTableHtml = oTable.getDomRef().outerHTML;
 
-			// Define table columns and rows
-			var columns = ["G/L Acct", "G/L Acct Long Text", "G/L Group", "Total", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov",
-				"Dec", "Jan", "Feb", "Mar", "Specl 1", "Specl 2", "Specl 3", "Specl 4"
-			];
-			var rows = [];
+			// Create a temporary DOM element to manipulate the table HTML
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = oTableHtml;
 
-			// Get table reference
-			var table = this.byId("dynamicTable");
+			// Remove the "Chart" column from the table header and body
+			var chartColumnIndex = -1;
+			var table = tempDiv.querySelector('table');
+			var headers = table.querySelectorAll('th, td');
 
-			// Get table items (data)
-			var items = table.getItems();
-
-			// Loop through table items to extract data
-			items.forEach(function(item) {
-				var cells = item.getCells();
-				var rowData = [];
-				cells.forEach(function(cell) {
-					rowData.push(cell.getText());
-				});
-				rows.push(rowData);
+			headers.forEach((header, index) => {
+				if (header.innerText === "Chart") {
+					chartColumnIndex = index;
+				}
 			});
 
-			// Add table to PDF
-			doc.autoTable(columns, rows);
+			if (chartColumnIndex !== -1) {
+				// Remove the header cell
+				table.querySelector('thead tr').deleteCell(chartColumnIndex);
 
-			// Save PDF
-			doc.save("table_data.pdf");
+				// Remove the corresponding cells in the body rows
+				var rows = table.querySelectorAll('tbody tr');
+				rows.forEach(row => {
+					row.deleteCell(chartColumnIndex);
+				});
+			}
+
+			var updatedTableHtml = tempDiv.innerHTML;
+
+			// Show the global BusyIndicator
+			sap.ui.core.BusyIndicator.show(0);
+
+			var opt = {
+				margin: [0.5, 0.5, 0.5, 0.5], // Adjust margins as needed
+				filename: 'Bank Balance' + ' ' + pdfTableName + '.pdf',
+				image: {
+					type: 'jpeg',
+					quality: 0.98
+				},
+				html2canvas: {
+					scale: 2, // Keep scale at 1 to capture full width
+					scrollX: 0, // Capture entire width including horizontal scroll
+					scrollY: 0,
+					useCORS: true,
+					logging: true
+				},
+				jsPDF: {
+					unit: 'in',
+					format: 'a4',
+					orientation: 'landscape'
+				},
+				pagebreak: {
+					mode: ['avoid-all', 'css', 'legacy']
+				} // Ensure proper page breaks
+			};
+
+			// Use html2pdf.js to generate the PDF
+			html2pdf()
+				.from(updatedTableHtml)
+				.set(opt)
+				.toPdf()
+				.get('pdf')
+				.then((pdf) => {
+					var totalPages = pdf.internal.getNumberOfPages();
+					for (var i = 1; i <= totalPages; i++) {
+						pdf.setPage(i);
+						pdf.setFontSize(11);
+						pdf.setTextColor(100);
+						pdf.text(
+							'Page ' + i + ' of ' + totalPages,
+							pdf.internal.pageSize.getWidth() / 2,
+							pdf.internal.pageSize.getHeight() - 10
+						);
+					}
+				})
+				.save()
+				.finally(() => {
+					// Hide the global BusyIndicator
+					sap.ui.core.BusyIndicator.hide();
+				});
 		}
 
 	});

@@ -1,11 +1,11 @@
 sap.ui.define([
-	"com/infocus/dataListApplication/controller/BaseController",
+	"com/infocus/bankFioriApp/controller/BaseController",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox"
 ], function(BaseController, JSONModel, MessageBox) {
 	"use strict";
 
-	return BaseController.extend("com.infocus.dataListApplication.controller.App", {
+	return BaseController.extend("com.infocus.bankFioriApp.controller.App", {
 
 		onInit: function() {
 

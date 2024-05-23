@@ -1,4 +1,4 @@
-<mvc:View controllerName="com.infocus.dataListApplication.controller.Chart" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:viz="sap.viz.ui5.controls"
+<mvc:View controllerName="com.infocus.bankFioriApp.controller.Chart" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:viz="sap.viz.ui5.controls"
 	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:viz.data="sap.viz.ui5.data">
 	<App>
 		<Page title="Chart Demo">
