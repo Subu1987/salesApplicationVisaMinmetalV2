@@ -34,7 +34,6 @@ sap.ui.define([
 
 		},
 		_validateInputFields: function() {
-			/*var inputLedger = this.byId("inputLedger");*/
 			var inputCompanyCode = this.byId("inputCompanyCode");
 			var datePickerFrom = this.byId("fromDate");
 			var datePickerTo = this.byId("toDate");
@@ -42,6 +41,7 @@ sap.ui.define([
 			var isValid = true;
 			var message = '';
 
+			// Validate company code
 			if (!inputCompanyCode.getValue()) {
 				inputCompanyCode.setValueState(sap.ui.core.ValueState.Error);
 				isValid = false;
@@ -50,6 +50,7 @@ sap.ui.define([
 				inputCompanyCode.setValueState(sap.ui.core.ValueState.None);
 			}
 
+			// Validate from date
 			if (!datePickerFrom.getValue()) {
 				datePickerFrom.setValueState(sap.ui.core.ValueState.Error);
 				isValid = false;
@@ -58,6 +59,7 @@ sap.ui.define([
 				datePickerFrom.setValueState(sap.ui.core.ValueState.None);
 			}
 
+			// Validate to date
 			if (!datePickerTo.getValue()) {
 				datePickerTo.setValueState(sap.ui.core.ValueState.Error);
 				isValid = false;
@@ -66,10 +68,24 @@ sap.ui.define([
 				datePickerTo.setValueState(sap.ui.core.ValueState.None);
 			}
 
+			// Display error message if any field is invalid
 			if (!isValid) {
-				// Remove the last comma and space from the message
-				message = message.slice(0, -2);
+				message = message.slice(0, -2); // Remove the trailing comma and space
 				sap.m.MessageBox.show("Please fill up the following fields: " + message);
+				return false;
+			}
+
+			// Log date values for debugging
+			console.log("From Date Value:", datePickerFrom.getValue());
+			console.log("To Date Value:", datePickerTo.getValue());
+
+			// Format dates
+			var fromDate = this.formatDate(datePickerFrom.getValue());
+			var toDate = this.formatDate(datePickerTo.getValue());
+
+			// Show error message if dates are invalid
+			if (!fromDate || !toDate) {
+				sap.m.MessageBox.show("Invalid date format. Please enter valid dates.");
 				return false;
 			}
 
@@ -77,24 +93,56 @@ sap.ui.define([
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
 			if (oGlobalDataModel) {
 				oGlobalDataModel.setProperty("/cmpnyCode", inputCompanyCode.getValue());
-				oGlobalDataModel.setProperty("/fromDate", this.formatDate(new Date(datePickerFrom.getValue())));
-				oGlobalDataModel.setProperty("/toDate", this.formatDate(new Date(datePickerTo.getValue())));
+				oGlobalDataModel.setProperty("/fromDate", fromDate);
+				oGlobalDataModel.setProperty("/toDate", toDate);
 			}
 
 			return true;
 		},
-		formatDate: function(oDate) {
-			var iYear = oDate.getFullYear();
-			var iMonth = oDate.getMonth() + 1;
-			var iDay = oDate.getDate();
 
-			// Pad month and day with leading zeros if necessary
-			var sMonth = iMonth < 10 ? '0' + iMonth : iMonth.toString();
-			var sDay = iDay < 10 ? '0' + iDay : iDay.toString();
+		formatDate: function(dateString) {
+			if (!dateString) {
+				console.error("Invalid Date String:", dateString);
+				return null;
+			}
 
-			// Concatenate year, month, and day into 'YYYYMMDD' format
-			return iYear.toString() + sMonth + sDay;
+			var parts = dateString.split(/[-/.]/); // Handle different delimiters
+			if (parts.length === 3 && parts[2].length === 2) {
+				var year = parts[2];
+				var month = parts[0];
+				var day = parts[1];
+
+				// Convert two-digit year to four-digit
+				if (year.length === 2) {
+					var currentYear = new Date().getFullYear();
+					var currentCentury = Math.floor(currentYear / 100) * 100;
+					year = (currentCentury + parseInt(year)).toString();
+				}
+
+				// Format as "YYYYMMDD"
+				var formattedDate = year + month.padStart(2, '0') + day.padStart(2, '0');
+				return formattedDate;
+			} else if (parts.length === 3 && parts[2].length > 2) {
+				var year = parts[2];
+				var month = parts[1];
+				var day = parts[0];
+
+				// Convert two-digit year to four-digit
+				/*if (year.length === 2) {
+					var currentYear = new Date().getFullYear();
+					var currentCentury = Math.floor(currentYear / 100) * 100;
+					year = (currentCentury + parseInt(year)).toString();
+				}*/
+
+				// Format as "YYYYMMDD"
+				var formattedDate = year + month + day;
+				return formattedDate;
+			} else {
+				console.error("Invalid Date String:", dateString);
+				return null;
+			}
 		},
+
 		onLiveChange: function(oEvent) {
 			var oInput = oEvent.getSource();
 			var sInputId = oInput.getId();
@@ -285,15 +333,15 @@ sap.ui.define([
 			}
 
 		},
-		_toggleSwitches: function (isEnabled) {
-            var splitViewSwitch = this.byId("splitViewSwitch");
-            var tabularDataSwitch = this.byId("tabularDataSwitch");
-            var chartDataSwitch = this.byId("chartDataSwitch");
+		_toggleSwitches: function(isEnabled) {
+			/*var splitViewSwitch = this.byId("splitViewSwitch");*/
+			var tabularDataSwitch = this.byId("tabularDataSwitch");
+			var chartDataSwitch = this.byId("chartDataSwitch");
 
-            splitViewSwitch.setEnabled(isEnabled);
-            tabularDataSwitch.setEnabled(isEnabled);
-            chartDataSwitch.setEnabled(isEnabled);
-        },
+			/*splitViewSwitch.setEnabled(isEnabled);*/
+			tabularDataSwitch.setEnabled(isEnabled);
+			chartDataSwitch.setEnabled(isEnabled);
+		},
 		onSelectChartType: function(oEvent) {
 			// Get the selected radio button
 			var selectedIndex = oEvent.getParameter("selectedIndex");
@@ -318,7 +366,7 @@ sap.ui.define([
 			var oSwitch = oEvent.getSource();
 			var sId = oSwitch.getId();
 			var aSwitches = [
-				this.byId("splitViewSwitch"),
+				/*this.byId("splitViewSwitch"),*/
 				this.byId("tabularDataSwitch"),
 				this.byId("chartDataSwitch")
 			]; // Array of all switches
@@ -329,9 +377,9 @@ sap.ui.define([
 
 			// which switch was toggled and get the corresponding text
 			var sText;
-			if (sId === this.byId("splitViewSwitch").getId()) {
+			/*if (sId === this.byId("splitViewSwitch").getId()) {
 				sText = "Split View";
-			} else if (sId === this.byId("tabularDataSwitch").getId()) {
+			} else*/ if (sId === this.byId("tabularDataSwitch").getId()) {
 				sText = "Tabular Data";
 			} else if (sId === this.byId("chartDataSwitch").getId()) {
 				sText = "Chart Data";
@@ -357,10 +405,12 @@ sap.ui.define([
 					case "Tabular Data":
 						oSplitterLayoutData1.setSize("100%");
 						oSplitterLayoutData2.setSize("0%");
+						this.byId("downloadPdfBtn").setEnabled(true);
 						break;
 					case "Chart Data":
 						oSplitterLayoutData1.setSize("0%");
 						oSplitterLayoutData2.setSize("100%");
+						this.byId("downloadPdfBtn").setEnabled(false);
 						break;
 					default:
 						break;
@@ -391,17 +441,16 @@ sap.ui.define([
 
 			// set the state
 			this._toggleSwitches(true);
-			this.byId("downloadPdfBtn").setEnabled(true);
+			this.byId("downloadPdfBtn").setEnabled(false);
 			this.loadDefaultGraph();
 			this.byId("panelForm").setExpanded(false);
-			this.byId("splitViewSwitch").setState(true);
+			/*this.byId("splitViewSwitch").setState(true);*/
 			this.byId("tabularDataSwitch").setState(false);
-			this.byId("chartDataSwitch").setState(false);
-			
-			
+			this.byId("chartDataSwitch").setState(true);
+
 			// Update SplitterLayoutData sizes for split view
-			oSplitterLayoutData1.setSize("50%");
-			oSplitterLayoutData2.setSize("50%");
+			oSplitterLayoutData1.setSize("0%");
+			oSplitterLayoutData2.setSize("100%");
 
 			then.getOwnerComponent().getModel("columnVisible").setData(oColumnVisibleData);
 			then.getOwnerComponent().getModel("globalData").setData(oGlobalData);
@@ -501,7 +550,7 @@ sap.ui.define([
 							that.byId("PRS").setSelected(true);
 							that.byId("FTRS").setSelected(false);
 							that.byId("CORP").setSelected(false);
-							that.byId("companytotal").setSelected(false);
+							/*that.byId("companytotal").setSelected(false);*/
 							that.byId("detailedlist").setSelected(true);
 							that.byId("summarylist").setSelected(false);
 
@@ -521,17 +570,17 @@ sap.ui.define([
 							}
 							// disbaled the switches
 							that._toggleSwitches(false);
-							
+
 							// change the state of switches 
-							that.byId("splitViewSwitch").setState(false);
+							/*that.byId("splitViewSwitch").setState(false);*/
 							that.byId("tabularDataSwitch").setState(false);
 							that.byId("chartDataSwitch").setState(false);
 
 							// SplitterLayoutData elements
 							var oSplitterLayoutData1 = that.byId("splitterLayoutData1");
 							var oSplitterLayoutData2 = that.byId("splitterLayoutData2");
-							oSplitterLayoutData1.setSize("100%");
-							oSplitterLayoutData2.setSize("0%");
+							oSplitterLayoutData1.setSize("0%");
+							oSplitterLayoutData2.setSize("100%");
 
 							that._columnVisible();
 							that.byId("downloadPdfBtn").setEnabled(false);
@@ -586,13 +635,13 @@ sap.ui.define([
 			var oSplitterLayoutData2 = this.byId("splitterLayoutData2");
 
 			// set the split view switch state to true
-			this.byId("splitViewSwitch").setState(true);
+			/*this.byId("splitViewSwitch").setState(true);*/
 			this.byId("tabularDataSwitch").setState(false);
-			this.byId("chartDataSwitch").setState(false);
+			this.byId("chartDataSwitch").setState(true);
 
 			// Update SplitterLayoutData sizes for split view
-			oSplitterLayoutData1.setSize("50%");
-			oSplitterLayoutData2.setSize("50%");
+			oSplitterLayoutData1.setSize("0%");
+			oSplitterLayoutData2.setSize("100%");
 
 		},
 		extractData: function(obj) {
@@ -629,9 +678,9 @@ sap.ui.define([
 				plotArea: {
 					dataLabel: {
 						visible: true,
-						showTotal: true
+						showTotal: true,
 					},
-					colorPalette: ['#5B9BD5', '#FF7F0E'] // Blue for IncomingBalance, Orange for OutgoingBalance
+					colorPalette: ['#00e600', '#0000b3'] // Green for IncomingBalance, Orange for OutgoingBalance
 				}
 			});
 

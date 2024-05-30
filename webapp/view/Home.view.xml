@@ -33,7 +33,7 @@
 										<RadioButton id="PRS" text="PRS"/>
 										<RadioButton id="FTRS" text="FTRS"/>
 										<RadioButton id="CORP" text="CORP"/>
-										<RadioButton id="companytotal" text="TOTAL"/>
+										<!--<RadioButton id="companytotal" text="TOTAL"/>-->
 									</RadioButtonGroup>
 								</FlexBox>
 								<FlexBox>
@@ -45,8 +45,8 @@
 								<FlexBox>
 									<Button id="searchData" icon="sap-icon://search" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
 										press="getListData"/>
-									<Button id="downloadPdfBtn" icon="sap-icon://pdf-attachment" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
-										press="onDownloadPDF"/>
+									<Button id="downloadPdfBtn" enabled="false" icon="sap-icon://pdf-attachment" text="" iconFirst="false" type="Emphasized"
+										class="sapUiTinyMarginEnd smallIcon" press="onDownloadPDF"/>
 									<Button id="clearData" icon="sap-icon://decline" text="" iconFirst="false" type="Emphasized" class="smallIcon" press="clearListData"/>
 								</FlexBox>
 							</FlexBox>
@@ -63,14 +63,14 @@
 							</HBox>
 							<HBox id="tableSwitchBtn" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? true : true }" justifyContent="Center"
 								alignItems="Center" class="sapUiTinyMarginBeginEnd">
-								<VBox alignItems="Center" justifyContent="Center" class="sapUiTinyMarginBeginEnd">
+								<!--<VBox alignItems="Center" justifyContent="Center" class="sapUiTinyMarginBeginEnd">
 									<Label text="Split View" design="Bold"/>
 								</VBox>
 								<Switch id="splitViewSwitch" change="onTabularToChartChanged" state="false" enabled="false">
 									<layoutData>
 										<FlexItemData growFactor="1"/>
 									</layoutData>
-								</Switch>
+								</Switch>-->
 								<VBox alignItems="Center" justifyContent="Center" class="sapUiTinyMarginBeginEnd">
 									<Label text="Tabular Data" design="Bold"/>
 								</VBox>
@@ -92,9 +92,10 @@
 					</Toolbar>
 				</headerToolbar>
 				<content>
-					<ScrollContainer horizontal="true" vertical="true" width="100%" height="auto">
-						<l:Splitter id="splitter" height="450px">
-							<Table headerText="Tabular Data" id="dynamicTable" items="{listData>/}" fixedLayout="true" width="auto" class="pdfTable">
+					<ScrollContainer horizontal="false" vertical="true" width="100%" height="auto">
+						<l:Splitter id="splitter" height="400px">
+							<Table headerText="{globalData>/prfitCentrGrp} Tabular Data(in Lacs) {globalData>/fromDate} - {globalData>/toDate}" id="dynamicTable"
+								items="{listData>/}" fixedLayout="true" width="auto" class="pdfTable">
 								<columns>
 									<Column width="80px" visible="{columnVisible>/glAcct}">
 										<Text text="GL"/>
@@ -102,22 +103,22 @@
 									<Column width="250px" visible="{columnVisible>/glAcctLongText}">
 										<Text text="GL Description"/>
 									</Column>
-									<Column width="80px" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? true : false }">
+									<Column width="50px" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? true : false }">
 										<Text text="Chart"/>
 									</Column>
-									<Column width="100px">
+									<Column width="80px">
 										<Text text="Opening Balance"/>
 									</Column>
-									<Column width="100px">
+									<Column width="80px">
 										<Text text="Incoming Balance(DR.)"/>
 									</Column>
-									<Column width="100px">
+									<Column width="80px">
 										<Text text="Outgoing Balance(CR.)"/>
 									</Column>
-									<Column width="100px">
+									<Column width="80px">
 										<Text text="Closing Balance"/>
 									</Column>
-									<Column width="80px" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? false : true }">
+									<Column width="50px" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? false : true }">
 										<Text text="Chart"/>
 									</Column>
 								</columns>
@@ -136,17 +137,31 @@
 									</ColumnListItem>
 								</items>
 								<layoutData>
-									<l:SplitterLayoutData id="splitterLayoutData1" size="{= ${globalData>/togglePanelVisibility} === 'X' ? '100%' : '50%' }" resizable="false"/>
+									<l:SplitterLayoutData id="splitterLayoutData1" size="{= ${globalData>/togglePanelVisibility} === 'X' ? '0%' : '50%' }" resizable="false"/>
 								</layoutData>
 							</Table>
 							<Panel id="chartPanel" width="100%" height="100%">
-								<FlexBox>
-									<RadioButtonGroup id="onSelectChartType" columns="5" select="onSelectChartType">
+								<FlexBox direction="Row" justifyContent="SpaceBetween" alignItems="Center">
+									<!--<RadioButtonGroup id="onSelectChartType" columns="5" select="onSelectChartType">
 										<RadioButton id="columnChart" text="Column Chart"/>
-										<!--<RadioButton id="pieChart" text="Pie Chart"/>-->
+										<RadioButton id="pieChart" text="Pie Chart"/>
 										<RadioButton id="lineChart" text="Line Chart"/>
-										<!--<RadioButton id="donutChart" text="Donut Chart"/>-->
-									</RadioButtonGroup>
+										<RadioButton id="donutChart" text="Donut Chart"/>
+									</RadioButtonGroup>-->
+									<FlexBox direction="Row" justifyContent="Center" alignItems="Start">
+										<Label text="Column Chart" design="Bold" class="balanceText"/>
+										<Label text="(In Lacs)" design="Bold" class="balanceText"/>
+									</FlexBox>
+									<FlexBox direction="Row" justifyContent="Center" alignItems="Start">
+										<FlexBox direction="Row" alignItems="Center">
+											<core:Icon class="incomingCircle"/>
+											<Label text="Incoming Balance" class="balanceText" design="Bold"/>
+										</FlexBox>
+										<FlexBox direction="Row" alignItems="Center" class="sapUiTinyMarginBegin">
+											<core:Icon class="outgoingCircle"/>
+											<Label text="Outgoing Balance" class="balanceText" design="Bold"/>
+										</FlexBox>
+									</FlexBox>
 								</FlexBox>
 								<chart:ChartContainer showLegend="false" showLegendButton="false" autoAdjustHeight="true" id="chartContainer" showFullScreen="true" title="">
 									<chart:ChartContainerContent icon="sap-icon://horizontal-stacked-chart" title="Stacked_bar Chart">
@@ -174,7 +189,7 @@
 									</chart:ChartContainerContent>
 								</chart:ChartContainer>
 								<layoutData>
-									<l:SplitterLayoutData id="splitterLayoutData2" size="{= ${globalData>/togglePanelVisibility} === 'X' ? '0%' : '50%' }" resizable="false"/>
+									<l:SplitterLayoutData id="splitterLayoutData2" size="{= ${globalData>/togglePanelVisibility} === 'X' ? '100%' : '50%' }" resizable="false"/>
 								</layoutData>
 							</Panel>
 						</l:Splitter>

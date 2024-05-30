@@ -28,43 +28,71 @@
 .boldText {
     font-weight: bold !important;
 }
-#dynamicTable{
-	border-right: 1.2px solid #34618747 !important;
+
+#dynamicTable {
+    border-right: 1.2px solid #34618747 !important;
 }
-#chartPanel{
-	border-left: 1.2px solid #34618747 !important;
+
+#chartPanel {
+    border-left: 1.2px solid #34618747 !important;
 }
 
 .highlightedRow {
-    background-color: #b0c4de !important;
+    background-color: #e5e5ff !important;
 }
-
 
 .chartButton {
     font-size: 1.5rem !important;
 }
 
+.incomingCircle {
+    width: 15px;
+    height: 15px;
+    background-color: #00e600;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.outgoingCircle {
+    width: 15px;
+    height: 15px;
+    background-color: #0000b3;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.balanceText {
+    margin-left: 5px;
+}
+
 .pdfTable {
-    width: auto; /* Allow table to expand horizontally */
+    width: auto;
+    /* Allow table to expand horizontally */
     border-collapse: collapse;
-    margin: 0; /* Remove any margin */
-    padding: 0; /* Remove any padding */
-    white-space: nowrap; /* Prevent line breaks within table cells */
-    overflow-x: auto; /* Enable horizontal scrolling */
+    margin: 0;
+    /* Remove any margin */
+    padding: 0;
+    /* Remove any padding */
+    white-space: nowrap;
+    /* Prevent line breaks within table cells */
+    overflow-x: auto;
+    /* Enable horizontal scrolling */
 }
 
 .pdfTable td {
-    border: 1px solid #ddd;
+    border: 1px solid #4c4cff;
     padding: 8px;
     text-align: left;
 }
 
 .pdfTable th {
-    background-color: #f2f2f2;
-    font-weight: bold;
+    background-color: #4d4dff;
+    font-weight: bold !important;
 }
 
 .sapMListTblRow {
-    margin: 0; /* Remove any margin */
-    padding: 0; /* Remove any padding */
+    margin: 0;
+    /* Remove any margin */
+    padding: 0;
+    /* Remove any padding */
 }
