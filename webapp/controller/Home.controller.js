@@ -99,6 +99,10 @@ sap.ui.define([
 					} else {
 						var oAuthDataModel = that.getOwnerComponent().getModel("authData");
 						oAuthDataModel.setData(oData);
+						///// Authorization Changes /////////
+						var inputCompanyCode = that.byId("inputCompanyCode").getValue();
+						that.totalRadioBtnCheck(inputCompanyCode);
+						that.authorizationCheck();
 						sap.ui.core.BusyIndicator.hide();
 					}
 
@@ -110,6 +114,58 @@ sap.ui.define([
 					sap.m.MessageBox.error(errorObject.error.message.value);
 				}
 			});
+		},
+		authorizationCheck: function() {
+			var oAuthDataModel = this.getOwnerComponent().getModel("authData");
+			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
+			var oAuthData = oAuthDataModel.oData;
+			var totalRadioBtn = oGlobalDataModel.getProperty("/totalRadioBtnChk");
+
+			////// Authorization Change ////////
+			if (oAuthData.PRS === "X") {
+				oGlobalDataModel.setProperty("/prfitCentrGrp", "PRS");
+				this.byId("PRS").setSelected(true);
+			} else if (oAuthData.FTRS === "X") {
+				oGlobalDataModel.setProperty("/prfitCentrGrp", "FTRS");
+				this.byId("FTRS").setSelected(true);
+			} else if (oAuthData.CORP === "X") {
+				oGlobalDataModel.setProperty("/prfitCentrGrp", "CORP");
+				this.byId("CORP").setSelected(true);
+			} else if (totalRadioBtn === "X") {
+				oGlobalDataModel.setProperty("/prfitCentrGrp", "TOTAL");
+				this.byId("companytotal").setSelected(true);
+			} else {
+				oGlobalDataModel.setProperty("/prfitCentrGrp", "");
+			}
+
+			// var inputCompanyCode = this.byId("inputCompanyCode").getValue();
+			// this.totalRadioBtnCheck(inputCompanyCode);
+
+		},
+		totalRadioBtnCheck: function(sValue) {
+			var oAuthDataModel = this.getOwnerComponent().getModel("authData");
+			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
+			var oAuthData = oAuthDataModel.oData;
+			var compCode = [];
+			var compArr = [];
+			compArr = Object.entries(oAuthData); //// Convert Object Data into Array ////
+			for (var i = 0; i < compArr.length; i++) {
+				if (compArr[i][0].includes("TOTAL_") && compArr[i][1] === "X") {
+					var oCode = compArr[i][0].slice(6);
+					if (sValue === oCode) {
+						this.byId("companytotal").setVisible(true);
+						oGlobalDataModel.setProperty("/totalRadioBtnChk", "X");
+						break;
+					}
+				} else if (compArr[i][0].includes("TOTAL_") && compArr[i][1] === "") {
+					var oCode = compArr[i][0].slice(6);
+					if (sValue === oCode) {
+						this.byId("companytotal").setVisible(false);
+						oGlobalDataModel.setProperty("/totalRadioBtnChk", "");
+						break;
+					}
+				}
+			}
 		},
 		_updateGlobalDataModel: function() {
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
@@ -245,6 +301,9 @@ sap.ui.define([
 				sProperty = "/toDate";
 			}
 
+			/// 03.09.2024 Total Radio Btn Check based on Company Code 
+			this.totalRadioBtnCheck(sInputValue);
+
 			// Update the global data model property
 			if (sProperty) {
 				var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
@@ -283,11 +342,11 @@ sap.ui.define([
 					var pData = response.results.reverse();
 					console.log(pData);
 					sap.ui.core.BusyIndicator.hide();
-					
+
 					// set the ledger data 
 					var ocompanyCodeDataModel = that.getOwnerComponent().getModel("companyCodeData");
 					ocompanyCodeDataModel.setData(pData);
-					
+
 					// set the default input value in company code
 					var inputCompanyCode = that.byId("inputCompanyCode");
 					inputCompanyCode.setValue(pData[0].Companycode);
@@ -380,6 +439,9 @@ sap.ui.define([
 				var ledgerInput = this.byId(this._companyCodeInputId);
 				var newValue = oSelectedItem.getTitle();
 				ledgerInput.setValue(newValue);
+
+				this.totalRadioBtnCheck(newValue); //// Total Radio Btn Check
+				this.authorizationCheck();
 
 				var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
 				if (oGlobalDataModel) {
@@ -562,7 +624,7 @@ sap.ui.define([
 			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
 
 			/*var ledgrNo = new Filter('Rldnr', FilterOperator.EQ, oGlobalData.ledgrNo);*/
-			var cmpnyCode = new Filter('Bukrs', FilterOperator.EQ, '1100');
+			var cmpnyCode = new Filter('Bukrs', FilterOperator.EQ, oGlobalData.cmpnyCode);
 			var prfitCentrGrp = new Filter('PrctrGr', FilterOperator.EQ, oGlobalData.prfitCentrGrp);
 			var fromDate = new Filter('FmDate', FilterOperator.EQ, oGlobalData.fromDate);
 			var toDate = new Filter('ToDate', FilterOperator.EQ, oGlobalData.toDate);
@@ -635,14 +697,19 @@ sap.ui.define([
 						if (oAction === sap.m.MessageBox.Action.OK) {
 							// Clear input fields
 							/*that.byId("inputLedger").setValue("0L");*/
-							that.byId("inputCompanyCode").setValue("1100");
+							var ocompanyCodeDataModel = that.getOwnerComponent().getModel("companyCodeData");
+							var oCmpCodeData = ocompanyCodeDataModel.oData;
+							that.byId("inputCompanyCode").setValue(oCmpCodeData[0].Companycode); //// Authorization Change ////
+							that.totalRadioBtnCheck(oCmpCodeData[0].Companycode);
+							/////  Authorization Changes //////
+							that.authorizationCheck();
 							that.byId("fromDate").setValue("");
 							that.byId("toDate").setValue("");
 
 							// Deselect radio buttons
-							that.byId("PRS").setSelected(true);
-							that.byId("FTRS").setSelected(false);
-							that.byId("CORP").setSelected(false);
+							// that.byId("PRS").setSelected(true);
+							// that.byId("FTRS").setSelected(false);
+							// that.byId("CORP").setSelected(false);
 							/*that.byId("companytotal").setSelected(false);*/
 							that.byId("detailedlist").setSelected(true);
 							that.byId("summarylist").setSelected(false);
