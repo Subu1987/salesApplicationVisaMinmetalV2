@@ -29,6 +29,14 @@
 					"odataVersion": "2.0",
 					"localUri": "localService/ZFI_FCR_SSC_SRV/metadata.xml"
 				}
+			},
+			"authorizationService": {
+				"uri": "/sap/opu/odata/sap/ZFI_FCR_DEPT_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/ZFI_FCR_DEPT_SRV/metadata.xml"
+				}
 			}
 		}
 	},
@@ -93,6 +101,16 @@
 				"settings": {
 					"useBatch": false
 				}
+			},
+			"authorizationModel": {
+				"dataSource": "authorizationService",
+				"preload": true,
+				"settings": {
+					"useBatch": false
+				}
+			},
+			"authData": {
+				"type": "sap.ui.model.json.JSONModel"
 			},
 			"globalData": {
 				"type": "sap.ui.model.json.JSONModel"

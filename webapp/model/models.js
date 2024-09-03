@@ -11,6 +11,10 @@ sap.ui.define([
 			oModel.setDefaultBindingMode("OneWay");
 			return oModel;
 		}
+		/*createUserModel: function(){
+			var oModel = new JSONModel("/services/userapi/currentUser");
+			return oModel;
+		}*/
 
 	};
 });

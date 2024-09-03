@@ -16,7 +16,7 @@
 								<HBox direction="Column" width="18%">
 									<Label text="Company Code" design="Bold"/>
 									<Input id="inputCompanyCode" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
-										valueHelpRequest="handleValueCompanyCode" value="1100" required="true" liveChange="onLiveChange"/>
+										valueHelpRequest="handleValueCompanyCode" value="" required="true" liveChange="onLiveChange"/>
 								</HBox>
 								<HBox direction="Column" width="18%">
 									<Label text="From Date" design="Bold"/>
@@ -30,10 +30,10 @@
 							<FlexBox width="90%" id="RadioBtn" justifyContent="SpaceAround" class="radioBtnCssRound" alignItems="Center" visible="true">
 								<FlexBox>
 									<RadioButtonGroup id="company" columns="5" select="onRadioButtonSelectReports">
-										<RadioButton id="PRS" text="PRS"/>
-										<RadioButton id="FTRS" text="FTRS"/>
-										<RadioButton id="CORP" text="CORP"/>
-										<!--<RadioButton id="companytotal" text="TOTAL"/>-->
+										<RadioButton id="PRS" text="PRS"  visible="{= ${authData>/PRS} === 'X' ? true : false}"/>
+										<RadioButton id="FTRS" text="FTRS" visible="{= ${authData>/FTRS} === 'X' ? true : false}"/>
+										<RadioButton id="CORP" text="CORP" visible="{= ${authData>/CORP} === 'X' ? true : false}"/>
+										<RadioButton id="companytotal" text="TOTAL" visible="false"/>
 									</RadioButtonGroup>
 								</FlexBox>
 								<FlexBox>

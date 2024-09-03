@@ -26,6 +26,7 @@ sap.ui.define([
 			
 			// create the views based on url/hash
 			this.getRouter().initialize();
+			
 		}
 	});
 });

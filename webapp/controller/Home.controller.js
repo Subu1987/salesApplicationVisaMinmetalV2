@@ -5,8 +5,9 @@ sap.ui.define([
 	'sap/ui/model/json/JSONModel',
 	"sap/m/MessageBox",
 	"sap/viz/ui5/api/env/Format",
-	"com/infocus/bankFioriApp/libs/html2pdf.bundle"
-], function(BaseController, Filter, FilterOperator, JSONModel, MessageBox, Format, html2pdf_bundle) {
+	"com/infocus/bankFioriApp/libs/html2pdf.bundle",
+	"jquery.sap.global"
+], function(BaseController, Filter, FilterOperator, JSONModel, MessageBox, Format, html2pdf_bundle, jQuery) {
 	"use strict";
 
 	return BaseController.extend("com.infocus.bankFioriApp.controller.Home", {
@@ -14,24 +15,112 @@ sap.ui.define([
 		/*************** on Load Functions *****************/
 		onInit: function() {
 
-			this.oRouter = this.getOwnerComponent().getRouter();
-
-			// call the input parameters data
-			/*this.getLedgerParametersData();*/
-			this.getcompanyCodeParametersData();
+			// Initialize the user ID and other parameters
+			this._initializeAppData();
 
 			// Update the global data model
+			this._updateGlobalDataModel();
+
+			// Set up UI components visibility
+			this._columnVisible();
+
+		},
+		_initializeAppData: function() {
+			/*this.getLedgerParametersData();*/
+			/*this.getUserIdFromLoggedInUser();*/
+			this._getUserIdFromLoggedInUser();
+			this.getcompanyCodeParametersData();
+		},
+		_getUserIdFromLoggedInUser: function() {
+			var that = this;
+
+			// the application is running within the Fiori Launchpad
+			/*if (sap.ushell && sap.ushell.Container) {
+				sap.ushell.Container.getServiceAsync("UserInfo").then(function(UserInfo) {
+						var userId = UserInfo.getId();
+						console.log(UserInfo);
+						//var userId = "1000";
+						that._onGlobalUserIdSet(userId);
+					})
+					.catch(function(oError) {
+						MessageBox.error("Error retrieving ShellUIService: " + oError.message);
+						console.error("Error retrieving ShellUIService: ", oError);
+					});
+			} else {*/
+			// Fallback method using AJAX to call /sap/bc/ui2/start_up
+			jQuery.ajax({
+				url: "/sap/bc/ui2/start_up",
+				method: "GET",
+				success: function(data) {
+					var userId = data.id;
+					console.log("User ID from /sap/bc/ui2/start_up:", userId);
+					that._onGlobalUserIdSet(userId);
+				},
+				error: function(xhr, status, error) {
+					MessageBox.error("Error retrieving User ID via AJAX: " + status);
+					console.error("Error retrieving User ID via AJAX:", status, error);
+				}
+			});
+
+			/*}*/
+		},
+		_onGlobalUserIdSet: function(sUserId) {
+			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
+			if (oGlobalDataModel) {
+				oGlobalDataModel.setProperty("/userId", sUserId || "");
+
+				// Call userAuthSet after the userId is set
+				this.userAuthSet();
+			} else {
+				console.error("Global data model is not available.");
+			}
+		},
+		userAuthSet: function() {
+			var that = this;
+			var authorizationModel = this.getOwnerComponent().getModel("authorizationModel");
+			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
+			var oUrl = "/AUTHSet(UNAME='" + oGlobalData.userId + "')";
+
+			sap.ui.core.BusyIndicator.show();
+
+			authorizationModel.read(oUrl, {
+				urlParameters: {
+					"sap-client": "400"
+				},
+
+				success: function(response) {
+					var oData = response;
+					console.log(oData);
+
+					// Check if data is available
+					if (!oData || oData.length === 0) {
+						sap.ui.core.BusyIndicator.hide();
+						sap.m.MessageBox.information('There are no data available!');
+					} else {
+						var oAuthDataModel = that.getOwnerComponent().getModel("authData");
+						oAuthDataModel.setData(oData);
+						sap.ui.core.BusyIndicator.hide();
+					}
+
+				},
+				error: function(error) {
+					sap.ui.core.BusyIndicator.hide();
+					console.log(error);
+					var errorObject = JSON.parse(error.responseText);
+					sap.m.MessageBox.error(errorObject.error.message.value);
+				}
+			});
+		},
+		_updateGlobalDataModel: function() {
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
 			if (oGlobalDataModel) {
 				oGlobalDataModel.setProperty("/prfitCentrGrp", "PRS");
 				oGlobalDataModel.setProperty("/listFlag", "X");
 				oGlobalDataModel.setProperty("/togglePanelVisibility", "X");
 				oGlobalDataModel.setProperty("/pdfTableName", "Detailed List");
+			} else {
+				console.error("Global data model is not available.");
 			}
-
-			/*this._validateInputFields();*/
-			this._columnVisible();
-
 		},
 		_validateInputFields: function() {
 			var inputCompanyCode = this.byId("inputCompanyCode");
@@ -99,7 +188,6 @@ sap.ui.define([
 
 			return true;
 		},
-
 		formatDate: function(dateString) {
 			if (!dateString) {
 				console.error("Invalid Date String:", dateString);
@@ -142,7 +230,6 @@ sap.ui.define([
 				return null;
 			}
 		},
-
 		onLiveChange: function(oEvent) {
 			var oInput = oEvent.getSource();
 			var sInputId = oInput.getId();
@@ -193,12 +280,17 @@ sap.ui.define([
 					"sap-client": "400"
 				},
 				success: function(response) {
-					var pData = response.results;
+					var pData = response.results.reverse();
 					console.log(pData);
 					sap.ui.core.BusyIndicator.hide();
+					
 					// set the ledger data 
 					var ocompanyCodeDataModel = that.getOwnerComponent().getModel("companyCodeData");
 					ocompanyCodeDataModel.setData(pData);
+					
+					// set the default input value in company code
+					var inputCompanyCode = that.byId("inputCompanyCode");
+					inputCompanyCode.setValue(pData[0].Companycode);
 
 				},
 				error: function(error) {
@@ -379,7 +471,8 @@ sap.ui.define([
 			var sText;
 			/*if (sId === this.byId("splitViewSwitch").getId()) {
 				sText = "Split View";
-			} else*/ if (sId === this.byId("tabularDataSwitch").getId()) {
+			} else*/
+			if (sId === this.byId("tabularDataSwitch").getId()) {
 				sText = "Tabular Data";
 			} else if (sId === this.byId("chartDataSwitch").getId()) {
 				sText = "Chart Data";
@@ -479,7 +572,7 @@ sap.ui.define([
 
 			/*var bURL = "/ZFI_BANKBAL_SRV/ZFI_BANKSet?$filter=Bukrs eq '1100' and PrctrGr eq 'FTRS' and FmDate eq '20230401' and ToDate eq '20240515' and DET_FLAG eq 'X'";*/
 
-			var bURL = "/ZFI_BANK_GRSet";
+			var bURL = "/ZFI_BANKSet";
 
 			oModel.read(bURL, {
 				urlParameters: {
