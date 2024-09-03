@@ -95,38 +95,38 @@
 					<ScrollContainer horizontal="false" vertical="true" width="100%" height="auto">
 						<l:Splitter id="splitter" height="400px">
 							<Table headerText="{globalData>/prfitCentrGrp} Tabular Data(in Lacs) {globalData>/fromDate} - {globalData>/toDate}" id="dynamicTable"
-								items="{listData>/}" fixedLayout="true" width="auto" class="pdfTable">
+								items="{listData>/}" fixedLayout="true" width="auto" class="pdfTable boldText">
 								<columns>
 									<Column width="80px" visible="{columnVisible>/glAcct}">
-										<Text text="GL"/>
+										<Text text="GL" class="boldText"/>
 									</Column>
 									<Column width="250px" visible="{columnVisible>/glAcctLongText}">
-										<Text text="GL Description"/>
+										<Text text="GL Description" class="boldText"/>
 									</Column>
 									<Column width="50px" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? true : false }">
-										<Text text="Chart"/>
+										<Text text="Chart" class="boldText"/>
 									</Column>
 									<Column width="80px">
-										<Text text="Opening Balance"/>
+										<Text text="Opening Balance" class="boldText"/>
 									</Column>
 									<Column width="80px">
-										<Text text="Incoming Balance(DR.)"/>
+										<Text text="Incoming Balance(DR.)" class="boldText"/>
 									</Column>
 									<Column width="80px">
-										<Text text="Outgoing Balance(CR.)"/>
+										<Text text="Outgoing Balance(CR.)" class="boldText"/>
 									</Column>
 									<Column width="80px">
-										<Text text="Closing Balance"/>
+										<Text text="Closing Balance" class="boldText"/>
 									</Column>
 									<Column width="50px" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? false : true }">
-										<Text text="Chart"/>
+										<Text text="Chart" class="boldText"/>
 									</Column>
 								</columns>
 								<items>
 									<ColumnListItem class="sapMListTblRow">
 										<cells>
-											<Text text="{listData>Hkont}"/>
-											<Text text="{listData>GlText}"/>
+											<Text text="{listData>Hkont}" class="boldText"/>
+											<Text text="{listData>GlText}" class="boldText"/>
 											<Button id="chartButton1" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>
 											<Text text="{listData>OpenBal}"/>
 											<Text text="{listData>IncomBal}"/>

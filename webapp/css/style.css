@@ -96,3 +96,31 @@
     padding: 0;
     /* Remove any padding */
 }
+.pdfTable td {
+    border: 1px solid #c0c4cc;
+    padding: 8px;
+    text-align: left;
+}
+ 
+.pdfTable th {
+    background-color: #91c8f6;
+    font-weight: bold;
+}
+.sapMBtnInner{
+
+	border: none !important;
+
+}
+ 
+.highlightedRow {
+
+    background-color: #5fb2f7 !important;
+
+}
+ 
+.boldText {
+
+    font-weight: bold !important;
+
+}
+ 
