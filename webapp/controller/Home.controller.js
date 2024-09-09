@@ -806,7 +806,7 @@ sap.ui.define([
 		},
 		extractData: function(obj) {
 			var result = [];
-			var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+			var months = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
 
 			// Combine incoming and outgoing balances for each month
 			for (var i = 0; i < 12; i++) {
