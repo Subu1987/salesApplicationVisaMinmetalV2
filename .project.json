@@ -145,8 +145,8 @@
     ]
   },
   "mockpreview": {
-    "mockUri": "/sap/opu/odata/sap/ZFI_BANKBAL_SRV",
-    "metadataFilePath": "",
+    "mockUri": "/sap/opu/odata/sap/ZFI_BANKBAL_SRV/",
+    "metadataFilePath": "localService/ZFI_BANKBAL_SRV/metadata.xml",
     "loadJSONFiles": false,
     "loadCustomRequests": false,
     "mockRequestsFilePath": ""

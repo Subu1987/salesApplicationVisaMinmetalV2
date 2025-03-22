@@ -1,54 +1,42 @@
 <mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core"
 	xmlns:f="sap.ui.layout.form" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
-	xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.bankFioriApp.controller.Home">
-	<Page id="page" title="Bank Balance Application" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false">
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.salesApplication.controller.Home">
+	<Page id="page" title="Sales Application" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false">
 		<content>
 			<Panel id="panelForm" headerText="" class="sapUiResponsiveMargin border-lineRadius" expandable="true" expanded="true" width="auto">
 				<content>
 					<FlexBox width="100%" id="panelFormBox" height="auto" justifyContent="Center" direction="Column" alignItems="Center">
 						<items>
-							<FlexBox width="90%" direction="Row" height="auto" id="tripView" wrap="Wrap" justifyContent="SpaceAround" alignItems="Center" visible="true">
-								<HBox direction="Column" width="18%">
-									<Label text="Ledger" design="Bold"/>
-									<Input id="inputLedger" editable="false" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="false"
-										valueHelpRequest="handleValueLedger" value="0L" required="true" liveChange="onLiveChange"/>
-								</HBox>
-								<HBox direction="Column" width="18%">
-									<Label text="Company Code" design="Bold"/>
-									<Input id="inputCompanyCode" class="sapUiSmallMarginBottom" type="Text" placeholder="Enter Value" showValueHelp="true"
-										valueHelpRequest="handleValueCompanyCode" value="" required="true" liveChange="onLiveChange"/>
-								</HBox>
-								<HBox direction="Column" width="18%">
-									<Label text="From Date" design="Bold"/>
-									<DatePicker id="fromDate" displayFormat="long" value="" class="round sapUiSmallMarginBottom"/>
-								</HBox>
-								<HBox direction="Column" width="18%">
-									<Label text="To Date" design="Bold"/>
-									<DatePicker id="toDate" displayFormat="long" value="" class="round sapUiSmallMarginBottom"/>
-								</HBox>
+							<!-- Radio Button Section -->
+							<FlexBox width="90%" id="RadioBtn" wrap="Wrap" justifyContent="Center" class="radioBtnCssRound" alignItems="Center" visible="true">
+								<RadioButtonGroup id="list" columns="4" select="onRadioButtonSelectList">
+									<RadioButton id="detailedlist" text="Top 10 Customer Quarterly Wise"/>
+									<RadioButton id="summarylist" text="Single Customer Quarterly Wise"/>
+									<RadioButton id="ssummarylist" text="Others Customer Quarterly Wise"/>
+									<RadioButton id="ssumsmarylist" text="Quarterly Turnover"/>
+								</RadioButtonGroup>
 							</FlexBox>
-							<FlexBox width="90%" id="RadioBtn" justifyContent="SpaceAround" class="radioBtnCssRound" alignItems="Center" visible="true">
-								<FlexBox>
-									<RadioButtonGroup id="company" columns="5" select="onRadioButtonSelectReports">
-										<RadioButton id="PRS" text="PRS"  visible="{= ${authData>/PRS} === 'X' ? true : false}"/>
-										<RadioButton id="FTRS" text="FTRS" visible="{= ${authData>/FTRS} === 'X' ? true : false}"/>
-										<RadioButton id="CORP" text="CORP" visible="{= ${authData>/CORP} === 'X' ? true : false}"/>
-										<RadioButton id="companytotal" text="TOTAL" visible="false"/>
-									</RadioButtonGroup>
-								</FlexBox>
-								<FlexBox>
-									<RadioButtonGroup id="list" columns="5" select="onRadioButtonSelectList">
-										<RadioButton id="detailedlist" text="Detailed List"/>
-										<RadioButton id="summarylist" text="Summary List"/>
-									</RadioButtonGroup>
-								</FlexBox>
-								<FlexBox>
-									<Button id="searchData" icon="sap-icon://search" text="" iconFirst="false" type="Emphasized" class="sapUiTinyMarginEnd smallIcon"
-										press="getListData"/>
-									<Button id="downloadPdfBtn" enabled="false" icon="sap-icon://pdf-attachment" text="" iconFirst="false" type="Emphasized"
-										class="sapUiTinyMarginEnd smallIcon" press="onDownloadPDF"/>
-									<Button id="clearData" icon="sap-icon://decline" text="" iconFirst="false" type="Emphasized" class="smallIcon" press="clearListData"/>
-								</FlexBox>
+							<!-- Input Fields Section -->
+							<FlexBox width="90%" id="tripView" wrap="NoWrap" justifyContent="SpaceAround" class="sapUiSmallMarginTop" alignItems="Center" visible="true">
+								<HBox direction="Row" width="100%" justifyContent="SpaceBetween">
+									<HBox direction="Column">
+										<Label text="From Date" design="Bold"/>
+										<DatePicker id="fromDate" displayFormat="long" class="round sapUiSmallMarginBottom"/>
+									</HBox>
+									<HBox direction="Column">
+										<Label text="To Date" design="Bold"/>
+										<DatePicker id="toDate" displayFormat="long" class="round sapUiSmallMarginBottom"/>
+									</HBox>
+									<HBox direction="Column">
+										<Label text="Financial Year" design="Bold"/>
+										<Input id="inputLedger" editable="true" type="Text" placeholder="Enter Value" showValueHelp="true" valueHelpRequest="handleValueCompanyCode" value="2024-25" required="true" liveChange="onLiveChange"/>
+									</HBox>
+									<HBox direction="Column">
+										<Label text="Quarter" design="Bold"/>
+										<Input id="inputCompanyCode" type="Text" placeholder="Enter Value" showValueHelp="true" valueHelpRequest="handleValueCompanyCode"
+											required="true" liveChange="onLiveChange"/>
+									</HBox>
+								</HBox>
 							</FlexBox>
 						</items>
 					</FlexBox>

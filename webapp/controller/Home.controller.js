@@ -1,16 +1,16 @@
 sap.ui.define([
-	"com/infocus/bankFioriApp/controller/BaseController",
+	"com/infocus/salesApplication/controller/BaseController",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	'sap/ui/model/json/JSONModel',
 	"sap/m/MessageBox",
 	"sap/viz/ui5/api/env/Format",
-	"com/infocus/bankFioriApp/libs/html2pdf.bundle",
+	"com/infocus/salesApplication/libs/html2pdf.bundle",
 	"jquery.sap.global"
 ], function(BaseController, Filter, FilterOperator, JSONModel, MessageBox, Format, html2pdf_bundle, jQuery) {
 	"use strict";
 
-	return BaseController.extend("com.infocus.bankFioriApp.controller.Home", {
+	return BaseController.extend("com.infocus.salesApplication.controller.Home", {
 
 		/*************** on Load Functions *****************/
 		onInit: function() {
@@ -142,13 +142,13 @@ sap.ui.define([
 			// this.totalRadioBtnCheck(inputCompanyCode);
 
 		},
-		totalRadioBtnCheck: function(sValue) {
+		/*totalRadioBtnCheck: function(sValue) {
 			var oAuthDataModel = this.getOwnerComponent().getModel("authData");
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
 			var oAuthData = oAuthDataModel.oData;
 			var compCode = [];
 			var compArr = [];
-			compArr = Object.entries(oAuthData); //// Convert Object Data into Array ////
+			compArr = Object.entries(oAuthData);
 			for (var i = 0; i < compArr.length; i++) {
 				if (compArr[i][0].includes("TOTAL_") && compArr[i][1] === "X") {
 					var oCode = compArr[i][0].slice(6);
@@ -166,7 +166,7 @@ sap.ui.define([
 					}
 				}
 			}
-		},
+		},*/
 		_updateGlobalDataModel: function() {
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
 			if (oGlobalDataModel) {
@@ -397,7 +397,7 @@ sap.ui.define([
 			this._companyCodeInputId = oEvent.getSource().getId();
 			// open fragment
 			if (!this.oOpenDialogComapanyCode) {
-				this.oOpenDialogComapanyCode = sap.ui.xmlfragment("com.infocus.bankFioriApp.view.dialogComponent.DialogComapanyCode", this);
+				this.oOpenDialogComapanyCode = sap.ui.xmlfragment("com.infocus.salesApplication.view.dialogComponent.DialogComapanyCode", this);
 				this.getView().addDependent(this.oOpenDialogComapanyCode);
 			}
 			this.oOpenDialogComapanyCode.open();
@@ -406,7 +406,7 @@ sap.ui.define([
 			this._ledgerInputId = oEvent.getSource().getId();
 			// open fragment
 			if (!this.oOpenDialogLedger) {
-				this.oOpenDialogLedger = sap.ui.xmlfragment("com.infocus.bankFioriApp.view.dialogComponent.DialogLedger", this);
+				this.oOpenDialogLedger = sap.ui.xmlfragment("com.infocus.salesApplication.view.dialogComponent.DialogLedger", this);
 				this.getView().addDependent(this.oOpenDialogLedger);
 			}
 			this.oOpenDialogLedger.open();

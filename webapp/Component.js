@@ -1,12 +1,12 @@
 sap.ui.define([
 	"sap/ui/core/UIComponent",
 	"sap/ui/Device",
-	"com/infocus/bankFioriApp/model/models",
+	"com/infocus/salesApplication/model/models",
 	"sap/ui/model/json/JSONModel"
 ], function(UIComponent, Device, models, JSONModel) {
 	"use strict";
 
-	return UIComponent.extend("com.infocus.bankFioriApp.Component", {
+	return UIComponent.extend("com.infocus.salesApplication.Component", {
 
 		metadata: {
 			manifest: "json"

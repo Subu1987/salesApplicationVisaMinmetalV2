@@ -1,10 +1,10 @@
 sap.ui.define([
-	"com/infocus/bankFioriApp/controller/BaseController",
+	"com/infocus/salesApplication/controller/BaseController",
 	"sap/ui/model/json/JSONModel"
 ], function(BaseController, JSONModel) {
 	"use strict";
 
-	return BaseController.extend("com.infocus.bankFioriApp.controller.Chart", {
+	return BaseController.extend("com.infocus.salesApplication.controller.Chart", {
 		onInit: function() {
 			
 			var oListDataModel = this.getOwnerComponent().getModel("listData");

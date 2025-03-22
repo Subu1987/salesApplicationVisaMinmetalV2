@@ -1,7 +1,7 @@
 {
 	"_version": "1.7.0",
 	"sap.app": {
-		"id": "com.infocus.bankFioriApp",
+		"id": "com.infocus.salesApplication",
 		"type": "application",
 		"i18n": "i18n/i18n.properties",
 		"applicationVersion": {
@@ -62,7 +62,7 @@
 	},
 	"sap.ui5": {
 		"rootView": {
-			"viewName": "com.infocus.bankFioriApp.view.App",
+			"viewName": "com.infocus.salesApplication.view.App",
 			"type": "XML"
 		},
 		"dependencies": {
@@ -85,7 +85,7 @@
 			"i18n": {
 				"type": "sap.ui.model.resource.ResourceModel",
 				"settings": {
-					"bundleName": "com.infocus.bankFioriApp.i18n.i18n"
+					"bundleName": "com.infocus.salesApplication.i18n.i18n"
 				}
 			},
 			"": {
@@ -150,7 +150,7 @@
 				"routerClass": "sap.m.routing.Router",
 				"viewType": "XML",
 				"async": true,
-				"viewPath": "com.infocus.bankFioriApp.view",
+				"viewPath": "com.infocus.salesApplication.view",
 				"controlId": "app",
 				"controlAggregation": "pages",
 				"clearAggregation": false
