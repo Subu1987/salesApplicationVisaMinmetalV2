@@ -14,30 +14,6 @@
 			"version": "0.0.0"
 		},
 		"dataSources": {
-			"mainService": {
-				"uri": "/sap/opu/odata/sap/ZFI_BANKBAL_SRV/",
-				"type": "OData",
-				"settings": {
-					"odataVersion": "2.0",
-					"localUri": "localService/ZFI_BANKBAL_SRV/metadata.xml"
-				}
-			},
-			"parameterService": {
-				"uri": "/sap/opu/odata/sap/ZFI_FCR_SSC_SRV/",
-				"type": "OData",
-				"settings": {
-					"odataVersion": "2.0",
-					"localUri": "localService/ZFI_FCR_SSC_SRV/metadata.xml"
-				}
-			},
-			"authorizationService": {
-				"uri": "/sap/opu/odata/sap/ZFI_FCR_DEPT_SRV/",
-				"type": "OData",
-				"settings": {
-					"odataVersion": "2.0",
-					"localUri": "localService/ZFI_FCR_DEPT_SRV/metadata.xml"
-				}
-			}
 		}
 	},
 	"sap.ui": {
@@ -86,27 +62,6 @@
 				"type": "sap.ui.model.resource.ResourceModel",
 				"settings": {
 					"bundleName": "com.infocus.salesApplication.i18n.i18n"
-				}
-			},
-			"": {
-				"dataSource": "mainService",
-				"preload": true,
-				"settings": {
-					"useBatch": false
-				}
-			},
-			"parameterModel": {
-				"dataSource": "parameterService",
-				"preload": true,
-				"settings": {
-					"useBatch": false
-				}
-			},
-			"authorizationModel": {
-				"dataSource": "authorizationService",
-				"preload": true,
-				"settings": {
-					"useBatch": false
 				}
 			},
 			"authData": {

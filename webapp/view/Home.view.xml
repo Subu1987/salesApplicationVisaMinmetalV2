@@ -5,36 +5,44 @@
 		<content>
 			<Panel id="panelForm" headerText="" class="sapUiResponsiveMargin border-lineRadius" expandable="true" expanded="true" width="auto">
 				<content>
-					<FlexBox width="100%" id="panelFormBox" height="auto" justifyContent="Center" direction="Column" alignItems="Center">
+					<FlexBox id="panelFormBox" direction="Row" width="100%" height="auto" justifyContent="Center" alignItems="Center">
 						<items>
 							<!-- Radio Button Section -->
-							<FlexBox width="90%" id="RadioBtn" wrap="Wrap" justifyContent="Center" class="radioBtnCssRound" alignItems="Center" visible="true">
-								<RadioButtonGroup id="list" columns="4" select="onRadioButtonSelectList">
-									<RadioButton id="detailedlist" text="Top 10 Customer Quarterly Wise"/>
-									<RadioButton id="summarylist" text="Single Customer Quarterly Wise"/>
-									<RadioButton id="ssummarylist" text="Others Customer Quarterly Wise"/>
-									<RadioButton id="ssumsmarylist" text="Quarterly Turnover"/>
+							<FlexBox width="100%" id="RadioBtn" wrap="Wrap" justifyContent="Center" class="radioBtnCssRound" alignItems="Center" visible="true">
+								<RadioButtonGroup id="radioBtnlist" columns="6" select="onRadioButtonSelectList">
+									<RadioButton id="fiscalYearWise" text="Fiscal Year Wise"/>
+									<RadioButton id="quaterlyWise" text="Quaterly Wise"/>
 								</RadioButtonGroup>
 							</FlexBox>
 							<!-- Input Fields Section -->
-							<FlexBox width="90%" id="tripView" wrap="NoWrap" justifyContent="SpaceAround" class="sapUiSmallMarginTop" alignItems="Center" visible="true">
-								<HBox direction="Row" width="100%" justifyContent="SpaceBetween">
-									<HBox direction="Column">
-										<Label text="From Date" design="Bold"/>
-										<DatePicker id="fromDate" displayFormat="long" class="round sapUiSmallMarginBottom"/>
+							<FlexBox width="100%" id="tripView" wrap="NoWrap" justifyContent="Center" alignItems="Center">
+								<HBox direction="Row" width="100%" justifyContent="Center" alignItems="Center">
+									
+									<!-- Customer Input -->
+									<HBox id="customerInputBox" direction="Column" alignItems="Center" visible="false">
+										<Label text="Customer" design="Bold"/>
+										<Input id="_customerInputId" type="Text" placeholder="eg.2023,2024,2025" required="true" liveChange="onLiveChange"/>
 									</HBox>
-									<HBox direction="Column">
-										<Label text="To Date" design="Bold"/>
-										<DatePicker id="toDate" displayFormat="long" class="round sapUiSmallMarginBottom"/>
+									<!-- Financial Year Input -->
+									<HBox id="fiscalYearBox" direction="Column" alignItems="Center" visible="true" class="sapUiTinyMarginBegin">
+										<Label text="Fiscal Year" design="Bold"/>
+										<Input id="_financialYearInputId" type="Text" placeholder="eg.2023,2024,2025" showValueHelp="true" valueHelpRequest="handleValueFiscalYear" required="true" liveChange="onLiveChange"/>
 									</HBox>
-									<HBox direction="Column">
-										<Label text="Financial Year" design="Bold"/>
-										<Input id="inputLedger" editable="true" type="Text" placeholder="Enter Value" showValueHelp="true" valueHelpRequest="handleValueCompanyCode" value="2024-25" required="true" liveChange="onLiveChange"/>
+									<!-- Financial Quarter Input -->
+									<HBox id="quarterBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
+										<Label text="Fiscal Quarter" design="Bold"/>
+										<Input id="_quarterInputId" type="Text" placeholder="Enter Value" showValueHelp="true" valueHelpRequest="handleValueQuarter" required="true"
+											liveChange="onLiveChange"/>
 									</HBox>
-									<HBox direction="Column">
-										<Label text="Quarter" design="Bold"/>
-										<Input id="inputCompanyCode" type="Text" placeholder="Enter Value" showValueHelp="true" valueHelpRequest="handleValueCompanyCode"
-											required="true" liveChange="onLiveChange"/>
+									<!-- Quarter Year Input -->
+									<HBox id="quarterYearBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
+										<Label text="Quarter Year" design="Bold"/>
+										<Input id="_quarterInputYearId" type="Text" placeholder="Enter Value" showValueHelp="true" valueHelpRequest="handleValueQuarterYear" required="true" liveChange="onLiveChange"/>
+									</HBox>
+									<!-- Action Buttons (Search and Clear) -->
+									<HBox id="buttonBox" direction="Row" justifyContent="Center" alignItems="Center" class="sapUiSmallMarginTop">
+										<Button id="searchData" icon="sap-icon://sales-order" type="Emphasized" press="getListData" class="sapUiTinyMarginBegin"/>
+										<Button id="clearData" icon="sap-icon://delete" type="Emphasized" press="clearListData" class="sapUiTinyMarginBegin"/>
 									</HBox>
 								</HBox>
 							</FlexBox>
@@ -49,16 +57,8 @@
 							<HBox id="tableTilte" justifyContent="Center" alignItems="Center" class="sapUiTinyMarginBeginEnd">
 								<Title text="{globalData>/prfitCentrGrp}" level="H1" titleStyle="Auto" class="boldText"/>
 							</HBox>
-							<HBox id="tableSwitchBtn" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? true : true }" justifyContent="Center"
+							<!--<HBox id="tableSwitchBtn" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? true : true }" justifyContent="Center"
 								alignItems="Center" class="sapUiTinyMarginBeginEnd">
-								<!--<VBox alignItems="Center" justifyContent="Center" class="sapUiTinyMarginBeginEnd">
-									<Label text="Split View" design="Bold"/>
-								</VBox>
-								<Switch id="splitViewSwitch" change="onTabularToChartChanged" state="false" enabled="false">
-									<layoutData>
-										<FlexItemData growFactor="1"/>
-									</layoutData>
-								</Switch>-->
 								<VBox alignItems="Center" justifyContent="Center" class="sapUiTinyMarginBeginEnd">
 									<Label text="Tabular Data" design="Bold"/>
 								</VBox>
@@ -75,113 +75,88 @@
 										<FlexItemData growFactor="1"/>
 									</layoutData>
 								</Switch>
-							</HBox>
+							</HBox>-->
 						</FlexBox>
 					</Toolbar>
 				</headerToolbar>
 				<content>
-					<ScrollContainer horizontal="false" vertical="true" width="100%" height="auto">
-						<l:Splitter id="splitter" height="400px">
-							<Table headerText="{globalData>/prfitCentrGrp} Tabular Data(in Lacs) {globalData>/fromDate} - {globalData>/toDate}" id="dynamicTable"
-								items="{listData>/}" fixedLayout="true" width="auto" class="pdfTable boldText">
-								<columns>
-									<Column width="80px" visible="{columnVisible>/glAcct}">
-										<Text text="GL" class="boldText"/>
-									</Column>
-									<Column width="250px" visible="{columnVisible>/glAcctLongText}">
-										<Text text="GL Description" class="boldText"/>
-									</Column>
-									<Column width="50px" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? true : false }">
-										<Text text="Chart" class="boldText"/>
-									</Column>
-									<Column width="80px">
-										<Text text="Opening Balance" class="boldText"/>
-									</Column>
-									<Column width="80px">
-										<Text text="Incoming Balance(DR.)" class="boldText"/>
-									</Column>
-									<Column width="80px">
-										<Text text="Outgoing Balance(CR.)" class="boldText"/>
-									</Column>
-									<Column width="80px">
-										<Text text="Closing Balance" class="boldText"/>
-									</Column>
-									<Column width="50px" visible="{= ${globalData>/togglePanelVisibility} === 'X' ? false : true }">
-										<Text text="Chart" class="boldText"/>
-									</Column>
-								</columns>
-								<items>
-									<ColumnListItem class="sapMListTblRow">
-										<cells>
-											<Text text="{listData>Hkont}" class="boldText"/>
-											<Text text="{listData>GlText}" class="boldText"/>
-											<Button id="chartButton1" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>
-											<Text text="{listData>OpenBal}"/>
-											<Text text="{listData>IncomBal}"/>
-											<Text text="{listData>OutgoBal}"/>
-											<Text text="{listData>CloseBal}"/>
-											<Button id="chartButton2" class="chartButton" icon="sap-icon://vertical-bar-chart" text="" press="onChartButtonPress"/>
-										</cells>
-									</ColumnListItem>
-								</items>
-								<layoutData>
-									<l:SplitterLayoutData id="splitterLayoutData1" size="{= ${globalData>/togglePanelVisibility} === 'X' ? '0%' : '50%' }" resizable="false"/>
-								</layoutData>
-							</Table>
-							<Panel id="chartPanel" width="100%" height="100%">
-								<FlexBox direction="Row" justifyContent="SpaceBetween" alignItems="Center">
-									<!--<RadioButtonGroup id="onSelectChartType" columns="5" select="onSelectChartType">
-										<RadioButton id="columnChart" text="Column Chart"/>
-										<RadioButton id="pieChart" text="Pie Chart"/>
-										<RadioButton id="lineChart" text="Line Chart"/>
-										<RadioButton id="donutChart" text="Donut Chart"/>
-									</RadioButtonGroup>-->
-									<FlexBox direction="Row" justifyContent="Center" alignItems="Start">
-										<Label text="Column Chart" design="Bold" class="balanceText"/>
-										<Label text="(In Lacs)" design="Bold" class="balanceText"/>
-									</FlexBox>
-									<FlexBox direction="Row" justifyContent="Center" alignItems="Start">
-										<FlexBox direction="Row" alignItems="Center">
-											<core:Icon class="incomingCircle"/>
-											<Label text="Incoming Balance" class="balanceText" design="Bold"/>
-										</FlexBox>
-										<FlexBox direction="Row" alignItems="Center" class="sapUiTinyMarginBegin">
-											<core:Icon class="outgoingCircle"/>
-											<Label text="Outgoing Balance" class="balanceText" design="Bold"/>
-										</FlexBox>
-									</FlexBox>
-								</FlexBox>
-								<chart:ChartContainer showLegend="false" showLegendButton="false" autoAdjustHeight="true" id="chartContainer" showFullScreen="true" title="">
-									<chart:ChartContainerContent icon="sap-icon://horizontal-stacked-chart" title="Stacked_bar Chart">
-										<chart:content>
-											<viz:VizFrame id="oVizFrame" busy="false" busyIndicatorDelay="1000" visible="true"
-												vizProperties="{ plotArea: { drawingEffect: 'glossy' }, dataLabel: { visible: true, showTotal: true }, interaction: { selectability: { mode: 'none' }}}"
-												uiConfig="{ 'applicationSet': 'fiori' }" vizType="column">
-												<viz:dataset>
-													<viz.data:FlattenedDataset data="{chartData>/}">
-														<viz.data:dimensions>
-															<viz.data:DimensionDefinition name="Month" value="{chartData>Month}"/>
-														</viz.data:dimensions>
-														<viz.data:measures>
-															<viz.data:MeasureDefinition group="1" name="Incoming" value="{chartData>IncomingBalance}"/>
-															<viz.data:MeasureDefinition group="1" name="Outgoing" value="{chartData>OutgoingBalance}"/>
-														</viz.data:measures>
-													</viz.data:FlattenedDataset>
-												</viz:dataset>
-												<viz:feeds>
-													<viz.feeds:FeedItem id="valueAxis1" uid="valueAxis" type="Measure" values="Incoming,Outgoing"/>
-													<viz.feeds:FeedItem id="categoryAxis" uid="categoryAxis" type="Dimension" values="Month"/>
-												</viz:feeds>
-											</viz:VizFrame>
-										</chart:content>
-									</chart:ChartContainerContent>
-								</chart:ChartContainer>
-								<layoutData>
-									<l:SplitterLayoutData id="splitterLayoutData2" size="{= ${globalData>/togglePanelVisibility} === 'X' ? '100%' : '50%' }" resizable="false"/>
-								</layoutData>
-							</Panel>
-						</l:Splitter>
-					</ScrollContainer>
+					<!-- IconTabBar for switching between scenarios -->
+					<IconTabBar id="iconTabBar" selectedKey="scenario1" select="onTabSelect">
+						<items>
+							<!-- Scenario 1 -->
+							<IconTabFilter key="scenario1" text="Top 10 Customer Quarterly Wise" icon="sap-icon://group" tooltip="Top 10 Customer Quarterly Wise">
+								<content>
+									<VBox visible="{globalData>/isTableFragment1Visible}">
+										<core:Fragment id="tableFragment1" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment1" type="XML"/>
+									</VBox>
+									<VBox visible="{globalData>/isTableFragment2Visible}">
+										<core:Fragment id="tableFragment2" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment2" type="XML"/>
+									</VBox>
+									<!--<VBox visible="{globalData>/isChartFragment1Visible}">
+										<core:Fragment id="chartFragment1" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment1" type="XML"/>
+									</VBox>
+									<VBox visible="{globalData>/isChartFragment2Visible}">
+										<core:Fragment id="chartFragment2" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment2" type="XML"/>
+									</VBox>-->
+								</content>
+							</IconTabFilter>
+							<!-- Scenario 2 -->
+							<IconTabSeparator />
+							<IconTabFilter key="scenario2" text="Single Customer Quarterly Wise" icon="sap-icon://customer" tooltip="Single Customer Quarterly Wise">
+								<content>
+									<VBox visible="{globalData>/isTableFragment3Visible}">
+										<core:Fragment id="tableFragment3" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment3" type="XML"/>
+									</VBox>
+									<VBox visible="{globalData>/isTableFragment4Visible}">
+										<core:Fragment id="tableFragment4" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment4" type="XML"/>
+									</VBox>
+									<!--<VBox visible="{globalData>/isChartFragment3Visible}">
+										<core:Fragment id="chartFragment3" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment3" type="XML"/>
+									</VBox>
+									<VBox visible="{globalData>/isChartFragment4Visible}">
+										<core:Fragment id="chartFragment4" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment4" type="XML"/>
+									</VBox>-->
+								</content>
+							</IconTabFilter>
+							<!-- Scenario 3 -->
+							<IconTabSeparator />
+							<IconTabFilter key="scenario3" text="All Customer Quarterly Wise" icon="sap-icon://employee-lookup" tooltip="All Customer Quarterly Wise">
+								<content>
+									<VBox visible="{globalData>/isTableFragment5Visible}">
+										<core:Fragment id="tableFragment5" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment5" type="XML"/>
+									</VBox>
+									<VBox visible="{globalData>/isTableFragment6Visible}">
+										<core:Fragment id="tableFragment6" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment6" type="XML"/>
+									</VBox>
+									<!--<VBox visible="{globalData>/isChartFragment5Visible}">
+										<core:Fragment id="chartFragment5" fragmentName="com.infocus.salesApplication.view.ChartFragment5" type="XML"/>
+									</VBox>
+									<VBox visible="{globalData>/isChartFragment6Visible}">
+										<core:Fragment id="chartFragment6" fragmentName="com.infocus.salesApplication.view.ChartFragment6" type="XML"/>
+									</VBox>-->
+								</content>
+							</IconTabFilter>
+							<!-- Scenario 4 -->
+							<IconTabSeparator />
+							<IconTabFilter key="scenario4" text="Quarterly Wise Turnover" icon="sap-icon://customer-financial-fact-sheet"
+								tooltip="Quarterly Wise Turnover">
+								<content>
+									<VBox visible="{globalData>/isTableFragment7Visible}">
+										<core:Fragment id="tableFragment7" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment7" type="XML"/>
+									</VBox>
+									<VBox visible="{globalData>/isTableFragment8Visible}">
+										<core:Fragment id="tableFragment8" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment8" type="XML"/>
+									</VBox>
+									<!--<VBox visible="{globalData>/isChartFragment7Visible}">
+										<core:Fragment id="chartFragment7" fragmentName="com.infocus.salesApplication.view.ChartFragment7" type="XML"/>
+									</VBox>
+									<VBox visible="{globalData>/isChartFragment8Visible}">
+										<core:Fragment id="chartFragment8" fragmentName="com.infocus.salesApplication.view.ChartFragment8" type="XML"/>
+									</VBox>-->
+								</content>
+							</IconTabFilter>
+						</items>
+					</IconTabBar>
 				</content>
 			</Panel>
 		</content>

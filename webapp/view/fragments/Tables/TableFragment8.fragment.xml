@@ -1,0 +1,29 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:table="sap.ui.table">
+	<Table headerText="" id="dynamicTable1" items="{listData>/}" fixedLayout="true" width="auto"
+		class="pdfTable boldText">
+		<columns>
+			<!--<Column width="auto" visible="true">
+				<Text text="Customer Name" class="boldText"/>
+			</Column>-->
+			<Column width="auto" visible="true">
+				<Text text="Quarter" class="boldText"/>
+			</Column>
+			<Column width="auto" visible="true">
+				<Text text="Quarter Year" class="boldText"/>
+			</Column>
+			<Column width="auto">
+				<Text text="Turn Over" class="boldText"/>
+			</Column>
+		</columns>
+		<items>
+			<ColumnListItem class="sapMListTblRow">
+				<cells>
+					<Text text="{listData>customerName}" class="boldText"/>
+					<Text text="{listData>quaterYear}" class="boldText"/>
+					<Text text="{listData>quater}"/>
+					<Text text="{listData>turnover}"/>
+				</cells>
+			</ColumnListItem>
+		</items>
+	</Table>
+</core:FragmentDefinition>

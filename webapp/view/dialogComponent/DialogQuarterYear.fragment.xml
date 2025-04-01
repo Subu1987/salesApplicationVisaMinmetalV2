@@ -1,16 +1,16 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
     <SelectDialog
-        id="fiscalYearDialog"
-        title="Select Fiscal Year"
-        search="_handleFiscalYearSearch"
-        confirm="_handleFiscalYearClose"
-        cancel="_handleFiscalYearClose"
+        id="quarterYearDialog"
+        title="Select Quarter Year"
+        search="_handleQuarterYearSearch"
+        confirm="_handleQuarterYearClose"
+        cancel="_handleQuarterYearClose"
         multiSelect="true"
         contentWidth="auto"
         class="sapUiPopupWithPadding">
         
         <items>
-            <!-- Creating Fiscal Year Options from 2015 to 2030 -->
+            <!-- Creating Quarter Year Options from 2015 to 2030 -->
             <StandardListItem title="2015" type="Active"/>
             <StandardListItem title="2016" type="Active"/>
             <StandardListItem title="2017" type="Active"/>

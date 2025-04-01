@@ -16,7 +16,7 @@ sap.ui.define([
 		onInit: function() {
 
 			// Initialize the user ID and other parameters
-			this._initializeAppData();
+			/*this._initializeAppData();*/
 
 			// Update the global data model
 			this._updateGlobalDataModel();
@@ -393,23 +393,33 @@ sap.ui.define([
 
 		/*************** set the inputId & create the fragment *****************/
 
-		handleValueCompanyCode: function(oEvent) {
-			this._companyCodeInputId = oEvent.getSource().getId();
+		
+		handleValueFiscalYear: function(oEvent) {
+			this._financialYearInputId = oEvent.getSource().getId();
 			// open fragment
-			if (!this.oOpenDialogComapanyCode) {
-				this.oOpenDialogComapanyCode = sap.ui.xmlfragment("com.infocus.salesApplication.view.dialogComponent.DialogComapanyCode", this);
-				this.getView().addDependent(this.oOpenDialogComapanyCode);
+			if (!this.oOpenDialogFiscalYear) {
+				this.oOpenDialogFiscalYear = sap.ui.xmlfragment("com.infocus.salesApplication.view.dialogComponent.DialogFiscalYear", this);
+				this.getView().addDependent(this.oOpenDialogFiscalYear);
 			}
-			this.oOpenDialogComapanyCode.open();
+			this.oOpenDialogFiscalYear.open();
 		},
-		handleValueLedger: function(oEvent) {
-			this._ledgerInputId = oEvent.getSource().getId();
+		handleValueQuarter: function(oEvent) {
+			this._quarterInputId = oEvent.getSource().getId();
 			// open fragment
-			if (!this.oOpenDialogLedger) {
-				this.oOpenDialogLedger = sap.ui.xmlfragment("com.infocus.salesApplication.view.dialogComponent.DialogLedger", this);
-				this.getView().addDependent(this.oOpenDialogLedger);
+			if (!this.oOpenDialogQuarter) {
+				this.oOpenDialogQuarter = sap.ui.xmlfragment("com.infocus.salesApplication.view.dialogComponent.DialogQuarter", this);
+				this.getView().addDependent(this.oOpenDialogQuarter);
 			}
-			this.oOpenDialogLedger.open();
+			this.oOpenDialogQuarter.open();
+		},
+		handleValueQuarterYear: function(oEvent) {
+			this._quarterInputYearId = oEvent.getSource().getId();
+			// open fragment
+			if (!this.oOpenDialogQuarterYear) {
+				this.oOpenDialogQuarterYear = sap.ui.xmlfragment("com.infocus.salesApplication.view.dialogComponent.DialogQuarterYear", this);
+				this.getView().addDependent(this.oOpenDialogQuarterYear);
+			}
+			this.oOpenDialogQuarterYear.open();
 		},
 
 		/*************** search value within fragment *****************/
@@ -467,6 +477,28 @@ sap.ui.define([
 
 		/*************** radio Button & drop down selection  *****************/
 
+		onRadioButtonSelectList: function(oEvent) {
+			var sSelectedKey = oEvent.getSource().getSelectedIndex();
+
+			// Get the containers (HBox elements)
+			var oFiscalYearBox = this.getView().byId("fiscalYearBox");
+			var oQuarterBox = this.getView().byId("quarterBox");
+			var oQuarterYearBox = this.getView().byId("quarterYearBox");
+			var oButtonBox = this.getView().byId("buttonBox");
+
+			if (sSelectedKey === 0) { // Fiscal Year Wise selected
+				oFiscalYearBox.setVisible(true);
+				oQuarterBox.setVisible(false);
+				oQuarterYearBox.setVisible(false);
+				oButtonBox.setVisible(true);
+			} else if (sSelectedKey === 1) { // Quarterly Wise selected
+				oFiscalYearBox.setVisible(false);
+				oQuarterBox.setVisible(true);
+				oQuarterYearBox.setVisible(true);
+				oButtonBox.setVisible(true);
+			}
+		},
+
 		onRadioButtonSelectReports: function(oEvent) {
 			var radioButtonSelectReport = oEvent.getSource();
 			var selectedButtonReport = radioButtonSelectReport.getSelectedButton().getText();
@@ -476,7 +508,7 @@ sap.ui.define([
 				oGlobalDataModel.setProperty("/prfitCentrGrp", selectedButtonReport);
 			}
 		},
-		onRadioButtonSelectList: function(oEvent) {
+		/*onRadioButtonSelectList: function(oEvent) {
 			var radioButtonList = oEvent.getSource();
 			var selectedButtonListText = radioButtonList.getSelectedButton().getText();
 
@@ -486,7 +518,7 @@ sap.ui.define([
 				oGlobalDataModel.setProperty("/pdfTableName", selectedButtonListText);
 			}
 
-		},
+		}*/
 		_toggleSwitches: function(isEnabled) {
 			/*var splitViewSwitch = this.byId("splitViewSwitch");*/
 			var tabularDataSwitch = this.byId("tabularDataSwitch");
