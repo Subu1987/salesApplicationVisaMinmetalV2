@@ -22,18 +22,18 @@
 		"path": "/sap/opu/odata",
 		"target": {
 			"type": "destination",
-			"name": "DEV",
+			"name": "VML",
 			"entryPath": "/sap/opu/odata"
 		},
-		"description": "DEV"
+		"description": "VML"
 	}, {
 		"path": "/sap/bc/ui2/start_up",
 		"target": {
 			"type": "destination",
-			"name": "DEV",
+			"name": "VML",
 			"entryPath": "/sap/bc/ui2/start_up"
 		},
-		"description": "DEV"
+		"description": "VML"
 	}],
 	"sendWelcomeFileRedirect": true
 }

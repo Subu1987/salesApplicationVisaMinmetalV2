@@ -361,39 +361,9 @@ sap.ui.define([
 			});
 
 		},
-		getLedgerParametersData: function() {
-			var that = this;
-			var parameterModel = this.getOwnerComponent().getModel("parameterModel");
-			var pUrl = "/ZLEDGERSet";
-
-			sap.ui.core.BusyIndicator.show();
-			parameterModel.read(pUrl, {
-				urlParameters: {
-					"sap-client": "400"
-				},
-				success: function(response) {
-					var pData = response.results;
-					console.log(pData);
-					sap.ui.core.BusyIndicator.hide();
-					// set the ledger data 
-					var oledgerDataModel = that.getOwnerComponent().getModel("ledgerData");
-					oledgerDataModel.setData(pData);
-
-				},
-				error: function(error) {
-					sap.ui.core.BusyIndicator.hide();
-					console.log(error);
-					var errorObject = JSON.parse(error.responseText);
-					sap.m.MessageBox.error(errorObject.error.message.value);
-
-				}
-			});
-
-		},
 
 		/*************** set the inputId & create the fragment *****************/
 
-		
 		handleValueFiscalYear: function(oEvent) {
 			this._financialYearInputId = oEvent.getSource().getId();
 			// open fragment
@@ -498,7 +468,6 @@ sap.ui.define([
 				oButtonBox.setVisible(true);
 			}
 		},
-
 		onRadioButtonSelectReports: function(oEvent) {
 			var radioButtonSelectReport = oEvent.getSource();
 			var selectedButtonReport = radioButtonSelectReport.getSelectedButton().getText();
@@ -508,17 +477,6 @@ sap.ui.define([
 				oGlobalDataModel.setProperty("/prfitCentrGrp", selectedButtonReport);
 			}
 		},
-		/*onRadioButtonSelectList: function(oEvent) {
-			var radioButtonList = oEvent.getSource();
-			var selectedButtonListText = radioButtonList.getSelectedButton().getText();
-
-			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
-			if (oGlobalDataModel) {
-				oGlobalDataModel.setProperty("/listFlag", selectedButtonListText === "Detailed List" ? 'X' : '');
-				oGlobalDataModel.setProperty("/pdfTableName", selectedButtonListText);
-			}
-
-		}*/
 		_toggleSwitches: function(isEnabled) {
 			/*var splitViewSwitch = this.byId("splitViewSwitch");*/
 			var tabularDataSwitch = this.byId("tabularDataSwitch");
@@ -647,52 +605,50 @@ sap.ui.define([
 
 		getListData: function() {
 			// Validate input fields
-			if (!this._validateInputFields()) {
+			/*if (!this._validateInputFields()) {
 				return;
-			}
+			}*/
 
 			var that = this;
-			var oModel = this.getOwnerComponent().getModel();
+			var oModel = this.getOwnerComponent().getModel("top10CustomerModel");
 			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
 
-			/*var ledgrNo = new Filter('Rldnr', FilterOperator.EQ, oGlobalData.ledgrNo);*/
-			var cmpnyCode = new Filter('Bukrs', FilterOperator.EQ, oGlobalData.cmpnyCode);
-			var prfitCentrGrp = new Filter('PrctrGr', FilterOperator.EQ, oGlobalData.prfitCentrGrp);
-			var fromDate = new Filter('FmDate', FilterOperator.EQ, oGlobalData.fromDate);
-			var toDate = new Filter('ToDate', FilterOperator.EQ, oGlobalData.toDate);
-			var listFlag = new Filter('DET_FLAG', FilterOperator.EQ, oGlobalData.listFlag);
+			var fiscalYear = "2023";
+			/*var fiscalQuater = "Q1";
+			var quater_Year = "2023";
+			var customer = "1000000000";*/
+
+			var fiscalYear = new Filter('fiscalYear', FilterOperator.EQ, fiscalYear);
+			/*var fiscalQuater = new Filter('fiscalQuater', FilterOperator.EQ, oGlobalData.selectedQuarter);
+			var quater_Year = new Filter('quater_Year', FilterOperator.EQ, oGlobalData.quarterYear);
+			var customer = new Filter('customer', FilterOperator.EQ, customer);
+*/
+			var oRaditoBttonIndex = this.byId("radioBtnlist").getSelectedIndex();
 
 			sap.ui.core.BusyIndicator.show();
 
-			/*var bURL = "/ZFI_BANKBAL_SRV/ZFI_BANKSet?$filter=Bukrs eq '1100' and PrctrGr eq 'FTRS' and FmDate eq '20230401' and ToDate eq '20240515' and DET_FLAG eq 'X'";*/
-
-			var bURL = "/ZFI_BANKSet";
-
+			var bURL = "/CUSTSet";
+			var filters = [fiscalYear];
 			oModel.read(bURL, {
 				urlParameters: {
-					"sap-client": "400"
+					"sap-client": "300"
 				},
-				filters: [cmpnyCode, prfitCentrGrp, fromDate, toDate, listFlag],
+				filters: filters,
 				success: function(response) {
 					var oData = response.results;
 					console.log(oData);
 
-					// Format decimal properties to 2 digits after the decimal point
-					oData.forEach(function(item) {
-						that._formatDecimalProperties(item, that);
-					});
-
-					var oListDataModel = that.getOwnerComponent().getModel("listData");
-					oListDataModel.setData(oData);
+					var oTop10ListDataModel = that.getOwnerComponent().getModel("top10listData");
+					oTop10ListDataModel.setData(oData);
 
 					// check in oData value is available or not 
 					if (typeof oData !== 'undefined' && oData.length === 0) {
 
 						sap.ui.core.BusyIndicator.hide();
 						sap.m.MessageBox.information('There are no data available!');
-						that._columnVisible();
+						// that._columnVisible();
 					} else {
-						that._assignVisiblity(oData, that);
+						/*that._assignVisiblity(oData, that);*/
 
 						sap.ui.core.BusyIndicator.hide();
 					}
@@ -893,95 +849,6 @@ sap.ui.define([
 			oTable.getItems().forEach(function(item) {
 				item.removeStyleClass("highlightedRow");
 			});
-		},
-
-		/*************** download pdf function  *****************/
-
-		onDownloadPDF: function() {
-			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
-			var pdfTableName = oGlobalDataModel.oData.pdfTableName;
-			var oTable = this.byId("dynamicTable");
-			var oTableHtml = oTable.getDomRef().outerHTML;
-
-			// Create a temporary DOM element to manipulate the table HTML
-			var tempDiv = document.createElement('div');
-			tempDiv.innerHTML = oTableHtml;
-
-			// Remove the "Chart" column from the table header and body
-			var chartColumnIndex = -1;
-			var table = tempDiv.querySelector('table');
-			var headers = table.querySelectorAll('th, td');
-
-			headers.forEach((header, index) => {
-				if (header.innerText === "Chart") {
-					chartColumnIndex = index;
-				}
-			});
-
-			if (chartColumnIndex !== -1) {
-				// Remove the header cell
-				table.querySelector('thead tr').deleteCell(chartColumnIndex);
-
-				// Remove the corresponding cells in the body rows
-				var rows = table.querySelectorAll('tbody tr');
-				rows.forEach(row => {
-					row.deleteCell(chartColumnIndex);
-				});
-			}
-
-			var updatedTableHtml = tempDiv.innerHTML;
-
-			// Show the global BusyIndicator
-			sap.ui.core.BusyIndicator.show(0);
-
-			var opt = {
-				margin: [0.5, 0.5, 0.5, 0.5], // Adjust margins as needed
-				filename: 'Bank Balance' + ' ' + pdfTableName + '.pdf',
-				image: {
-					type: 'jpeg',
-					quality: 0.98
-				},
-				html2canvas: {
-					scale: 2, // Keep scale at 1 to capture full width
-					scrollX: 0, // Capture entire width including horizontal scroll
-					scrollY: 0,
-					useCORS: true,
-					logging: true
-				},
-				jsPDF: {
-					unit: 'in',
-					format: 'a4',
-					orientation: 'landscape'
-				},
-				pagebreak: {
-					mode: ['avoid-all', 'css', 'legacy']
-				} // Ensure proper page breaks
-			};
-
-			// Use html2pdf.js to generate the PDF
-			html2pdf()
-				.from(updatedTableHtml)
-				.set(opt)
-				.toPdf()
-				.get('pdf')
-				.then((pdf) => {
-					var totalPages = pdf.internal.getNumberOfPages();
-					for (var i = 1; i <= totalPages; i++) {
-						pdf.setPage(i);
-						pdf.setFontSize(11);
-						pdf.setTextColor(100);
-						pdf.text(
-							'Page ' + i + ' of ' + totalPages,
-							pdf.internal.pageSize.getWidth() / 2,
-							pdf.internal.pageSize.getHeight() - 10
-						);
-					}
-				})
-				.save()
-				.finally(() => {
-					// Hide the global BusyIndicator
-					sap.ui.core.BusyIndicator.hide();
-				});
 		}
 
 	});

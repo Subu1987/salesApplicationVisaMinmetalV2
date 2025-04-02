@@ -14,6 +14,38 @@
 			"version": "0.0.0"
 		},
 		"dataSources": {
+			"top10CustomerService": {
+				"uri": "/sap/opu/odata/sap/Z_INF_TOP10_QTR_TRNOVR_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/metadata.xml"
+				}
+			},
+			"singleCustomerService": {
+				"uri": "/sap/opu/odata/sap/Z_INF_SINGLE_CUST_QTR_TRNOVR_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/Z_INF_SINGLE_CUST_QTR_TRNOVR_SRV/metadata.xml"
+				}
+			},
+			"allCustomerService": {
+				"uri": "/sap/opu/odata/sap/Z_INF_ALL_CUST_QTR_TRNOVR_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/Z_INF_ALL_CUST_QTR_TRNOVR_SRV/metadata.xml"
+				}
+			},
+			"quarterlyTurnoverService": {
+				"uri": "/sap/opu/odata/sap/Z_INF_QUATERLY_TURNOVER_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/Z_INF_QUATERLY_TURNOVER_SRV/metadata.xml"
+				}
+			}
 		}
 	},
 	"sap.ui": {
@@ -50,7 +82,8 @@
 				"sap.ui.core": {},
 				"sap.ui.layout": {},
 				"sap.ushell": {},
-				"sap.uxap": {}
+				"sap.uxap": {},
+				"sap.suite.ui.commons": {}
 			}
 		},
 		"contentDensities": {
@@ -64,13 +97,41 @@
 					"bundleName": "com.infocus.salesApplication.i18n.i18n"
 				}
 			},
+			"top10CustomerModel": {
+				"dataSource": "top10CustomerService",
+				"preload": true,
+				"settings": {
+					"useBatch": false
+				}
+			},
+			"singleCustomerModel": {
+				"dataSource": "singleCustomerService",
+				"preload": true,
+				"settings": {
+					"useBatch": false
+				}
+			},
+			"allCustomerModel": {
+				"dataSource": "allCustomerService",
+				"preload": true,
+				"settings": {
+					"useBatch": false
+				}
+			},
+			"quarterlyTurnoverModel": {
+				"dataSource": "quarterlyTurnoverService",
+				"preload": true,
+				"settings": {
+					"useBatch": false
+				}
+			},
 			"authData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
 			"globalData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
-			"listData": {
+			"top10listData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
 			"columnVisible": {
@@ -93,11 +154,9 @@
 			}
 		},
 		"resources": {
-			"css": [
-				{
-					"uri": "css/style.css"
-				}
-			],
+			"css": [{
+				"uri": "css/style.css"
+			}],
 			"js": []
 		},
 		"routing": {
@@ -110,18 +169,15 @@
 				"controlAggregation": "pages",
 				"clearAggregation": false
 			},
-			"routes": [
-				{
-					"name": "home",
-					"pattern": "",
-					"target": "home"
-				},
-				{
-					"name": "chart",
-					"pattern": "chart",
-					"target": "chart"
-				}
-			],
+			"routes": [{
+				"name": "home",
+				"pattern": "",
+				"target": "home"
+			}, {
+				"name": "chart",
+				"pattern": "chart",
+				"target": "chart"
+			}],
 			"targets": {
 				"home": {
 					"viewName": "Home",
