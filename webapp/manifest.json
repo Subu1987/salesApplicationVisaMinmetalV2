@@ -131,6 +131,9 @@
 			"globalData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
+			"allCustlistData": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
 			"top10listData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},

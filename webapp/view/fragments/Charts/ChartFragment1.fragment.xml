@@ -7,18 +7,20 @@
 				<suite:content>
 					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%">
 						<viz:dataset>
-							<vizData:FlattenedDataset data="{top10listData>/}">
+							<vizData:FlattenedDataset data="{allCustlistData>/allCustlistDataFiscalYearWise}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Customer Name" value="{top10listData>customerName}"/>
+									<vizData:DimensionDefinition name="Customer Code" value="{allCustlistData>customerCode}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Turn Over" value="{top10listData>turnover}"/>
+									<vizData:MeasureDefinition name="Turn Over" value="{allCustlistData>turnOver}"/>
+									
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
 						<viz:feeds>
 							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over"/>
-							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Name"/>
+							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Code"/>
+							<vizFeeds:FeedItem uid="color" type="Dimension" values="Customer Code"/>
 						</viz:feeds>
 					</viz:VizFrame>
 				</suite:content>
@@ -26,24 +28,24 @@
 			<!-- Table Content -->
 			<suite:ChartContainerContent icon="sap-icon://table-chart" title="Table View">
 				<suite:content>
-					<table:Table id="idTable" rows="{top10listData>/}" selectionMode="None">
+					<table:Table id="idTable" rows="{allCustlistData>/allCustlistDataFiscalYearWise}" selectionMode="None">
 						<table:columns>
 							<table:Column>
-								<Label text="Customer Name"/>
+								<Label text="Customer Code"/>
 								<table:template>
-									<Text text="{top10listData>customerName}"/>
+									<Text text="{allCustlistData>customerCode}"/>
 								</table:template>
 							</table:Column>
-							<table:Column>
+							<!--<table:Column>
 								<Label text="Fiscal Year"/>
 								<table:template>
-									<Text text="{top10listData>fiscalYear}"/>
+									<Text text="{allCustlistData>fiscalYear}"/>
 								</table:template>
-							</table:Column>
+							</table:Column>-->
 							<table:Column>
 								<Label text="Turn Over"/>
 								<table:template>
-									<Text text="{top10listData>turnover}"/>
+									<Text text="{allCustlistData>turnOver}"/>
 								</table:template>
 							</table:Column>
 						</table:columns>

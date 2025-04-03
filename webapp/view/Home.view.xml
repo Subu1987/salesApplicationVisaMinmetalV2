@@ -21,24 +21,24 @@
 						<!-- Financial Year Input -->
 						<HBox id="fiscalYearBox" direction="Column" alignItems="Center" visible="true" class="sapUiTinyMarginBegin">
 							<Label text="Fiscal Year" design="Bold"/>
-							<Input id="_financialYearInputId" type="Text" placeholder="eg.2023,2024,2025" showValueHelp="true" valueHelpRequest="handleValueFiscalYear"
+							<Input id="_financialYearInputId" type="Text" placeholder="eg.2023,2024,2025" showValueHelp="true" value="{globalData>/fiscalYears}" valueHelpRequest="handleValueFiscalYear"
 								required="true" liveChange="onLiveChange"/>
 						</HBox>
 						<!-- Financial Quarter Input -->
 						<HBox id="quarterBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
 							<Label text="Fiscal Quarter" design="Bold"/>
-							<Input id="_quarterInputId" type="Text" placeholder="Enter Value" showValueHelp="true" valueHelpRequest="handleValueQuarter" required="true"
+							<Input id="_quarterInputId" type="Text" placeholder="Enter Value" showValueHelp="true" value="{globalData>/selectedQuarters}" valueHelpRequest="handleValueQuarter" required="true"
 								liveChange="onLiveChange"/>
 						</HBox>
 						<!-- Quarter Year Input -->
 						<HBox id="quarterYearBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
 							<Label text="Quarter Year" design="Bold"/>
-							<Input id="_quarterInputYearId" type="Text" placeholder="Enter Value" showValueHelp="true" valueHelpRequest="handleValueQuarterYear"
+							<Input id="_quarterInputYearId" type="Text" placeholder="Enter Value" showValueHelp="true" value="{globalData>/selectedQuarterYears}" valueHelpRequest="handleValueQuarterYear"
 								required="true" liveChange="onLiveChange"/>
 						</HBox>
 						<!-- Action Buttons (Search and Clear) -->
 						<HBox id="buttonBox" direction="Row" justifyContent="Center" alignItems="Center" class="sapUiSmallMarginTop">
-							<Button id="searchData" icon="sap-icon://sales-order" type="Emphasized" press="getListData" class="sapUiTinyMarginBegin"/>
+							<Button id="searchData" icon="sap-icon://sales-order" type="Emphasized" press="getBackendData" class="sapUiTinyMarginBegin"/>
 							<Button id="clearData" icon="sap-icon://delete" type="Emphasized" press="clearListData" class="sapUiTinyMarginBegin"/>
 						</HBox>
 					</FlexBox>
@@ -52,36 +52,31 @@
 							<!-- Scenario 1 -->
 							<IconTabFilter key="scenario1" text="All Customer Quarterly Wise" icon="sap-icon://group" tooltip="All Customer Quarterly Wise">
 								<content>
-									<!--<VBox visible="{globalData>/isTableFragment1Visible}">
-										<core:Fragment id="tableFragment1" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment1" type="XML"/>
-									</VBox>-->
-									<!--<VBox visible="{globalData>/isTableFragment2Visible}">
-										<core:Fragment id="tableFragment2" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment2" type="XML"/>
-									</VBox>-->
+									
 									<VBox visible="{globalData>/isChartFragment1Visible}">
 										<core:Fragment id="chartFragment1" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment1" type="XML"/>
 									</VBox>
-									<!--<VBox visible="{globalData>/isChartFragment2Visible}">
+									<VBox visible="{globalData>/isChartFragment2Visible}">
 										<core:Fragment id="chartFragment2" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment2" type="XML"/>
-									</VBox>-->
+									</VBox>
 								</content>
 							</IconTabFilter>
 							<!-- Scenario 2 -->
 							<IconTabSeparator/>
 							<IconTabFilter key="scenario2" text="Top 10 Customer Quarterly Wise" icon="sap-icon://customer" tooltip="Top 10 Customer Quarterly Wise">
 								<content>
-									<VBox visible="{globalData>/isTableFragment3Visible}">
+									<!--<VBox visible="{globalData>/isTableFragment3Visible}">
 										<core:Fragment id="tableFragment3" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment3" type="XML"/>
 									</VBox>
 									<VBox visible="{globalData>/isTableFragment4Visible}">
 										<core:Fragment id="tableFragment4" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment4" type="XML"/>
-									</VBox>
-									<!--<VBox visible="{globalData>/isChartFragment3Visible}">
+									</VBox>-->
+									<VBox visible="{globalData>/isChartFragment3Visible}">
 										<core:Fragment id="chartFragment3" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment3" type="XML"/>
 									</VBox>
 									<VBox visible="{globalData>/isChartFragment4Visible}">
 										<core:Fragment id="chartFragment4" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment4" type="XML"/>
-									</VBox>-->
+									</VBox>
 								</content>
 							</IconTabFilter>
 							<!-- Scenario 3 -->
