@@ -1,39 +1,44 @@
 {
-	"welcomeFile": "/webapp/index.html",
-	"routes": [{
-		"path": "/resources",
-		"target": {
-			"type": "service",
-			"name": "sapui5",
-			"entryPath": "/resources",
-			"version": "1.52.13"
-		},
-		"description": "SAPUI5 Resources"
-	}, {
-		"path": "/test-resources",
-		"target": {
-			"type": "service",
-			"name": "sapui5",
-			"entryPath": "/test-resources",
-			"version": "1.52.13"
-		},
-		"description": "SAPUI5 Test Resources"
-	}, {
-		"path": "/sap/opu/odata",
-		"target": {
-			"type": "destination",
-			"name": "VML",
-			"entryPath": "/sap/opu/odata"
-		},
-		"description": "VML"
-	}, {
-		"path": "/sap/bc/ui2/start_up",
-		"target": {
-			"type": "destination",
-			"name": "VML",
-			"entryPath": "/sap/bc/ui2/start_up"
-		},
-		"description": "VML"
-	}],
-	"sendWelcomeFileRedirect": true
+  "welcomeFile": "/webapp/index.html",
+  "routes": [
+    {
+      "path": "/resources",
+      "target": {
+        "type": "service",
+        "name": "sapui5",
+        "entryPath": "/resources",
+        "version": "1.108.34"
+      },
+      "description": "SAPUI5 Resources"
+    },
+    {
+      "path": "/test-resources",
+      "target": {
+        "type": "service",
+        "name": "sapui5",
+        "entryPath": "/test-resources",
+        "version": "1.108.34"
+      },
+      "description": "SAPUI5 Test Resources"
+    },
+    {
+      "path": "/sap/opu/odata",
+      "target": {
+        "type": "destination",
+        "name": "VML",
+        "entryPath": "/sap/opu/odata"
+      },
+      "description": "VML"
+    },
+    {
+      "path": "/sap/bc/ui2/start_up",
+      "target": {
+        "type": "destination",
+        "name": "VML",
+        "entryPath": "/sap/bc/ui2/start_up"
+      },
+      "description": "VML"
+    }
+  ],
+  "sendWelcomeFileRedirect": true
 }

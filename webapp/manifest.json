@@ -78,12 +78,12 @@
 			"libs": {
 				"sap.collaboration": {},
 				"sap.m": {},
+				"sap.suite.ui.commons": {},
 				"sap.ui.comp": {},
 				"sap.ui.core": {},
 				"sap.ui.layout": {},
 				"sap.ushell": {},
-				"sap.uxap": {},
-				"sap.suite.ui.commons": {}
+				"sap.uxap": {}
 			}
 		},
 		"contentDensities": {
@@ -157,9 +157,11 @@
 			}
 		},
 		"resources": {
-			"css": [{
-				"uri": "css/style.css"
-			}],
+			"css": [
+				{
+					"uri": "css/style.css"
+				}
+			],
 			"js": []
 		},
 		"routing": {
@@ -172,15 +174,18 @@
 				"controlAggregation": "pages",
 				"clearAggregation": false
 			},
-			"routes": [{
-				"name": "home",
-				"pattern": "",
-				"target": "home"
-			}, {
-				"name": "chart",
-				"pattern": "chart",
-				"target": "chart"
-			}],
+			"routes": [
+				{
+					"name": "home",
+					"pattern": "",
+					"target": "home"
+				},
+				{
+					"name": "chart",
+					"pattern": "chart",
+					"target": "chart"
+				}
+			],
 			"targets": {
 				"home": {
 					"viewName": "Home",
@@ -194,7 +199,7 @@
 		}
 	},
 	"sap.platform.abap": {
-		"uri": "/sap/bc/ui5_ui5/sap/zbank_balance/webapp",
+		"uri": "/sap/bc/ui5_ui5/sap/zsalesoverview/webapp",
 		"_version": "1.1.0"
 	}
 }

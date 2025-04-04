@@ -1,24 +1,24 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:table="sap.ui.table" xmlns:suite="sap.suite.ui.commons"
 	xmlns:viz="sap.viz.ui5.controls" xmlns:vizData="sap.viz.ui5.data" xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
-	<suite:ChartContainer id="chartContainer" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false" title="Revenue">
+	<suite:ChartContainer id="chartContainer" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false" title="{globalData>/selectedTabText}">
 		<!-- Chart Content -->
 		<suite:content>
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
 				<suite:content>
 					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%">
 						<viz:dataset>
-							<vizData:FlattenedDataset data="{allCustlistData>/allCustlistDataFiscalYearWise}">
+							<vizData:FlattenedDataset data="{top10listData>/top10CustlistDataFiscalYearWise}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Customer Name" value="{allCustlistData>customerNam}"/>
+									<vizData:DimensionDefinition name="Customer Name" value="{top10listData>customerName}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Turn Over" value="{allCustlistData>turnOver}"/>
+									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{top10listData>turnover}"/>
 									
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
 						<viz:feeds>
-							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over"/>
+							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (Cr)"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Name"/>
 							<vizFeeds:FeedItem uid="color" type="Dimension" values="Customer Name"/>
 						</viz:feeds>
@@ -28,24 +28,24 @@
 			<!-- Table Content -->
 			<suite:ChartContainerContent icon="sap-icon://table-chart" title="Table View">
 				<suite:content>
-					<table:Table id="idTable" rows="{allCustlistData>/allCustlistDataFiscalYearWise}" selectionMode="None">
+					<table:Table id="idTable" rows="{top10listData>/top10CustlistDataFiscalYearWise}" selectionMode="None">
 						<table:columns>
 							<table:Column>
 								<Label text="Customer Name"/>
 								<table:template>
-									<Text text="{allCustlistData>customerName}"/>
+									<Text text="{top10listData>customerName}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>
 								<Label text="Fiscal Year"/>
 								<table:template>
-									<Text text="{allCustlistData>fiscalYear}"/>
+									<Text text="{top10listData>fiscalYear}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>
-								<Label text="Turn Over"/>
+								<Label text="Turn Over (Cr)"/>
 								<table:template>
-									<Text text="{allCustlistData>turnOver}"/>
+									<Text text="{top10listData>turnover}"/>
 								</table:template>
 							</table:Column>
 						</table:columns>

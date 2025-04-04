@@ -40,12 +40,12 @@
     "blockPushLevel": "Error"
   },
   "build": {
-    "buildRequired": true,
+    "buildRequired": false,
     "sourceFolder": "webapp",
     "targetFolder": "dist",
     "excludedFolders": [],
     "excludedFiles": [],
-    "lastBuildDateTime": "Thu, 22 Aug 2024 12:08:54 GMT",
+    "lastBuildDateTime": "Fri, 04 Apr 2025 09:47:20 GMT",
     "availableFoldersComboBox": [
       {
         "text": "localService"

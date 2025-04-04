@@ -1,6 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:table="sap.ui.table" xmlns:suite="sap.suite.ui.commons"
 	xmlns:viz="sap.viz.ui5.controls" xmlns:vizData="sap.viz.ui5.data" xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
-	<suite:ChartContainer id="chartContainer" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false" title="Revenue">
+	<suite:ChartContainer id="chartContainer" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false" title="{globalData>/selectedTabText}">
 		<!-- Chart Content -->
 		<suite:content>
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
@@ -9,18 +9,18 @@
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{allCustlistData>/allCustlistDataFiscalYearWise}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Customer Code" value="{allCustlistData>customerCode}"/>
+									<vizData:DimensionDefinition name="Customer Name" value="{allCustlistData>customerName}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Turn Over" value="{allCustlistData>turnOver}"/>
+									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{allCustlistData>turnOver}"/>
 									
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
 						<viz:feeds>
-							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over"/>
-							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Code"/>
-							<vizFeeds:FeedItem uid="color" type="Dimension" values="Customer Code"/>
+							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (Cr)"/>
+							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Name"/>
+							<vizFeeds:FeedItem uid="color" type="Dimension" values="Customer Name"/>
 						</viz:feeds>
 					</viz:VizFrame>
 				</suite:content>
@@ -31,9 +31,9 @@
 					<table:Table id="idTable" rows="{allCustlistData>/allCustlistDataFiscalYearWise}" selectionMode="None">
 						<table:columns>
 							<table:Column>
-								<Label text="Customer Code"/>
+								<Label text="Customer Name"/>
 								<table:template>
-									<Text text="{allCustlistData>customerCode}"/>
+									<Text text="{allCustlistData>customerName}"/>
 								</table:template>
 							</table:Column>
 							<!--<table:Column>
@@ -43,7 +43,7 @@
 								</table:template>
 							</table:Column>-->
 							<table:Column>
-								<Label text="Turn Over"/>
+								<Label text="Turn Over (Cr)"/>
 								<table:template>
 									<Text text="{allCustlistData>turnOver}"/>
 								</table:template>

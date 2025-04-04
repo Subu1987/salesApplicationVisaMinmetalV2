@@ -1,7 +1,7 @@
 <mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core"
 	xmlns:f="sap.ui.layout.form" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
 	xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.salesApplication.controller.Home">
-	<Page id="page" title="Sales Dashboard" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false">
+	<Page id="page"  title="Sales Dashboard" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false">
 		<content>
 			<FlexBox id="panelFormBox" direction="Row" width="100%" height="auto" justifyContent="Center" alignItems="Center" class="sapUiTinyMarginTop">
 				<items>
