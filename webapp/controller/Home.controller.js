@@ -901,7 +901,7 @@ sap.ui.define([
 				success: function(response) {
 					var oData = response.results || [];
 					console.log(oData);
-					
+
 					// Convert Turn Over to Crores
 					oData.forEach(function(item) {
 						if (item.turnover) {
@@ -916,6 +916,8 @@ sap.ui.define([
 					// Toggle visibility of chart fragments
 					oGlobalDataModel.setProperty("/isChartFragment3Visible", oSelectedIndex === 0);
 					oGlobalDataModel.setProperty("/isChartFragment4Visible", oSelectedIndex !== 0);
+
+					
 
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();

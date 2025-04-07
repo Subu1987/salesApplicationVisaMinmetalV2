@@ -40,12 +40,12 @@
     "blockPushLevel": "Error"
   },
   "build": {
-    "buildRequired": false,
+    "buildRequired": true,
     "sourceFolder": "webapp",
     "targetFolder": "dist",
     "excludedFolders": [],
     "excludedFiles": [],
-    "lastBuildDateTime": "Fri, 04 Apr 2025 09:47:20 GMT",
+    "lastBuildDateTime": "Fri, 04 Apr 2025 10:25:41 GMT",
     "availableFoldersComboBox": [
       {
         "text": "localService"
@@ -152,7 +152,7 @@
     "mockRequestsFilePath": ""
   },
   "deploy": {
-    "destination": "DEV",
-    "name": "ZBANK_BALANCE"
+    "destination": "VML",
+    "name": "zsalesoverview"
   }
 }
