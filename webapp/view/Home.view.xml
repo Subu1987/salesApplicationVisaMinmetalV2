@@ -1,7 +1,7 @@
 <mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core"
 	xmlns:f="sap.ui.layout.form" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
 	xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.salesApplication.controller.Home">
-	<Page id="page"  title="Sales Dashboard" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false">
+	<Page id="page" title="Sales Dashboard" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false">
 		<content>
 			<FlexBox id="panelFormBox" direction="Row" width="100%" height="auto" justifyContent="Center" alignItems="Center" class="sapUiTinyMarginTop">
 				<items>
@@ -14,27 +14,28 @@
 					</FlexBox>
 					<!-- Input Fields Section -->
 					<FlexBox width="100%" id="tripView" wrap="NoWrap" justifyContent="Center" alignItems="Center">
-						<HBox id="customerInputBox" direction="Column" alignItems="Center" visible="false">
+						<HBox id="customerMasterBox" direction="Column" alignItems="Center" visible="false">
 							<Label text="Customer" design="Bold"/>
-							<Input id="_customerInputId" type="Text" placeholder="eg.2023,2024,2025" required="true" liveChange="onLiveChange"/>
+							<Input id="_customerInputId" type="Text" placeholder="eg.1000000000,1000000001" showValueHelp="true" value="{globalData>/selectedCustomerMasterData}"
+								valueHelpRequest="handleValueCustomerMaster" required="true" liveChange="onLiveChange"/>
 						</HBox>
 						<!-- Financial Year Input -->
 						<HBox id="fiscalYearBox" direction="Column" alignItems="Center" visible="true" class="sapUiTinyMarginBegin">
 							<Label text="Fiscal Year" design="Bold"/>
-							<Input id="_financialYearInputId" type="Text" placeholder="eg.2023,2024,2025" showValueHelp="true" value="{globalData>/fiscalYears}" valueHelpRequest="handleValueFiscalYear"
-								required="true" liveChange="onLiveChange"/>
+							<Input id="_financialYearInputId" type="Text" placeholder="eg.2023,2024,2025" showValueHelp="true" value="{globalData>/fiscalYears}"
+								valueHelpRequest="handleValueFiscalYear" required="true" liveChange="onLiveChange"/>
 						</HBox>
 						<!-- Financial Quarter Input -->
 						<HBox id="quarterBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
 							<Label text="Fiscal Quarter" design="Bold"/>
-							<Input id="_quarterInputId" type="Text" placeholder="Enter Value" showValueHelp="true" value="{globalData>/selectedQuarters}" valueHelpRequest="handleValueQuarter" required="true"
-								liveChange="onLiveChange"/>
+							<Input id="_quarterInputId" type="Text" placeholder="Enter Value" showValueHelp="true" value="{globalData>/selectedQuarters}"
+								valueHelpRequest="handleValueQuarter" required="true" liveChange="onLiveChange"/>
 						</HBox>
 						<!-- Quarter Year Input -->
 						<HBox id="quarterYearBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
 							<Label text="Quarter Year" design="Bold"/>
-							<Input id="_quarterInputYearId" type="Text" placeholder="Enter Value" showValueHelp="true" value="{globalData>/selectedQuarterYears}" valueHelpRequest="handleValueQuarterYear"
-								required="true" liveChange="onLiveChange"/>
+							<Input id="_quarterInputYearId" type="Text" placeholder="Enter Value" showValueHelp="true" value="{globalData>/selectedQuarterYears}"
+								valueHelpRequest="handleValueQuarterYear" required="true" liveChange="onLiveChange"/>
 						</HBox>
 						<!-- Action Buttons (Search and Clear) -->
 						<HBox id="buttonBox" direction="Row" justifyContent="Center" alignItems="Center" class="sapUiSmallMarginTop">
@@ -52,7 +53,6 @@
 							<!-- Scenario 1 -->
 							<IconTabFilter key="scenario1" text="All Customer Quarterly Wise" icon="sap-icon://group" tooltip="All Customer Quarterly Wise">
 								<content>
-									
 									<VBox visible="{globalData>/isChartFragment1Visible}">
 										<core:Fragment id="chartFragment1" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment1" type="XML"/>
 									</VBox>
@@ -84,18 +84,18 @@
 							<IconTabFilter key="scenario3" text="Single Customer Quarterly Wise" icon="sap-icon://employee-lookup"
 								tooltip="Single Customer Quarterly Wise">
 								<content>
-									<VBox visible="{globalData>/isTableFragment5Visible}">
+									<!--<VBox visible="{globalData>/isTableFragment5Visible}">
 										<core:Fragment id="tableFragment5" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment5" type="XML"/>
 									</VBox>
 									<VBox visible="{globalData>/isTableFragment6Visible}">
 										<core:Fragment id="tableFragment6" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment6" type="XML"/>
-									</VBox>
-									<!--<VBox visible="{globalData>/isChartFragment5Visible}">
-										<core:Fragment id="chartFragment5" fragmentName="com.infocus.salesApplication.view.ChartFragment5" type="XML"/>
+									</VBox>-->
+									<VBox visible="{globalData>/isChartFragment5Visible}">
+										<core:Fragment id="chartFragment5" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment5" type="XML"/>
 									</VBox>
 									<VBox visible="{globalData>/isChartFragment6Visible}">
-										<core:Fragment id="chartFragment6" fragmentName="com.infocus.salesApplication.view.ChartFragment6" type="XML"/>
-									</VBox>-->
+										<core:Fragment id="chartFragment6" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment6" type="XML"/>
+									</VBox>
 								</content>
 							</IconTabFilter>
 							<!-- Scenario 4 -->
@@ -103,17 +103,17 @@
 							<IconTabFilter key="scenario4" text="Quarterly Wise Turnover" icon="sap-icon://customer-financial-fact-sheet"
 								tooltip="Quarterly Wise Turnover">
 								<content>
-									<VBox visible="{globalData>/isTableFragment7Visible}">
+									<!--<VBox visible="{globalData>/isTableFragment7Visible}">
 										<core:Fragment id="tableFragment7" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment7" type="XML"/>
 									</VBox>
 									<VBox visible="{globalData>/isTableFragment8Visible}">
 										<core:Fragment id="tableFragment8" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment8" type="XML"/>
-									</VBox>
+									</VBox>-->
 									<!--<VBox visible="{globalData>/isChartFragment7Visible}">
-										<core:Fragment id="chartFragment7" fragmentName="com.infocus.salesApplication.view.ChartFragment7" type="XML"/>
+										<core:Fragment id="chartFragment7" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment7" type="XML"/>
 									</VBox>
 									<VBox visible="{globalData>/isChartFragment8Visible}">
-										<core:Fragment id="chartFragment8" fragmentName="com.infocus.salesApplication.view.ChartFragment8" type="XML"/>
+										<core:Fragment id="chartFragment8" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment8" type="XML"/>
 									</VBox>-->
 								</content>
 							</IconTabFilter>

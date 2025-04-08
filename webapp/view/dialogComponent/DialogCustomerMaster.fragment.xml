@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<SelectDialog id="customerMasterDialog" title="Select Customer Master Datax" items="{customerMasterData>/}"
+		search="_handleCustomerMasterDataSearch" confirm="_handleCustomerMasterDataClose" cancel="_handleCustomerMasterDataClose" multiSelect="true"
+		contentWidth="auto" class="sapUiPopupWithPadding">
+		<StandardListItem title="{customerMasterData>Customer}" type="Active" description="{customerMasterData>Name}"/>
+	</SelectDialog>
+</core:FragmentDefinition>
