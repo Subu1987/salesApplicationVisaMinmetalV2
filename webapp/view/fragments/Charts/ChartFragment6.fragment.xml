@@ -12,7 +12,7 @@
 									<vizData:DimensionDefinition name="Customer Name" value="{singleCustlistData>customerName}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{singleCustlistData>turnover}"/>
+									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{singleCustlistData>turnOver}"/>
 									
 								</vizData:measures>
 							</vizData:FlattenedDataset>
@@ -51,7 +51,7 @@
 							<table:Column>
 								<Label text="Turn Over (Cr)"/>
 								<table:template>
-									<Text text="{singleCustlistData>turnover}"/>
+									<Text text="{singleCustlistData>turnOver}"/>
 								</table:template>
 							</table:Column>
 						</table:columns>

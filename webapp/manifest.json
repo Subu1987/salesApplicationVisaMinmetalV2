@@ -155,10 +155,13 @@
 			"singleCustlistData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
+			"quarterlyTurnoverlistData": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
 			"customerMasterData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
-			"chartData": {
+			"top10CustChartData": {
 				"type": "sap.ui.model.json.JSONModel"
 			}
 		},

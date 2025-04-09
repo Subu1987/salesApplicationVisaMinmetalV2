@@ -7,21 +7,20 @@
 				<suite:content>
 					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%">
 						<viz:dataset>
-							<vizData:FlattenedDataset data="{allCustlistData>/allCustlistDataQuaterlyWise}">
+							<vizData:FlattenedDataset data="{quarterlyTurnoverlistData>/quarterlyTurnoverlistDataQuaterlyWise}">
 								<vizData:dimensions>
-									<!-- Use Quarter and Quarter Year as categories -->
-                                    <vizData:DimensionDefinition name="Quarter" value="{allCustlistData>quater}" />
-                                    <vizData:DimensionDefinition name="Year" value="{allCustlistData>quateryear}" />
+									<vizData:DimensionDefinition name="Customer Name" value="{quarterlyTurnoverlistData>customerName}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{allCustlistData>turnOver}"/>
+									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{quarterlyTurnoverlistData>turnOver}"/>
+									
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
 						<viz:feeds>
 							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (Cr)"/>
-                            <vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter,Year"/>
-                            <vizFeeds:FeedItem uid="color" type="Dimension" values="Quarter,Year"/>
+							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Name"/>
+							<vizFeeds:FeedItem uid="color" type="Dimension" values="Customer Name"/>
 						</viz:feeds>
 					</viz:VizFrame>
 				</suite:content>
@@ -29,30 +28,30 @@
 			<!-- Table Content -->
 			<suite:ChartContainerContent icon="sap-icon://table-chart" title="Table View">
 				<suite:content>
-					<table:Table id="idTable" rows="{allCustlistData>/allCustlistDataQuaterlyWise}" selectionMode="None">
+					<table:Table id="idTable" rows="{quarterlyTurnoverlistData>/quarterlyTurnoverlistDataQuaterlyWise}" selectionMode="None">
 						<table:columns>
-						    <table:Column>
+							<!--<table:Column>
 								<Label text="Customer Name"/>
 								<table:template>
-									<Text text="{allCustlistData>customerName}"/>
+									<Text text="{quarterlyTurnoverlistData>customerName}"/>
 								</table:template>
-							</table:Column>
+							</table:Column>-->
 							<table:Column>
 								<Label text="Quarter"/>
 								<table:template>
-									<Text text="{allCustlistData>quater}"/>
+									<Text text="{quarterlyTurnoverlistData>quater}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>
 								<Label text="Quarter Year"/>
 								<table:template>
-									<Text text="{allCustlistData>quateryear}"/>
+									<Text text="{quarterlyTurnoverlistData>quaterYear}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>
 								<Label text="Turn Over (Cr)"/>
 								<table:template>
-									<Text text="{allCustlistData>turnOver}"/>
+									<Text text="{quarterlyTurnoverlistData>turnOver}"/>
 								</table:template>
 							</table:Column>
 						</table:columns>

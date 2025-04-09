@@ -5,22 +5,24 @@
 		<suite:content>
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
 				<suite:content>
-					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%">
+					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{top10listData>/top10CustlistDataQuaterlyWise}">
 								<vizData:dimensions>
 									<vizData:DimensionDefinition name="Customer Name" value="{top10listData>customerName}"/>
+									<vizData:DimensionDefinition name="Quarter Year" value="{top10listData>quaterYear}"/>
+									<vizData:DimensionDefinition name="Quarter" value="{top10listData>quater}"/>
 								</vizData:dimensions>
 								<vizData:measures>
 									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{top10listData>turnover}"/>
-									
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
 						<viz:feeds>
 							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (Cr)"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Name"/>
-							<vizFeeds:FeedItem uid="color" type="Dimension" values="Customer Name"/>
+							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter Year"/>
+							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter"/>
 						</viz:feeds>
 					</viz:VizFrame>
 				</suite:content>

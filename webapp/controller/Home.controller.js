@@ -1,13 +1,14 @@
 sap.ui.define([
 	"com/infocus/salesApplication/controller/BaseController",
+	"sap/ui/core/Fragment",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	'sap/ui/model/json/JSONModel',
+	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
 	"sap/viz/ui5/api/env/Format",
 	"com/infocus/salesApplication/libs/html2pdf.bundle",
 	"jquery.sap.global"
-], function(BaseController, Filter, FilterOperator, JSONModel, MessageBox, Format, html2pdf_bundle, jQuery) {
+], function(BaseController, Fragment, Filter, FilterOperator, JSONModel, MessageBox, Format, html2pdf_bundle, jQuery) {
 	"use strict";
 
 	return BaseController.extend("com.infocus.salesApplication.controller.Home", {
@@ -140,31 +141,6 @@ sap.ui.define([
 			// this.totalRadioBtnCheck(inputCompanyCode);
 
 		},
-		/*totalRadioBtnCheck: function(sValue) {
-			var oAuthDataModel = this.getOwnerComponent().getModel("authData");
-			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
-			var oAuthData = oAuthDataModel.oData;
-			var compCode = [];
-			var compArr = [];
-			compArr = Object.entries(oAuthData);
-			for (var i = 0; i < compArr.length; i++) {
-				if (compArr[i][0].includes("TOTAL_") && compArr[i][1] === "X") {
-					var oCode = compArr[i][0].slice(6);
-					if (sValue === oCode) {
-						this.byId("companytotal").setVisible(true);
-						oGlobalDataModel.setProperty("/totalRadioBtnChk", "X");
-						break;
-					}
-				} else if (compArr[i][0].includes("TOTAL_") && compArr[i][1] === "") {
-					var oCode = compArr[i][0].slice(6);
-					if (sValue === oCode) {
-						this.byId("companytotal").setVisible(false);
-						oGlobalDataModel.setProperty("/totalRadioBtnChk", "");
-						break;
-					}
-				}
-			}
-		},*/
 		_updateGlobalDataModel: function() {
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
 			if (oGlobalDataModel) {
@@ -175,6 +151,8 @@ sap.ui.define([
 				oGlobalDataModel.setProperty("/isChartFragment4Visible", false);
 				oGlobalDataModel.setProperty("/isChartFragment5Visible", true);
 				oGlobalDataModel.setProperty("/isChartFragment6Visible", false);
+				oGlobalDataModel.setProperty("/isChartFragment7Visible", true);
+				oGlobalDataModel.setProperty("/isChartFragment8Visible", false);
 
 			} else {
 				console.error("Global data model is not available.");
@@ -353,13 +331,23 @@ sap.ui.define([
 
 		handleValueCustomerMaster: function(oEvent) {
 			this._customerInputId = oEvent.getSource().getId();
-			// open fragment
-			if (!this.oOpenDialogCustomMasterData) {
-				this.oOpenDialogCustomMasterData = sap.ui.xmlfragment("customerMasterFragment","com.infocus.salesApplication.view.dialogComponent.DialogCustomerMaster",
-					this);
-				this.getView().addDependent(this.oOpenDialogCustomMasterData);
+			var that = this;
+
+			if (!this._oCustomerMasterDialog) {
+				Fragment.load({
+					id: that.getView().getId(),
+					name: "com.infocus.salesApplication.view.dialogComponent.DialogCustomerMaster",
+					controller: that
+				}).then(function(oDialog) {
+					that._oCustomerMasterDialog = oDialog;
+					that.getView().addDependent(oDialog);
+					oDialog.open();
+				}).catch(function(oError) {
+					console.error("Error loading Customer Master Dialog:", oError);
+				});
+			} else {
+				this._oCustomerMasterDialog.open();
 			}
-			this.oOpenDialogCustomMasterData.open();
 		},
 		handleValueFiscalYear: function(oEvent) {
 			this._financialYearInputId = oEvent.getSource().getId();
@@ -391,13 +379,25 @@ sap.ui.define([
 
 		/*************** search value within fragment *****************/
 
-		_handleCustomerMasterDataSearch: function(oEvent) {
-			var sValue = oEvent.getParameter("value");
-			var oFilter = new Filter(
-				"Customer",
-				FilterOperator.Contains, sValue
-			);
-			oEvent.getSource().getBinding("items").filter([oFilter]);
+		onSearchCustomerMaster: function(oEvent) {
+			var sQuery = oEvent.getParameter("newValue");
+			var oList = Fragment.byId(this.getView().getId(), "idCustomerMasterList");
+			if (!oList) return;
+
+			var oBinding = oList.getBinding("items");
+			if (!oBinding) return;
+
+			var aFilters = [];
+			if (sQuery) {
+				var oFilter1 = new sap.ui.model.Filter("Customer", sap.ui.model.FilterOperator.Contains, sQuery);
+				var oFilter2 = new sap.ui.model.Filter("Name", sap.ui.model.FilterOperator.Contains, sQuery);
+				aFilters.push(new sap.ui.model.Filter({
+					filters: [oFilter1, oFilter2],
+					and: false
+				}));
+			}
+
+			oBinding.filter(aFilters);
 		},
 		_handleValueLedgerSearch: function(oEvent) {
 			var sValue = oEvent.getParameter("value");
@@ -410,30 +410,62 @@ sap.ui.define([
 
 		/*************** set the each property to globalData & reflect data in input field  *****************/
 
-		_handleCustomerMasterDataClose: function(oEvent) {
-			var aSelectedItems = oEvent.getParameter("selectedItems");
-			var aSelectedCustomerMasterData = [];
+		/*onSelectionChangeCustomerMaster: function(oEvent) {
+			var oList = oEvent.getSource();
+			var aSelectedItems = oList.getSelectedItems();
 
-			if (aSelectedItems && aSelectedItems.length > 0) {
-				aSelectedItems.forEach(function(oItem) {
-					aSelectedCustomerMasterData.push(oItem.getTitle()); // Collect selected Customer Data
-				});
+			var aSelectedNames = [];
+			var aSelectedIDs = [];
 
-				var oFiscalYearInput = this.byId(this._fiscalYearInputId); // Ensure input ID is correct
-				if (oFiscalYearInput) {
-					oFiscalYearInput.setValue(aSelectedCustomerMasterData.join(", ")); // Display selected values in input
-				}
+			aSelectedItems.forEach(function(oItem) {
+				aSelectedIDs.push(oItem.getTitle()); // Customer ID
+				aSelectedNames.push(oItem.getDescription()); // Customer Name
+			});
 
-				// Store selected fiscal years in the global model
-				var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
-				if (oGlobalDataModel) {
-					oGlobalDataModel.setProperty("/selectedCustomerMasterData", aSelectedCustomerMasterData);
-				}
-			}
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			oGlobalModel.setProperty("/selectedCustomerNames", aSelectedNames);
+			oGlobalModel.setProperty("/selectedCustomerIDs", aSelectedIDs);
+		},*/
 
-			// Clear filters on closing the dialog
-			oEvent.getSource().getBinding("items").filter([]);
+		onConfirmCustomerMaster: function() {
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var oList = Fragment.byId(this.getView().getId(), "idCustomerMasterList");
+			var aSelectedItems = oList.getSelectedItems();
+			var aSelectedNames = [];
+			var aSelectedIDs = [];
+
+			aSelectedItems.forEach(function(oItem) {
+				aSelectedNames.push(oItem.getDescription()); // Name
+				aSelectedIDs.push(oItem.getTitle()); // Customer
+			});
+
+			oGlobalModel.setProperty("/selectedCustomerNames", aSelectedNames);
+			oGlobalModel.setProperty("/selectedCustomerIDs", aSelectedIDs);
+
+			this._resetCustomerMasterDialog();
+			this._oCustomerMasterDialog.close();
 		},
+
+		onCloseCustomerMaster: function() {
+			this._resetCustomerMasterDialog();
+			this._oCustomerMasterDialog.close();
+		},
+
+		_resetCustomerMasterDialog: function() {
+			var oList = Fragment.byId(this.getView().getId(), "idCustomerMasterList");
+			var oSearchField = Fragment.byId(this.getView().getId(), "idCustomerSearchField");
+
+			// Clear Search
+			if (oSearchField) {
+				oSearchField.setValue("");
+			}
+			// Remove selections & filters
+			if (oList) {
+				oList.removeSelections(true);
+				oList.getBinding("items").filter([]);
+			}
+		},
+
 		_handleFiscalYearClose: function(oEvent) {
 			var aSelectedItems = oEvent.getParameter("selectedItems"); // Get selected items (multiSelect enabled)
 			var aSelectedYears = [];
@@ -608,20 +640,22 @@ sap.ui.define([
 				this.getSingleCustomerData();
 
 			} else {
-				/*this.getQuarterlyData();*/
+				this.getQuarterlyData();
 
 			}
 
 		},
 
-		/* Data fetching from backend */
 		_buildFilters: function(oGlobalData, oSelectedIndex) {
 			var filters = [];
+
 			var oSelectedTabText = oGlobalData.selectedTabText;
+			var aFiscalYears = oGlobalData.fiscalYears || [];
+			var aSelectedCustomerMasterData = oGlobalData.selectedCustomerIDs || [];
+			var aQuarters = oGlobalData.selectedQuarters || [];
+			var aQuarterYears = oGlobalData.selectedQuarterYears || [];
 
 			if (oSelectedIndex === 0) {
-				// Fiscal Year filter
-				var aFiscalYears = oGlobalData.fiscalYears || [];
 				if (aFiscalYears.length > 0) {
 					filters.push(new Filter({
 						filters: aFiscalYears.map(function(year) {
@@ -630,33 +664,13 @@ sap.ui.define([
 						and: false
 					}));
 				}
-
-				if (oSelectedTabText === "Single Customer Quarterly Wise") {
-					// Customer filter
-					var aSelectedCustomerMasterData = oGlobalData.selectedCustomerMasterData || [];
-					if (aSelectedCustomerMasterData.length > 0) {
-						filters.push(new Filter({
-							filters: aSelectedCustomerMasterData.map(function(cust) {
-								return new Filter("customer", FilterOperator.EQ, cust);
-							}),
-							and: false
-						}));
-					}
-				}
-
 			} else {
-				// Quarters and Quarter Years filters
-				var aQuarters = oGlobalData.selectedQuarters || [];
-				var aQuarterYears = oGlobalData.selectedQuarterYears || [];
-
 				var quarterFilters = aQuarters.map(function(quarter) {
-					return new Filter("fiscalQuater", FilterOperator.EQ, quarter);
+					return new Filter("fiscalQuater", FilterOperator.EQ, quarter); // double-check spelling
 				});
-
 				var quarterYearFilters = aQuarterYears.map(function(year) {
-					return new Filter("quater_Year", FilterOperator.EQ, year);
+					return new Filter("quater_Year", FilterOperator.EQ, year); // double-check spelling
 				});
-
 				if (quarterFilters.length && quarterYearFilters.length) {
 					filters.push(new Filter({
 						filters: [
@@ -672,18 +686,16 @@ sap.ui.define([
 						and: true
 					}));
 				}
-				if (oSelectedTabText === "Single Customer Quarterly Wise") {
-					// Customer filter
-					var aSelectedCustomerMasterData = oGlobalData.selectedCustomerMasterData || [];
-					if (aSelectedCustomerMasterData.length > 0) {
-						filters.push(new Filter({
-							filters: aSelectedCustomerMasterData.map(function(cust) {
-								return new Filter("customer", FilterOperator.EQ, cust);
-							}),
-							and: false
-						}));
-					}
-				}
+			}
+
+			// Add customer filter (for both tabs)
+			if (oSelectedTabText === "Single Customer Quarterly Wise" && aSelectedCustomerMasterData.length > 0) {
+				filters.push(new Filter({
+					filters: aSelectedCustomerMasterData.map(function(cust) {
+						return new Filter("customer", FilterOperator.EQ, cust);
+					}),
+					and: false
+				}));
 			}
 
 			return filters;
@@ -796,6 +808,10 @@ sap.ui.define([
 					oGlobalDataModel.setProperty("/isChartFragment3Visible", oSelectedIndex === 0);
 					oGlobalDataModel.setProperty("/isChartFragment4Visible", oSelectedIndex !== 0);
 
+					// Bind chart
+					var sFragmentId = oSelectedIndex === 0 ? "chartFragment3" : "chartFragment4";
+					that.bindChartColorRules(sFragmentId, oData);
+
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();
 					if (!oData.length) {
@@ -814,6 +830,78 @@ sap.ui.define([
 					}
 				}
 			});
+		},
+		generateColorMapByCustomerYear: function(data) {
+			const colorMap = {};
+			const legendItems = [];
+			const uniqueKeys = [...new Set(data.map(item => item.customerName + " (" + item.fiscalYear + ")"))];
+
+			uniqueKeys.forEach((key, i) => {
+				const color = `hsl(${(i * 43) % 360}, 70%, 50%)`;
+				colorMap[key] = color;
+				legendItems.push({
+					label: key,
+					color: color
+				});
+			});
+
+			return {
+				colorMap: colorMap,
+				legendItems: legendItems
+			};
+		},
+		bindChartColorRules: function(sFragmentId, oData) {
+			var oVizFrame = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idVizFrame");
+			const result = this.generateColorMapByCustomerYear(oData);
+			const colorMap = result.colorMap;
+
+			if (!oVizFrame) {
+				console.warn("VizFrame not found for Fragment ID:", sFragmentId);
+				return;
+			}
+
+			// Sort data by Fiscal Year → Customer Name
+			/*oData.sort(function(a, b) {
+				if (a.fiscalYear === b.fiscalYear) {
+					return a.customerName.localeCompare(b.customerName);
+				}
+				return a.fiscalYear - b.fiscalYear;
+			});*/
+
+			const rules = oData.map(item => {
+				const customerYear = item.customerName + " (" + item.fiscalYear + ")";
+				return {
+					dataContext: {
+						"Customer Name": item.customerName,
+						"Fiscal Year": item.fiscalYear
+					},
+					properties: {
+						color: colorMap[customerYear]
+					}
+				};
+			});
+
+			oVizFrame.setVizProperties({
+				legend: {
+					visible: false,
+					isScrollable: true,
+					title: {
+						visible: true,
+						text: "Customer-Year Legend"
+					}
+				},
+				plotArea: {
+					dataPointStyle: {
+						rules: rules
+					},
+					dataLabel: {
+						visible: true
+					},
+					// Glossy effect
+					drawingEffect: "glossy"
+				}
+			});
+
 		},
 		getSingleCustomerData: function() {
 			var that = this;
@@ -844,8 +932,8 @@ sap.ui.define([
 
 					// Convert Turn Over to Crores
 					oData.forEach(function(item) {
-						if (item.turnover) {
-							item.turnover = (parseFloat(item.turnover) / 10000000).toFixed(2); // Convert to Crore and round to 2 decimals
+						if (item.turnOver) {
+							item.turnOver = (parseFloat(item.turnOver) / 10000000).toFixed(2); // Convert to Crore and round to 2 decimals
 						}
 					});
 
@@ -856,6 +944,68 @@ sap.ui.define([
 					// Toggle visibility of chart fragments
 					oGlobalDataModel.setProperty("/isChartFragment5Visible", oSelectedIndex === 0);
 					oGlobalDataModel.setProperty("/isChartFragment6Visible", oSelectedIndex !== 0);
+
+					// Check if data is available
+					sap.ui.core.BusyIndicator.hide();
+					if (!oData.length) {
+						sap.m.MessageBox.information("There are no data available!");
+					}
+				},
+				error: function(error) {
+					sap.ui.core.BusyIndicator.hide();
+					console.error(error);
+
+					try {
+						var errorObject = JSON.parse(error.responseText);
+						sap.m.MessageBox.error(errorObject.error.message.value);
+					} catch (e) {
+						sap.m.MessageBox.error("An unexpected error occurred.");
+					}
+				}
+			});
+		},
+		getQuarterlyData: function() {
+			var that = this;
+
+			// Retrieve models once to avoid redundant calls
+			var oComponent = this.getOwnerComponent();
+			var oQuarterlyTurnoverModel = oComponent.getModel("quarterlyTurnoverModel");
+			var oGlobalDataModel = oComponent.getModel("globalData");
+			var oGlobalData = oGlobalDataModel.getData();
+			var oQuarterlyTurnoverlistDataModel = oComponent.getModel("quarterlyTurnoverlistData");
+			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+
+			// reusable filter function 
+			var filters = this._buildFilters(oGlobalData, oSelectedIndex);
+
+			// Show busy indicator
+			sap.ui.core.BusyIndicator.show();
+
+			// OData call to fetch data
+			oQuarterlyTurnoverModel.read("/CUSTSet", {
+				urlParameters: {
+					"sap-client": "300"
+				},
+				filters: filters,
+				success: function(response) {
+					var oData = response.results || [];
+					console.log(oData);
+
+					// Convert Turn Over to Crores
+					oData.forEach(function(item) {
+						if (item.turnOver) {
+							item.turnOver = (parseFloat(item.turnOver) / 10000000).toFixed(2); // Convert to Crore and round to 2 decimals
+						}
+					});
+
+					// Update models based on selection
+					var sPropertyPath = oSelectedIndex === 0 ? "/quarterlyTurnoverlistDataFiscalYearWise" :
+						"/quarterlyTurnoverlistDataQuaterlyWise";
+					oQuarterlyTurnoverlistDataModel.setProperty(sPropertyPath, oData);
+
+					// Toggle visibility of chart fragments
+					oGlobalDataModel.setProperty("/isChartFragment7Visible", oSelectedIndex === 0);
+					oGlobalDataModel.setProperty("/isChartFragment8Visible", oSelectedIndex !== 0);
 
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();

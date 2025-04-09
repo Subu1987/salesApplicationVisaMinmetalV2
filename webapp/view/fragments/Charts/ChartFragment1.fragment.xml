@@ -38,12 +38,12 @@
 									<Text text="{allCustlistData>customerName}"/>
 								</table:template>
 							</table:Column>
-							<!--<table:Column>
+							<table:Column>
 								<Label text="Fiscal Year"/>
 								<table:template>
 									<Text text="{allCustlistData>fiscalYear}"/>
 								</table:template>
-							</table:Column>-->
+							</table:Column>
 							<table:Column>
 								<Label text="Turn Over (Cr)"/>
 								<table:template>
