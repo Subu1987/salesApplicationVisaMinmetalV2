@@ -12,6 +12,19 @@
     overflow-wrap: break-word; /* Prevent text overflow */
 }
 
+/* For most browsers */
+.boldText input::placeholder {
+    font-weight: bold !important;
+    color: #000 !important;
+}
+
+/* For Safari */
+.boldText input::-webkit-input-placeholder {
+    font-weight: bold !important;
+    color: #000 !important;
+}
+
+
 /*.equalWidthTabs .sapMITBHead {
     display: flex !important;
     justify-content: space-evenly;

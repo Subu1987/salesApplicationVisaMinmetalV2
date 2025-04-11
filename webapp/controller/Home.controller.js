@@ -562,25 +562,13 @@ sap.ui.define([
 				oButtonBox.setVisible(true);
 			}
 		},
-		onSelectChartType: function(oEvent) {
+		onChartTypeChange: function(oEvent) {
 			// Get the selected radio button
-			var selectedIndex = oEvent.getParameter("selectedIndex");
-			var oVizFrame = this.byId("oVizFrame");
-			var chartType;
+			var chartType = oEvent.getSource().getSelectedKey();
+			var oVizFrame = sap.ui.core.Fragment.byId(this.createId("chartFragment3"), "idVizFrame");
 
-			switch (selectedIndex) {
-				case 0:
-					chartType = "column";
-					break;
-				case 1:
-					chartType = "line";
-					break;
-				default:
-					chartType = "column";
-			}
-
-			// Update the vizType of the VizFrame
 			oVizFrame.setVizType(chartType);
+
 		},
 
 		/*************** get the Icontabfilter select updated in global model  *****************/
@@ -732,20 +720,32 @@ sap.ui.define([
 						if (item.turnOver) {
 							item.turnOver = (parseFloat(item.turnOver) / 10000000).toFixed(2); // Convert to Crore and round to 2 decimals
 						}
+
+						// Dynamically generate short name from customerName
+						var words = item.customerName.split(" ");
+						var abbreviation = words
+							.filter(w => w.length > 2 && w[0] === w[0].toUpperCase())
+							.map(w => w[0])
+							.join("")
+							.toUpperCase();
+
+						item.CustomerNameShort = abbreviation || item.customerName;
 					});
 
-					// In controller
-					/*var columnWidth = 80; // pixels per column
-					var chartWidth = oData.length * columnWidth;
-					that.byId("idVizFrame").setWidth(chartWidth + "px");*/
-
 					// Update models based on selection
-					var sPropertyPath = oSelectedIndex === 0 ? "/allCustlistDataFiscalYearWise" : "/allCustlistDataQuaterlyWise";
+					var isSelectedIndex = oSelectedIndex === 0;
+					var sPropertyPath = isSelectedIndex ? "/allCustlistDataFiscalYearWise" : "/allCustlistDataQuaterlyWise";
+					var sFragmentId = isSelectedIndex ? "chartFragment1" : "chartFragment2";
+
 					oAllCustListDataModel.setProperty(sPropertyPath, oData);
 
 					// Toggle visibility of chart fragments
-					oGlobalDataModel.setProperty("/isChartFragment1Visible", oSelectedIndex === 0);
-					oGlobalDataModel.setProperty("/isChartFragment2Visible", oSelectedIndex !== 0);
+					oGlobalDataModel.setProperty("/isChartFragment1Visible", isSelectedIndex);
+					oGlobalDataModel.setProperty("/isChartFragment2Visible", !isSelectedIndex);
+					
+					// Bind chart
+					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
+						sFragmentId, oData);
 
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();
@@ -798,19 +798,32 @@ sap.ui.define([
 						if (item.turnover) {
 							item.turnover = (parseFloat(item.turnover) / 10000000).toFixed(2); // Convert to Crore and round to 2 decimals
 						}
+
+						// Dynamically generate short name from customerName
+						var words = item.customerName.split(" ");
+						var abbreviation = words
+							.filter(w => w.length > 2 && w[0] === w[0].toUpperCase())
+							.map(w => w[0])
+							.join("")
+							.toUpperCase();
+
+						item.CustomerNameShort = abbreviation || item.customerName;
 					});
 
 					// Update models based on selection
-					var sPropertyPath = oSelectedIndex === 0 ? "/top10CustlistDataFiscalYearWise" : "/top10CustlistDataQuaterlyWise";
+					var isSelectedIndex = oSelectedIndex === 0;
+					var sPropertyPath = isSelectedIndex ? "/top10CustlistDataFiscalYearWise" : "/top10CustlistDataQuaterlyWise";
+					var sFragmentId = isSelectedIndex ? "chartFragment3" : "chartFragment4";
+
 					oTop10CustListDataModel.setProperty(sPropertyPath, oData);
 
 					// Toggle visibility of chart fragments
-					oGlobalDataModel.setProperty("/isChartFragment3Visible", oSelectedIndex === 0);
-					oGlobalDataModel.setProperty("/isChartFragment4Visible", oSelectedIndex !== 0);
+					oGlobalDataModel.setProperty("/isChartFragment3Visible", isSelectedIndex);
+					oGlobalDataModel.setProperty("/isChartFragment4Visible", !isSelectedIndex);
 
 					// Bind chart
-					var sFragmentId = oSelectedIndex === 0 ? "chartFragment3" : "chartFragment4";
-					that.bindChartColorRules(sFragmentId, oData);
+					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
+						sFragmentId, oData);
 
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();
@@ -831,28 +844,22 @@ sap.ui.define([
 				}
 			});
 		},
-		generateColorMapByCustomerYear: function(data) {
+		generateColorMapByFiscalYearWise: function(data) {
 			const colorMap = {};
-			const legendItems = [];
-			const uniqueKeys = [...new Set(data.map(item => item.customerName + " (" + item.fiscalYear + ")"))];
+			const uniqueKeys = [...new Set(data.map(item => item.CustomerNameShort + " (" + item.fiscalYear + ")"))];
 
 			uniqueKeys.forEach((key, i) => {
 				const color = `hsl(${(i * 43) % 360}, 70%, 50%)`;
 				colorMap[key] = color;
-				legendItems.push({
-					label: key,
-					color: color
-				});
 			});
 
 			return {
 				colorMap: colorMap,
-				legendItems: legendItems
 			};
 		},
-		bindChartColorRules: function(sFragmentId, oData) {
+		bindChartColorRulesByFiscalYearWise: function(sFragmentId, oData) {
 			var oVizFrame = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idVizFrame");
-			const result = this.generateColorMapByCustomerYear(oData);
+			const result = this.generateColorMapByFiscalYearWise(oData);
 			const colorMap = result.colorMap;
 
 			if (!oVizFrame) {
@@ -860,19 +867,11 @@ sap.ui.define([
 				return;
 			}
 
-			// Sort data by Fiscal Year → Customer Name
-			/*oData.sort(function(a, b) {
-				if (a.fiscalYear === b.fiscalYear) {
-					return a.customerName.localeCompare(b.customerName);
-				}
-				return a.fiscalYear - b.fiscalYear;
-			});*/
-
 			const rules = oData.map(item => {
-				const customerYear = item.customerName + " (" + item.fiscalYear + ")";
+				const customerYear = item.CustomerNameShort + " (" + item.fiscalYear + ")";
 				return {
 					dataContext: {
-						"Customer Name": item.customerName,
+						"Customer Name": item.CustomerNameShort,
 						"Fiscal Year": item.fiscalYear
 					},
 					properties: {
@@ -882,12 +881,16 @@ sap.ui.define([
 			});
 
 			oVizFrame.setVizProperties({
-				legend: {
-					visible: false,
-					isScrollable: true,
-					title: {
-						visible: true,
-						text: "Customer-Year Legend"
+				sizeLegend: {
+					visible: false
+				},
+				categoryAxis: {
+					layout: {
+						maxHeight: 100
+					},
+					label: {
+						rotation: "45",
+						visible: true
 					}
 				},
 				plotArea: {
@@ -897,12 +900,70 @@ sap.ui.define([
 					dataLabel: {
 						visible: true
 					},
-					// Glossy effect
-					drawingEffect: "glossy"
+					drawingEffect: "glossy",
+					tooltip: {
+						visible: true,
+						formatString: [
+							"Customer: {customerName}", // <-- Show full name here
+							"Fiscal Year: {Fiscal Year}",
+							"Turnover: {turnover} Cr"
+						]
+					}
 				}
 			});
 
 		},
+		generateColorMapByQuarterlyWise: function(data) {
+			const colorMap = {};
+
+			const uniqueKeys = [...new Set(data.map(item => item.CustomerNameShort + " (" + item.quater + " " + item.quaterYear + ")"))];
+
+			uniqueKeys.forEach((key, i) => {
+				const color = `hsl(${(i * 37) % 360}, 65%, 55%)`;
+				colorMap[key] = color;
+			});
+
+			return {
+				colorMap: colorMap,
+			};
+		},
+		bindChartColorRulesByQuarterlyWise: function(sFragmentId, oData) {
+			const oVizFrame = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idVizFrame");
+			const result = this.generateColorMapByQuarterlyWise(oData);
+			const colorMap = result.colorMap;
+
+			if (!oVizFrame) {
+				console.warn("VizFrame not found for Fragment ID:", sFragmentId);
+				return;
+			}
+
+			const rules = oData.map(item => {
+				const customerQuarter = item.CustomerNameShort + " (" + item.quater + " " + item.quaterYear + ")";
+				return {
+					dataContext: {
+						"Customer Name": item.CustomerNameShort,
+						"Quarter": item.quater,
+						"Quarter Year": item.quaterYear
+					},
+					properties: {
+						color: colorMap[customerQuarter]
+					}
+				};
+			});
+
+			oVizFrame.setVizProperties({
+				plotArea: {
+					dataPointStyle: {
+						rules: rules
+					},
+					dataLabel: {
+						visible: true
+					},
+					drawingEffect: "glossy"
+				}
+			});
+		},
+
 		getSingleCustomerData: function() {
 			var that = this;
 
@@ -935,15 +996,32 @@ sap.ui.define([
 						if (item.turnOver) {
 							item.turnOver = (parseFloat(item.turnOver) / 10000000).toFixed(2); // Convert to Crore and round to 2 decimals
 						}
+						
+						// Dynamically generate short name from customerName
+						var words = item.customerName.split(" ");
+						var abbreviation = words
+							.filter(w => w.length > 2 && w[0] === w[0].toUpperCase())
+							.map(w => w[0])
+							.join("")
+							.toUpperCase();
+
+						item.CustomerNameShort = abbreviation || item.customerName;
 					});
 
 					// Update models based on selection
-					var sPropertyPath = oSelectedIndex === 0 ? "/singleCustlistDataFiscalYearWise" : "/singleCustlistDataQuaterlyWise";
+					var isSelectedIndex = oSelectedIndex === 0;
+					var sPropertyPath = isSelectedIndex ? "/singleCustlistDataFiscalYearWise" : "/singleCustlistDataQuaterlyWise";
+					var sFragmentId = isSelectedIndex ? "chartFragment5" : "chartFragment6";
+					
 					oSingleCustListDataModel.setProperty(sPropertyPath, oData);
 
 					// Toggle visibility of chart fragments
-					oGlobalDataModel.setProperty("/isChartFragment5Visible", oSelectedIndex === 0);
-					oGlobalDataModel.setProperty("/isChartFragment6Visible", oSelectedIndex !== 0);
+					oGlobalDataModel.setProperty("/isChartFragment5Visible", isSelectedIndex);
+					oGlobalDataModel.setProperty("/isChartFragment6Visible", !isSelectedIndex);
+					
+					// Bind chart
+					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
+						sFragmentId, oData);
 
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();
@@ -1026,7 +1104,6 @@ sap.ui.define([
 				}
 			});
 		},
-
 		_formatDecimalProperties: function(obj, then) {
 			for (var key in obj) {
 

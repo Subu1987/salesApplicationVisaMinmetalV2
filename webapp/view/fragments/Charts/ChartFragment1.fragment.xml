@@ -1,18 +1,17 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:table="sap.ui.table" xmlns:suite="sap.suite.ui.commons"
 	xmlns:viz="sap.viz.ui5.controls" xmlns:vizData="sap.viz.ui5.data" xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
 	<suite:ChartContainer id="chartContainer" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false"
-		title="{globalData>/selectedTabText}">
+		title="{globalData>/selectedTabText}" showLegendButton="false">
 		<!-- Chart Content -->
 		<suite:content>
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
 				<suite:content>
-					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%"
-						vizProperties="{ plotArea: { drawingEffect: 'glossy', dataLabel: { visible: true, showTotal: true } }, categoryAxis: { label: { rotation: 'vertical', style: { fontSize: '2px' } } } }"
-						uiConfig="{ 'applicationSet': 'fiori' }">
+					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{allCustlistData>/allCustlistDataFiscalYearWise}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Customer Name" value="{allCustlistData>customerName}"/>
+									<vizData:DimensionDefinition name="Customer Name" value="{allCustlistData>CustomerNameShort}"/>
+									<vizData:DimensionDefinition name="Fiscal Year" value="{allCustlistData>fiscalYear}"/>
 								</vizData:dimensions>
 								<vizData:measures>
 									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{allCustlistData>turnOver}"/>
@@ -22,7 +21,7 @@
 						<viz:feeds>
 							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (Cr)"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Name"/>
-							<vizFeeds:FeedItem uid="color" type="Dimension" values="Customer Name"/>
+							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Fiscal Year"/>
 						</viz:feeds>
 					</viz:VizFrame>
 				</suite:content>

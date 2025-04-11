@@ -1,54 +1,40 @@
-<mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core"
-	xmlns:f="sap.ui.layout.form" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
-	xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.salesApplication.controller.Home">
-	<Page id="page" title="Sales Dashboard" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false">
+<mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.salesApplication.controller.Home">
+	<Page id="page" title="Sales Dashboard" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false" titleLevel="H1">
 		<content>
-			<FlexBox id="panelFormBox" direction="Row" width="100%" height="auto" justifyContent="Center" alignItems="Center" class="sapUiTinyMarginTop">
+			<FlexBox id="panelFormBox" direction="Row" height="auto" justifyContent="Center" alignItems="Center" class="sapUiTinyMarginTop">
 				<items>
 					<!-- Radio Button Section -->
-					<FlexBox width="100%" id="RadioBtn" wrap="NoWrap" justifyContent="Center" alignItems="Center">
-						<RadioButtonGroup id="radioBtnlist" columns="6" select="onRadioButtonSelectList">
+					<FlexBox width="auto" id="RadioBtn" wrap="NoWrap" justifyContent="Center" alignItems="Center">
+						<RadioButtonGroup id="radioBtnlist" columns="2" select="onRadioButtonSelectList">
 							<RadioButton id="fiscalYearWise" text="Fiscal Year Wise"/>
 							<RadioButton id="quaterlyWise" text="Quaterly Wise"/>
 						</RadioButtonGroup>
 					</FlexBox>
 					<!-- Input Fields Section -->
-					<FlexBox width="100%" id="tripView" wrap="NoWrap" justifyContent="Center" alignItems="Center">
-						<HBox id="customerMasterBox" direction="Column" alignItems="Center" visible="false">
-							<Label text="Customer" design="Bold"/>
-							<Input 
-							id="_customerInputId" 
-							type="Text" 
-							placeholder="eg.1000000000,1000000001" 
-							showValueHelp="true" 
-							showClearIcon="true" 
-							value="{globalData>/selectedCustomerNames}"
-							valueHelpRequest="handleValueCustomerMaster" 
-							required="true" 
-							/>
+					<FlexBox width="auto" id="inputBoxes" wrap="NoWrap" justifyContent="Center" alignItems="Center">
+						<HBox id="customerMasterBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
+							<!--<Label text="Customer" design="Bold"/>-->
+							<Input id="_customerInputId" type="Text" placeholder="Customer" class="boldText" showValueHelp="true" showClearIcon="true" value="{globalData>/selectedCustomerNames}" valueHelpRequest="handleValueCustomerMaster" required="true"/>
 						</HBox>
 						<!-- Financial Year Input -->
 						<HBox id="fiscalYearBox" direction="Column" alignItems="Center" visible="true" class="sapUiTinyMarginBegin">
-							<Label text="Fiscal Year" design="Bold"/>
-							<Input id="_financialYearInputId" type="Text" placeholder="eg.2023,2024,2025" showValueHelp="true" value="{globalData>/fiscalYears}"
-								valueHelpRequest="handleValueFiscalYear" required="true" liveChange="onLiveChange"/>
+							<!--<Label text="Fiscal Year" design="Bold"/>-->
+							<Input id="_financialYearInputId" type="Text" placeholder="Fiscal Year" class="boldText" showValueHelp="true" value="{globalData>/fiscalYears}" valueHelpRequest="handleValueFiscalYear" required="true" liveChange="onLiveChange"/>
 						</HBox>
 						<!-- Financial Quarter Input -->
 						<HBox id="quarterBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
-							<Label text="Fiscal Quarter" design="Bold"/>
-							<Input id="_quarterInputId" type="Text" placeholder="Enter Value" showValueHelp="true" value="{globalData>/selectedQuarters}"
-								valueHelpRequest="handleValueQuarter" required="true" liveChange="onLiveChange"/>
+							<!--<Label text="Fiscal Quarter" design="Bold"/>-->
+							<Input id="_quarterInputId" type="Text" placeholder="Fiscal Quarter" class="boldText" showValueHelp="true" value="{globalData>/selectedQuarters}" valueHelpRequest="handleValueQuarter" required="true" liveChange="onLiveChange"/>
 						</HBox>
 						<!-- Quarter Year Input -->
 						<HBox id="quarterYearBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
-							<Label text="Quarter Year" design="Bold"/>
-							<Input id="_quarterInputYearId" type="Text" placeholder="Enter Value" showValueHelp="true" value="{globalData>/selectedQuarterYears}"
-								valueHelpRequest="handleValueQuarterYear" required="true" liveChange="onLiveChange"/>
+							<!--<Label text="Quarter Year" design="Bold"/>-->
+							<Input id="_quarterInputYearId" type="Text" placeholder="Quarter Year" class="boldText" showValueHelp="true" value="{globalData>/selectedQuarterYears}" valueHelpRequest="handleValueQuarterYear" required="true" liveChange="onLiveChange"/>
 						</HBox>
 						<!-- Action Buttons (Search and Clear) -->
-						<HBox id="buttonBox" direction="Row" justifyContent="Center" alignItems="Center" class="sapUiSmallMarginTop">
-							<Button id="searchData" icon="sap-icon://sales-order" type="Emphasized" press="getBackendData" class="sapUiTinyMarginBegin"/>
-							<Button id="clearData" icon="sap-icon://delete" type="Emphasized" press="clearListData" class="sapUiTinyMarginBegin"/>
+						<HBox id="buttonBox" direction="Row" justifyContent="Center" alignItems="Center">
+							<Button id="searchData" icon="sap-icon://sales-order" press="getBackendData" class="sapUiTinyMarginBegin" type="Accept"/>
+							<Button id="clearData" icon="sap-icon://delete" press="clearListData" class="sapUiTinyMarginBegin" type="Reject"/>
 						</HBox>
 					</FlexBox>
 				</items>
@@ -59,7 +45,7 @@
 					<IconTabBar id="iconTabBar" selectedKey="scenario1" select="onTabSelect" stretchContentHeight="true" class="equalWidthTabs">
 						<items>
 							<!-- Scenario 1 -->
-							<IconTabFilter key="scenario1" text="All Customer Quarterly Wise" icon="sap-icon://group" tooltip="All Customer Quarterly Wise">
+							<IconTabFilter key="scenario1" text="All Customer Quarterly Wise" icon="sap-icon://group" tooltip="All Customer Quarterly Wise" iconColor="Positive" design="Horizontal">
 								<content>
 									<VBox visible="{globalData>/isChartFragment1Visible}">
 										<core:Fragment id="chartFragment1" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment1" type="XML"/>
@@ -71,7 +57,7 @@
 							</IconTabFilter>
 							<!-- Scenario 2 -->
 							<IconTabSeparator/>
-							<IconTabFilter key="scenario2" text="Top 10 Customer Quarterly Wise" icon="sap-icon://customer" tooltip="Top 10 Customer Quarterly Wise">
+							<IconTabFilter key="scenario2" text="Top 10 Customer Quarterly Wise" icon="sap-icon://customer" tooltip="Top 10 Customer Quarterly Wise" design="Horizontal">
 								<content>
 									<!--<VBox visible="{globalData>/isTableFragment3Visible}">
 										<core:Fragment id="tableFragment3" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment3" type="XML"/>
@@ -89,8 +75,7 @@
 							</IconTabFilter>
 							<!-- Scenario 3 -->
 							<IconTabSeparator/>
-							<IconTabFilter key="scenario3" text="Single Customer Quarterly Wise" icon="sap-icon://employee-lookup"
-								tooltip="Single Customer Quarterly Wise">
+							<IconTabFilter key="scenario3" text="Single Customer Quarterly Wise" icon="sap-icon://employee-lookup" tooltip="Single Customer Quarterly Wise" iconColor="Critical" design="Horizontal">
 								<content>
 									<!--<VBox visible="{globalData>/isTableFragment5Visible}">
 										<core:Fragment id="tableFragment5" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment5" type="XML"/>
@@ -108,8 +93,7 @@
 							</IconTabFilter>
 							<!-- Scenario 4 -->
 							<IconTabSeparator/>
-							<IconTabFilter key="scenario4" text="Quarterly Wise Turnover" icon="sap-icon://customer-financial-fact-sheet"
-								tooltip="Quarterly Wise Turnover">
+							<IconTabFilter key="scenario4" text="Quarterly Wise Turnover" icon="sap-icon://customer-financial-fact-sheet" tooltip="Quarterly Wise Turnover" iconColor="Negative" design="Horizontal">
 								<content>
 									<!--<VBox visible="{globalData>/isTableFragment7Visible}">
 										<core:Fragment id="tableFragment7" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment7" type="XML"/>

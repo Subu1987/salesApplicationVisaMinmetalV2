@@ -1,17 +1,30 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:table="sap.ui.table" xmlns:suite="sap.suite.ui.commons"
-	xmlns:viz="sap.viz.ui5.controls" xmlns:vizData="sap.viz.ui5.data" xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
-	<suite:ChartContainer id="chartContainer" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false"
+<core:FragmentDefinition 
+xmlns:suite="sap.suite.ui.commons" 
+xmlns:m="sap.m"
+xmlns:core="sap.ui.core" 
+xmlns:table="sap.ui.table"
+xmlns:viz="sap.viz.ui5.controls" 
+xmlns:vizData="sap.viz.ui5.data" 
+xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
+	<suite:ChartContainer id="chartContainer" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false" showLegendButton="false"
 		title="{globalData>/selectedTabText}">
 		<!-- Chart Content -->
+		<!--<suite:dimensionSelectors>
+			<m:Select id="chartTypeSelect" change="onChartTypeChange" width="200px">
+				<core:Item key="column" text="📊 Column Chart"/>
+				<core:Item key="bar" text="📉 Bar Chart"/>
+				<core:Item key="line" text="📈 Line Chart"/>
+
+			</m:Select>
+		</suite:dimensionSelectors>-->
 		<suite:content>
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
 				<suite:content>
 					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
-						
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{top10listData>/top10CustlistDataFiscalYearWise}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Customer Name" value="{top10listData>customerName}"/>
+									<vizData:DimensionDefinition name="Customer Name" value="{top10listData>CustomerNameShort}"/>
 									<vizData:DimensionDefinition name="Fiscal Year" value="{top10listData>fiscalYear}"/>
 								</vizData:dimensions>
 								<vizData:measures>
@@ -33,21 +46,21 @@
 					<table:Table id="idTable" rows="{top10listData>/top10CustlistDataFiscalYearWise}" selectionMode="None">
 						<table:columns>
 							<table:Column>
-								<Label text="Customer Name"/>
+								<m:Label text="Customer Name"/>
 								<table:template>
-									<Text text="{top10listData>customerName}"/>
+									<m:Text text="{top10listData>customerName}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>
-								<Label text="Fiscal Year"/>
+								<m:Label text="Fiscal Year"/>
 								<table:template>
-									<Text text="{top10listData>fiscalYear}"/>
+									<m:Text text="{top10listData>fiscalYear}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>
-								<Label text="Turn Over (Cr)"/>
+								<m:Label text="Turn Over (Cr)"/>
 								<table:template>
-									<Text text="{top10listData>turnover}"/>
+									<m:Text text="{top10listData>turnover}"/>
 								</table:template>
 							</table:Column>
 						</table:columns>
