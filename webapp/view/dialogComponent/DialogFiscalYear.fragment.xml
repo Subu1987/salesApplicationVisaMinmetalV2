@@ -2,7 +2,7 @@
     <SelectDialog
         id="fiscalYearDialog"
         title="Select Fiscal Year"
-        search="_handleFiscalYearSearch"
+        liveChange="_handleFiscalYearSearch"
         confirm="_handleFiscalYearClose"
         cancel="_handleFiscalYearClose"
         multiSelect="true"

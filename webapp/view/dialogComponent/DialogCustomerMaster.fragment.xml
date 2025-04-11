@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
-	<Dialog id="idCustomerMasterDialog" title="Select Customer Master" draggable="true" resizable="true" afterClose=".onCloseCustomerMaster">
+	<Dialog id="idCustomerMasterDialog" title="Select Customer Master" draggable="true" resizable="true">
 		<content>
 			<Toolbar>
 				<SearchField id="idCustomerSearchField" placeholder="Search..." liveChange=".onSearchCustomerMaster"/>

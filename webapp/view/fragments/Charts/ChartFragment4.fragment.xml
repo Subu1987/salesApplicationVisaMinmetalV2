@@ -15,7 +15,7 @@
 									<vizData:DimensionDefinition name="Quarter" value="{top10listData>quater}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{top10listData>turnover}"/>
+									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{top10listData>turnOver}"/>
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
@@ -54,7 +54,7 @@
 							<table:Column>
 								<Label text="Turn Over (Cr)"/>
 								<table:template>
-									<Text text="{top10listData>turnover}"/>
+									<Text text="{top10listData>turnOver}"/>
 								</table:template>
 							</table:Column>
 						</table:columns>

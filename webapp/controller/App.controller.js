@@ -1,41 +1,64 @@
 sap.ui.define([
 	"com/infocus/salesApplication/controller/BaseController",
-	"sap/ui/model/json/JSONModel",
-	"sap/m/MessageBox"
-], function(BaseController, JSONModel, MessageBox) {
+	"sap/m/MessageBox",
+	"sap/ui/core/BusyIndicator"
+], function(BaseController, MessageBox, BusyIndicator) {
 	"use strict";
 
 	return BaseController.extend("com.infocus.salesApplication.controller.App", {
 
 		onInit: function() {
+		    console.log("App Controller onInit called");
+			this._loadAllModelMetadata();
+		},
 
-			var oViewModel,
-				fnSetAppNotBusy,
-				iOriginalBusyDelay = this.getView().getBusyIndicatorDelay();
+		_loadAllModelMetadata: function() {
+			BusyIndicator.show(0); // Show immediately
 
-			oViewModel = new JSONModel({
-				busy: true,
-				delay: 0
-			});
+			setTimeout(() => {
+				// Map of model names to user-friendly labels
+				const modelMap = {
+					"top10CustomerModel": "Top 10 Customer",
+					"singleCustomerModel": "Single Customer",
+					"allCustomerModel": "All Customers",
+					"quarterlyTurnoverModel": "Quarterly Turnover",
+					"customerMasterModel": "Customer Master"
+				};
 
-			this.setModel(oViewModel, "appView");
+				// Create metadata loading promises
+				const modelPromises = Object.keys(modelMap).map(modelName => {
+					const model = this.getOwnerComponent().getModel(modelName);
+					return model.metadataLoaded()
+						.then(() => ({
+							status: "fulfilled",
+							modelName
+						}))
+						.catch(() => ({
+							status: "rejected",
+							modelName
+						}));
+				});
 
-			fnSetAppNotBusy = function() {
-				oViewModel.setProperty("/busy", false);
-				oViewModel.setProperty("/delay", iOriginalBusyDelay);
-			};
-			
-			// Function to handle metadata loading failure
-            var handleMetadataFailed = function(oError) {
-                MessageBox.error("Failed to load metadata: " + oError.getParameter("message"));
-                fnSetAppNotBusy();
-            };
+				// Wait for all metadata loads
+				Promise.all(modelPromises).then(results => {
+					BusyIndicator.hide(); // Hide after everything
 
-			// disable busy indication when the metadata is loaded and in case of errors
+					const failedModels = results.filter(r => r.status === "rejected");
 
-			/*this.getOwnerComponent().getModel().metadataLoaded().then(fnSetAppNotBusy);
-			this.getOwnerComponent().getModel().attachMetadataFailed(handleMetadataFailed);*/
+					if (failedModels.length > 0) {
+						const failedNames = failedModels
+							.map(item => `• ${modelMap[item.modelName]}`)
+							.join("\n");
+
+						const errorMessage = `The following data failed to load:\n\n${failedNames}\n\nPlease try again or contact support.`;
+
+						MessageBox.error(errorMessage);
+					} else {
+						// Optional: You can log or toast if you ever want
+						console.log("✅ All model metadata loaded successfully.");
+					}
+				});
+			}, 0); // Give UI time to show BusyIndicator
 		}
-
 	});
 });

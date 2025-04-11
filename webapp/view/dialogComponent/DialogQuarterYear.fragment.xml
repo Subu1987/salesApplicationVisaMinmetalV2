@@ -2,7 +2,7 @@
     <SelectDialog
         id="quarterYearDialog"
         title="Select Quarter Year"
-        search="_handleQuarterYearSearch"
+        liveChange="_handleQuarterYearSearch"
         confirm="_handleQuarterYearClose"
         cancel="_handleQuarterYearClose"
         multiSelect="true"

@@ -24,122 +24,7 @@ sap.ui.define([
 
 		},
 		_initializeAppData: function() {
-			/*this.getLedgerParametersData();*/
-			/*this.getUserIdFromLoggedInUser();*/
-			/*this._getUserIdFromLoggedInUser();*/
-
 			this.getCustomerMasterParametersData();
-		},
-		_getUserIdFromLoggedInUser: function() {
-			var that = this;
-
-			// the application is running within the Fiori Launchpad
-			/*if (sap.ushell && sap.ushell.Container) {
-				sap.ushell.Container.getServiceAsync("UserInfo").then(function(UserInfo) {
-						var userId = UserInfo.getId();
-						console.log(UserInfo);
-						//var userId = "1000";
-						that._onGlobalUserIdSet(userId);
-					})
-					.catch(function(oError) {
-						MessageBox.error("Error retrieving ShellUIService: " + oError.message);
-						console.error("Error retrieving ShellUIService: ", oError);
-					});
-			} else {*/
-			// Fallback method using AJAX to call /sap/bc/ui2/start_up
-			jQuery.ajax({
-				url: "/sap/bc/ui2/start_up",
-				method: "GET",
-				success: function(data) {
-					var userId = data.id;
-					console.log("User ID from /sap/bc/ui2/start_up:", userId);
-					that._onGlobalUserIdSet(userId);
-				},
-				error: function(xhr, status, error) {
-					MessageBox.error("Error retrieving User ID via AJAX: " + status);
-					console.error("Error retrieving User ID via AJAX:", status, error);
-				}
-			});
-
-			/*}*/
-		},
-		_onGlobalUserIdSet: function(sUserId) {
-			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
-			if (oGlobalDataModel) {
-				oGlobalDataModel.setProperty("/userId", sUserId || "");
-
-				// Call userAuthSet after the userId is set
-				this.userAuthSet();
-			} else {
-				console.error("Global data model is not available.");
-			}
-		},
-		userAuthSet: function() {
-			var that = this;
-			var authorizationModel = this.getOwnerComponent().getModel("authorizationModel");
-			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
-			var oUrl = "/AUTHSet(UNAME='" + oGlobalData.userId + "')";
-
-			sap.ui.core.BusyIndicator.show();
-
-			authorizationModel.read(oUrl, {
-				urlParameters: {
-					"sap-client": "400"
-				},
-
-				success: function(response) {
-					var oData = response;
-					console.log(oData);
-
-					// Check if data is available
-					if (!oData || oData.length === 0) {
-						sap.ui.core.BusyIndicator.hide();
-						sap.m.MessageBox.information('There are no data available!');
-					} else {
-						var oAuthDataModel = that.getOwnerComponent().getModel("authData");
-						oAuthDataModel.setData(oData);
-						///// Authorization Changes /////////
-						var inputCompanyCode = that.byId("inputCompanyCode").getValue();
-						that.totalRadioBtnCheck(inputCompanyCode);
-						that.authorizationCheck();
-						sap.ui.core.BusyIndicator.hide();
-					}
-
-				},
-				error: function(error) {
-					sap.ui.core.BusyIndicator.hide();
-					console.log(error);
-					var errorObject = JSON.parse(error.responseText);
-					sap.m.MessageBox.error(errorObject.error.message.value);
-				}
-			});
-		},
-		authorizationCheck: function() {
-			var oAuthDataModel = this.getOwnerComponent().getModel("authData");
-			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
-			var oAuthData = oAuthDataModel.oData;
-			var totalRadioBtn = oGlobalDataModel.getProperty("/totalRadioBtnChk");
-
-			////// Authorization Change ////////
-			if (oAuthData.PRS === "X") {
-				oGlobalDataModel.setProperty("/prfitCentrGrp", "PRS");
-				this.byId("PRS").setSelected(true);
-			} else if (oAuthData.FTRS === "X") {
-				oGlobalDataModel.setProperty("/prfitCentrGrp", "FTRS");
-				this.byId("FTRS").setSelected(true);
-			} else if (oAuthData.CORP === "X") {
-				oGlobalDataModel.setProperty("/prfitCentrGrp", "CORP");
-				this.byId("CORP").setSelected(true);
-			} else if (totalRadioBtn === "X") {
-				oGlobalDataModel.setProperty("/prfitCentrGrp", "TOTAL");
-				this.byId("companytotal").setSelected(true);
-			} else {
-				oGlobalDataModel.setProperty("/prfitCentrGrp", "");
-			}
-
-			// var inputCompanyCode = this.byId("inputCompanyCode").getValue();
-			// this.totalRadioBtnCheck(inputCompanyCode);
-
 		},
 		_updateGlobalDataModel: function() {
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
@@ -223,74 +108,6 @@ sap.ui.define([
 			}
 
 			return true;
-		},
-		formatDate: function(dateString) {
-			if (!dateString) {
-				console.error("Invalid Date String:", dateString);
-				return null;
-			}
-
-			var parts = dateString.split(/[-/.]/); // Handle different delimiters
-			if (parts.length === 3 && parts[2].length === 2) {
-				var year = parts[2];
-				var month = parts[0];
-				var day = parts[1];
-
-				// Convert two-digit year to four-digit
-				if (year.length === 2) {
-					var currentYear = new Date().getFullYear();
-					var currentCentury = Math.floor(currentYear / 100) * 100;
-					year = (currentCentury + parseInt(year)).toString();
-				}
-
-				// Format as "YYYYMMDD"
-				var formattedDate = year + month.padStart(2, '0') + day.padStart(2, '0');
-				return formattedDate;
-			} else if (parts.length === 3 && parts[2].length > 2) {
-				var year = parts[2];
-				var month = parts[1];
-				var day = parts[0];
-
-				// Convert two-digit year to four-digit
-				/*if (year.length === 2) {
-					var currentYear = new Date().getFullYear();
-					var currentCentury = Math.floor(currentYear / 100) * 100;
-					year = (currentCentury + parseInt(year)).toString();
-				}*/
-
-				// Format as "YYYYMMDD"
-				var formattedDate = year + month + day;
-				return formattedDate;
-			} else {
-				console.error("Invalid Date String:", dateString);
-				return null;
-			}
-		},
-		onLiveChange: function(oEvent) {
-			var oInput = oEvent.getSource();
-			var sInputId = oInput.getId();
-			var sInputValue = oInput.getValue();
-			var sProperty;
-
-			// update based on the input field ID
-			if (sInputId.endsWith("--inputCompanyCode")) {
-				sProperty = "/cmpnyCode";
-			} else if (sInputId.endsWith("--fromDate")) {
-				sProperty = "/fromDate";
-			} else if (sInputId.endsWith("--toDate")) {
-				sProperty = "/toDate";
-			}
-
-			/// 03.09.2024 Total Radio Btn Check based on Company Code 
-			this.totalRadioBtnCheck(sInputValue);
-
-			// Update the global data model property
-			if (sProperty) {
-				var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
-				if (oGlobalDataModel) {
-					oGlobalDataModel.setProperty(sProperty, sInputValue);
-				}
-			}
 		},
 
 		/*************** get parameters data *****************/
@@ -399,58 +216,96 @@ sap.ui.define([
 
 			oBinding.filter(aFilters);
 		},
-		_handleValueLedgerSearch: function(oEvent) {
-			var sValue = oEvent.getParameter("value");
-			var oFilter = new Filter(
-				"Rldnr",
-				FilterOperator.Contains, sValue
-			);
-			oEvent.getSource().getBinding("items").filter([oFilter]);
+		_handleFiscalYearSearch: function(oEvent) {
+			var sQuery = oEvent.getParameter("value");
+			var oDialog = oEvent.getSource();
+
+			var aItems = oDialog.getItems();
+			aItems.forEach(function(oItem) {
+				var sTitle = oItem.getTitle();
+				if (sTitle && sTitle.toLowerCase().includes(sQuery.toLowerCase())) {
+					oItem.setVisible(true);
+				} else {
+					oItem.setVisible(false);
+				}
+			});
+		},
+		_handleQuarterYearSearch: function(oEvent) {
+			var sQuery = oEvent.getParameter("value");
+			var oDialog = oEvent.getSource();
+
+			var aItems = oDialog.getItems();
+			aItems.forEach(function(oItem) {
+				var sTitle = oItem.getTitle();
+				if (sTitle && sTitle.toLowerCase().includes(sQuery.toLowerCase())) {
+					oItem.setVisible(true);
+				} else {
+					oItem.setVisible(false);
+				}
+			});
 		},
 
 		/*************** set the each property to globalData & reflect data in input field  *****************/
 
-		/*onSelectionChangeCustomerMaster: function(oEvent) {
+		onSelectionChangeCustomerMaster: function(oEvent) {
 			var oList = oEvent.getSource();
-			var aSelectedItems = oList.getSelectedItems();
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var aSelectedCustomerIDs = oGlobalModel.getProperty("/selectedCustomerIDs") || [];
+			var aSelectedCustomerNames = oGlobalModel.getProperty("/selectedCustomerNames") || [];
 
-			var aSelectedNames = [];
-			var aSelectedIDs = [];
+			var aAllItems = oList.getItems();
+			aAllItems.forEach(function(oItem) {
+				var sID = oItem.getTitle();
+				var sName = oItem.getDescription();
 
-			aSelectedItems.forEach(function(oItem) {
-				aSelectedIDs.push(oItem.getTitle()); // Customer ID
-				aSelectedNames.push(oItem.getDescription()); // Customer Name
+				// If item is selected
+				if (oItem.getSelected()) {
+					if (!aSelectedCustomerIDs.includes(sID)) {
+						aSelectedCustomerIDs.push(sID);
+						aSelectedCustomerNames.push(sName);
+					}
+				} else {
+					// If item is unselected
+					var index = aSelectedCustomerIDs.indexOf(sID);
+					if (index !== -1) {
+						aSelectedCustomerIDs.splice(index, 1);
+						aSelectedCustomerNames.splice(index, 1);
+					}
+				}
 			});
 
-			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
-			oGlobalModel.setProperty("/selectedCustomerNames", aSelectedNames);
-			oGlobalModel.setProperty("/selectedCustomerIDs", aSelectedIDs);
-		},*/
-
+			oGlobalModel.setProperty("/selectedCustomerNames", aSelectedCustomerNames);
+			oGlobalModel.setProperty("/selectedCustomerIDs", aSelectedCustomerIDs);
+			oGlobalModel.setProperty("/selectedCustomerNamesDisplay", aSelectedCustomerNames.join(", "));
+		},
 		onConfirmCustomerMaster: function() {
 			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
-			var oList = Fragment.byId(this.getView().getId(), "idCustomerMasterList");
-			var aSelectedItems = oList.getSelectedItems();
-			var aSelectedNames = [];
-			var aSelectedIDs = [];
 
-			aSelectedItems.forEach(function(oItem) {
-				aSelectedNames.push(oItem.getDescription()); // Name
-				aSelectedIDs.push(oItem.getTitle()); // Customer
-			});
+			// Values are already being maintained correctly in the model
+			var aSelectedNamesDisplay = oGlobalModel.getProperty("/selectedCustomerNamesDisplay") || "";
+			var aSelectedNames = oGlobalModel.getProperty("/selectedCustomerNames") || [];
+			var aSelectedIDs = oGlobalModel.getProperty("/selectedCustomerIDs") || [];
 
-			oGlobalModel.setProperty("/selectedCustomerNames", aSelectedNames);
-			oGlobalModel.setProperty("/selectedCustomerIDs", aSelectedIDs);
+			// You can now directly use these for any processing or display
+			console.log("Confirmed selected IDs:", aSelectedIDs);
+			console.log("Confirmed selected Names:", aSelectedNames);
+			console.log("Confirmed selected Display Names:", aSelectedNamesDisplay);
+
+			oGlobalModel.refresh(true);
 
 			this._resetCustomerMasterDialog();
 			this._oCustomerMasterDialog.close();
 		},
-
 		onCloseCustomerMaster: function() {
+			// Clear global model selections
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			oGlobalModel.setProperty("/selectedCustomerIDs", []);
+			oGlobalModel.setProperty("/selectedCustomerNames", []);
+			oGlobalModel.setProperty("/selectedCustomerNamesDisplay", "");
+
 			this._resetCustomerMasterDialog();
 			this._oCustomerMasterDialog.close();
 		},
-
 		_resetCustomerMasterDialog: function() {
 			var oList = Fragment.byId(this.getView().getId(), "idCustomerMasterList");
 			var oSearchField = Fragment.byId(this.getView().getId(), "idCustomerSearchField");
@@ -458,11 +313,20 @@ sap.ui.define([
 			// Clear Search
 			if (oSearchField) {
 				oSearchField.setValue("");
+
+				// Manually trigger the liveChange event handler with empty value
+				this.onSearchCustomerMaster({
+					getParameter: function() {
+						return "";
+					}
+				});
 			}
-			// Remove selections & filters
+
+			// Clear selections
 			if (oList) {
-				oList.removeSelections(true);
-				oList.getBinding("items").filter([]);
+				oList.getItems().forEach(function(oItem) {
+					oItem.setSelected(false);
+				});
 			}
 		},
 
@@ -487,8 +351,10 @@ sap.ui.define([
 				}
 			}
 
-			// Clear filters on closing the dialog
-			oEvent.getSource().getBinding("items").filter([]);
+			// Reset visibility
+			oEvent.getSource().getItems().forEach(function(oItem) {
+				oItem.setVisible(true);
+			});
 		},
 		_handleValueQuarterClose: function(oEvent) {
 			var aSelectedItems = oEvent.getParameter("selectedItems"); // Get selected items for multiSelect
@@ -511,8 +377,10 @@ sap.ui.define([
 				}
 			}
 
-			// Clear filters on closing the dialog
-			oEvent.getSource().getBinding("items").filter([]);
+			// Reset visibility
+			oEvent.getSource().getItems().forEach(function(oItem) {
+				oItem.setVisible(true);
+			});
 		},
 		_handleQuarterYearClose: function(oEvent) {
 			var aSelectedItems = oEvent.getParameter("selectedItems"); // Get selected items for multiSelect
@@ -535,8 +403,43 @@ sap.ui.define([
 				}
 			}
 
-			// Clear filters on closing the dialog
-			oEvent.getSource().getBinding("items").filter([]);
+			// Reset visibility
+			oEvent.getSource().getItems().forEach(function(oItem) {
+				oItem.setVisible(true);
+			});
+		},
+
+		/*************** Clear the input value in livechange event  *****************/
+
+		onCustomerInputLiveChange: function(oEvent) {
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var sValue = oEvent.getParameter("value");
+			if (!sValue) {
+				oGlobalModel.setProperty("/selectedCustomerNames", []);
+				oGlobalModel.setProperty("/selectedCustomerIDs", []);
+				oGlobalModel.setProperty("/selectedCustomerNamesDisplay", "");
+			}
+		},
+		onFiscalYearInputLiveChange: function(oEvent) {
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var sValue = oEvent.getParameter("value");
+			if (!sValue) {
+				oGlobalModel.setProperty("/fiscalYears", "");
+			}
+		},
+		onQuarterInputLiveChange: function(oEvent) {
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var sValue = oEvent.getParameter("value");
+			if (!sValue) {
+				oGlobalModel.setProperty("/selectedQuarters", "");
+			}
+		},
+		onQuarterYearInputLiveChange: function(oEvent) {
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var sValue = oEvent.getParameter("value");
+			if (!sValue) {
+				oGlobalModel.setProperty("/selectedQuarterYears", "");
+			}
 		},
 
 		/*************** radio Button & drop down selection  *****************/
@@ -562,14 +465,14 @@ sap.ui.define([
 				oButtonBox.setVisible(true);
 			}
 		},
-		onChartTypeChange: function(oEvent) {
+		/*onChartTypeChange: function(oEvent) {
 			// Get the selected radio button
 			var chartType = oEvent.getSource().getSelectedKey();
 			var oVizFrame = sap.ui.core.Fragment.byId(this.createId("chartFragment3"), "idVizFrame");
 
 			oVizFrame.setVizType(chartType);
 
-		},
+		},*/
 
 		/*************** get the Icontabfilter select updated in global model  *****************/
 
@@ -633,7 +536,6 @@ sap.ui.define([
 			}
 
 		},
-
 		_buildFilters: function(oGlobalData, oSelectedIndex) {
 			var filters = [];
 
@@ -715,22 +617,8 @@ sap.ui.define([
 					var oData = response.results || [];
 					console.log("Raw Response Data:", oData);
 
-					// Convert Turn Over to Crores
-					oData.forEach(function(item) {
-						if (item.turnOver) {
-							item.turnOver = (parseFloat(item.turnOver) / 10000000).toFixed(2); // Convert to Crore and round to 2 decimals
-						}
-
-						// Dynamically generate short name from customerName
-						var words = item.customerName.split(" ");
-						var abbreviation = words
-							.filter(w => w.length > 2 && w[0] === w[0].toUpperCase())
-							.map(w => w[0])
-							.join("")
-							.toUpperCase();
-
-						item.CustomerNameShort = abbreviation || item.customerName;
-					});
+					// format customer data function
+					that.formatCustomerData(oData);
 
 					// Update models based on selection
 					var isSelectedIndex = oSelectedIndex === 0;
@@ -742,7 +630,7 @@ sap.ui.define([
 					// Toggle visibility of chart fragments
 					oGlobalDataModel.setProperty("/isChartFragment1Visible", isSelectedIndex);
 					oGlobalDataModel.setProperty("/isChartFragment2Visible", !isSelectedIndex);
-					
+
 					// Bind chart
 					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
 						sFragmentId, oData);
@@ -793,22 +681,8 @@ sap.ui.define([
 					var oData = response.results || [];
 					console.log(oData);
 
-					// Convert Turn Over to Crores
-					oData.forEach(function(item) {
-						if (item.turnover) {
-							item.turnover = (parseFloat(item.turnover) / 10000000).toFixed(2); // Convert to Crore and round to 2 decimals
-						}
-
-						// Dynamically generate short name from customerName
-						var words = item.customerName.split(" ");
-						var abbreviation = words
-							.filter(w => w.length > 2 && w[0] === w[0].toUpperCase())
-							.map(w => w[0])
-							.join("")
-							.toUpperCase();
-
-						item.CustomerNameShort = abbreviation || item.customerName;
-					});
+					// format customer data function
+					that.formatCustomerData(oData);
 
 					// Update models based on selection
 					var isSelectedIndex = oSelectedIndex === 0;
@@ -844,126 +718,6 @@ sap.ui.define([
 				}
 			});
 		},
-		generateColorMapByFiscalYearWise: function(data) {
-			const colorMap = {};
-			const uniqueKeys = [...new Set(data.map(item => item.CustomerNameShort + " (" + item.fiscalYear + ")"))];
-
-			uniqueKeys.forEach((key, i) => {
-				const color = `hsl(${(i * 43) % 360}, 70%, 50%)`;
-				colorMap[key] = color;
-			});
-
-			return {
-				colorMap: colorMap,
-			};
-		},
-		bindChartColorRulesByFiscalYearWise: function(sFragmentId, oData) {
-			var oVizFrame = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idVizFrame");
-			const result = this.generateColorMapByFiscalYearWise(oData);
-			const colorMap = result.colorMap;
-
-			if (!oVizFrame) {
-				console.warn("VizFrame not found for Fragment ID:", sFragmentId);
-				return;
-			}
-
-			const rules = oData.map(item => {
-				const customerYear = item.CustomerNameShort + " (" + item.fiscalYear + ")";
-				return {
-					dataContext: {
-						"Customer Name": item.CustomerNameShort,
-						"Fiscal Year": item.fiscalYear
-					},
-					properties: {
-						color: colorMap[customerYear]
-					}
-				};
-			});
-
-			oVizFrame.setVizProperties({
-				sizeLegend: {
-					visible: false
-				},
-				categoryAxis: {
-					layout: {
-						maxHeight: 100
-					},
-					label: {
-						rotation: "45",
-						visible: true
-					}
-				},
-				plotArea: {
-					dataPointStyle: {
-						rules: rules
-					},
-					dataLabel: {
-						visible: true
-					},
-					drawingEffect: "glossy",
-					tooltip: {
-						visible: true,
-						formatString: [
-							"Customer: {customerName}", // <-- Show full name here
-							"Fiscal Year: {Fiscal Year}",
-							"Turnover: {turnover} Cr"
-						]
-					}
-				}
-			});
-
-		},
-		generateColorMapByQuarterlyWise: function(data) {
-			const colorMap = {};
-
-			const uniqueKeys = [...new Set(data.map(item => item.CustomerNameShort + " (" + item.quater + " " + item.quaterYear + ")"))];
-
-			uniqueKeys.forEach((key, i) => {
-				const color = `hsl(${(i * 37) % 360}, 65%, 55%)`;
-				colorMap[key] = color;
-			});
-
-			return {
-				colorMap: colorMap,
-			};
-		},
-		bindChartColorRulesByQuarterlyWise: function(sFragmentId, oData) {
-			const oVizFrame = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idVizFrame");
-			const result = this.generateColorMapByQuarterlyWise(oData);
-			const colorMap = result.colorMap;
-
-			if (!oVizFrame) {
-				console.warn("VizFrame not found for Fragment ID:", sFragmentId);
-				return;
-			}
-
-			const rules = oData.map(item => {
-				const customerQuarter = item.CustomerNameShort + " (" + item.quater + " " + item.quaterYear + ")";
-				return {
-					dataContext: {
-						"Customer Name": item.CustomerNameShort,
-						"Quarter": item.quater,
-						"Quarter Year": item.quaterYear
-					},
-					properties: {
-						color: colorMap[customerQuarter]
-					}
-				};
-			});
-
-			oVizFrame.setVizProperties({
-				plotArea: {
-					dataPointStyle: {
-						rules: rules
-					},
-					dataLabel: {
-						visible: true
-					},
-					drawingEffect: "glossy"
-				}
-			});
-		},
-
 		getSingleCustomerData: function() {
 			var that = this;
 
@@ -991,34 +745,20 @@ sap.ui.define([
 					var oData = response.results || [];
 					console.log(oData);
 
-					// Convert Turn Over to Crores
-					oData.forEach(function(item) {
-						if (item.turnOver) {
-							item.turnOver = (parseFloat(item.turnOver) / 10000000).toFixed(2); // Convert to Crore and round to 2 decimals
-						}
-						
-						// Dynamically generate short name from customerName
-						var words = item.customerName.split(" ");
-						var abbreviation = words
-							.filter(w => w.length > 2 && w[0] === w[0].toUpperCase())
-							.map(w => w[0])
-							.join("")
-							.toUpperCase();
-
-						item.CustomerNameShort = abbreviation || item.customerName;
-					});
+					// format customer data function
+					that.formatCustomerData(oData);
 
 					// Update models based on selection
 					var isSelectedIndex = oSelectedIndex === 0;
 					var sPropertyPath = isSelectedIndex ? "/singleCustlistDataFiscalYearWise" : "/singleCustlistDataQuaterlyWise";
 					var sFragmentId = isSelectedIndex ? "chartFragment5" : "chartFragment6";
-					
+
 					oSingleCustListDataModel.setProperty(sPropertyPath, oData);
 
 					// Toggle visibility of chart fragments
 					oGlobalDataModel.setProperty("/isChartFragment5Visible", isSelectedIndex);
 					oGlobalDataModel.setProperty("/isChartFragment6Visible", !isSelectedIndex);
-					
+
 					// Bind chart
 					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
 						sFragmentId, oData);
@@ -1069,21 +809,24 @@ sap.ui.define([
 					var oData = response.results || [];
 					console.log(oData);
 
-					// Convert Turn Over to Crores
-					oData.forEach(function(item) {
-						if (item.turnOver) {
-							item.turnOver = (parseFloat(item.turnOver) / 10000000).toFixed(2); // Convert to Crore and round to 2 decimals
-						}
-					});
+					// format customer data function
+					that.formatCustomerData(oData);
 
 					// Update models based on selection
-					var sPropertyPath = oSelectedIndex === 0 ? "/quarterlyTurnoverlistDataFiscalYearWise" :
+					var isSelectedIndex = oSelectedIndex === 0;
+					var sPropertyPath = isSelectedIndex ? "/quarterlyTurnoverlistDataFiscalYearWise" :
 						"/quarterlyTurnoverlistDataQuaterlyWise";
+					var sFragmentId = isSelectedIndex ? "chartFragment7" : "chartFragment8";
+
 					oQuarterlyTurnoverlistDataModel.setProperty(sPropertyPath, oData);
 
 					// Toggle visibility of chart fragments
-					oGlobalDataModel.setProperty("/isChartFragment7Visible", oSelectedIndex === 0);
-					oGlobalDataModel.setProperty("/isChartFragment8Visible", oSelectedIndex !== 0);
+					oGlobalDataModel.setProperty("/isChartFragment7Visible", isSelectedIndex);
+					oGlobalDataModel.setProperty("/isChartFragment8Visible", !isSelectedIndex);
+
+					// Bind chart
+					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
+						sFragmentId, oData);
 
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();
@@ -1104,191 +847,292 @@ sap.ui.define([
 				}
 			});
 		},
-		_formatDecimalProperties: function(obj, then) {
-			for (var key in obj) {
-
-				if (key === 'Hkont') {
-					continue;
-				} else if (typeof obj[key] === "object") {
-					continue;
-				} else if (!isNaN(parseFloat(obj[key])) && isFinite(obj[key])) {
-					obj[key] = parseFloat(obj[key]).toFixed(2);
+		formatCustomerData: function(oData) {
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var oSelectedTabText = oGlobalModel.getProperty("/selectedTabText");
+			oData.forEach(item => {
+				this.convertTurnoverToCrore(item);
+				if (oSelectedTabText !== "Quarterly Wise Turnover") {
+					this.generateCustomerNameShort(item);
 				}
-			}
 
+			});
+			return oData;
 		},
+		convertTurnoverToCrore: function(item) {
+			if (item.turnOver) {
+				item.turnOver = (parseFloat(item.turnOver) / 10000000).toFixed(2);
+			}
+		},
+		generateCustomerNameShort: function(item) {
+			const words = item.customerName.split(" ");
+			const abbreviation = words
+				.filter(w => w.length > 2 && w[0] === w[0].toUpperCase())
+				.map(w => w[0])
+				.join("")
+				.toUpperCase();
+
+			item.CustomerNameShort = abbreviation || item.customerName;
+		},
+
+		/*************** Clear data from all input fields,radio button & model make it default  *****************/
+
 		clearListData: function() {
-			var that = this;
+			const that = this;
+			const oView = that.getView();
 
-			sap.m.MessageBox.confirm(
-				"Are you sure you want to clear all data?", {
-					onClose: function(oAction) {
-						if (oAction === sap.m.MessageBox.Action.OK) {
-							// Clear input fields
-							/*that.byId("inputLedger").setValue("0L");*/
-							var ocompanyCodeDataModel = that.getOwnerComponent().getModel("companyCodeData");
-							var oCmpCodeData = ocompanyCodeDataModel.oData;
-							that.byId("inputCompanyCode").setValue(oCmpCodeData[0].Companycode); //// Authorization Change ////
-							that.totalRadioBtnCheck(oCmpCodeData[0].Companycode);
-							/////  Authorization Changes //////
-							that.authorizationCheck();
-							that.byId("fromDate").setValue("");
-							that.byId("toDate").setValue("");
+			sap.m.MessageBox.confirm("Are you sure you want to clear all data?", {
+				onClose: function(oAction) {
+				    var oGlobalDataModel = that.getOwnerComponent().getModel("globalData");
+					if (oAction === sap.m.MessageBox.Action.OK) {
 
-							// Deselect radio buttons
-							// that.byId("PRS").setSelected(true);
-							// that.byId("FTRS").setSelected(false);
-							// that.byId("CORP").setSelected(false);
-							/*that.byId("companytotal").setSelected(false);*/
-							that.byId("detailedlist").setSelected(true);
-							that.byId("summarylist").setSelected(false);
+						// Clear input fields
+						const aInputIds = [
+							"_customerInputId",
+							"_financialYearInputId",
+							"_quarterInputId",
+							"_quarterInputYearId"
+						];
+						aInputIds.forEach((sId) => {
+							const oInput = that.byId(sId);
+							if (oInput) oInput.setValue("");
+						});
 
-							// Clear list data
-							var oListDataModel = that.getOwnerComponent().getModel("listData");
-							oListDataModel.setData({});
-
-							// clear the chart data 
-							var oChartDataModel = that.getOwnerComponent().getModel("chartData");
-							oChartDataModel.setData({});
-
-							// Update global data model properties
-							var oGlobalDataModel = that.getOwnerComponent().getModel("globalData");
-							if (oGlobalDataModel) {
-								oGlobalDataModel.setProperty("/listFlag", "X");
-								oGlobalDataModel.setProperty("/togglePanelVisibility", "X");
-							}
-							// disbaled the switches
-							that._toggleSwitches(false);
-
-							// change the state of switches 
-							/*that.byId("splitViewSwitch").setState(false);*/
-							that.byId("tabularDataSwitch").setState(false);
-							that.byId("chartDataSwitch").setState(false);
-
-							// SplitterLayoutData elements
-							var oSplitterLayoutData1 = that.byId("splitterLayoutData1");
-							var oSplitterLayoutData2 = that.byId("splitterLayoutData2");
-							oSplitterLayoutData1.setSize("0%");
-							oSplitterLayoutData2.setSize("100%");
-
-							that._columnVisible();
-							that.byId("downloadPdfBtn").setEnabled(false);
+						// Clear the values bound to the input fields
+                        oGlobalDataModel.setProperty("/selectedCustomerNamesDisplay", "");
+                        oGlobalDataModel.setProperty("/selectedCustomerNames", "");
+                        oGlobalDataModel.setProperty("/selectedCustomerIDs", "");
+                        oGlobalDataModel.setProperty("/fiscalYears", "");
+                        oGlobalDataModel.setProperty("/selectedQuarters", "");
+                        oGlobalDataModel.setProperty("/selectedQuarterYears", ""); 
+						
+						
+						// Reset RadioButtonGroup to default
+						const oRadioGroup = that.byId("radioBtnlist");
+						if (oRadioGroup) {
+							oRadioGroup.setSelectedIndex(0); // 0 = Fiscal Year Wise
+							that.onRadioButtonSelectList({
+								getSource: () => oRadioGroup
+							});
 						}
+
+						// Reset IconTabBar to default tab
+						const oIconTabBar = oView.byId("iconTabBar");
+						if (oIconTabBar) {
+							oIconTabBar.setSelectedKey("scenario1");
+							that.onTabSelect({
+								getParameter: () => "scenario1"
+							});
+						}
+
+						// Reset global data
+						that._updateGlobalDataModel();
+
+						// Define model reset map
+						const oModelResetMap = {
+							allCustlistData: [
+								"/allCustlistDataFiscalYearWise",
+								"/allCustlistDataQuaterlyWise"
+							],
+							top10listData: [
+								"/top10CustlistDataFiscalYearWise",
+								"/top10CustlistDataQuaterlyWise"
+							],
+							singleCustlistData: [
+								"/singleCustlistDataFiscalYearWise",
+								"/singleCustlistDataQuaterlyWise"
+							],
+							quarterlyTurnoverlistData: [
+								"/quarterlyTurnoverlistDataFiscalYearWise",
+								"/quarterlyTurnoverlistDataQuaterlyWise"
+							]
+						};
+
+						// Reset data in each model
+						Object.keys(oModelResetMap).forEach((sModelName) => {
+							const oModel = that.getOwnerComponent().getModel(sModelName);
+							if (oModel) {
+								oModelResetMap[sModelName].forEach((sPath) => {
+									oModel.setProperty(sPath, []);
+								});
+							}
+						});
 					}
 				}
-			);
+			});
 		},
 
 		/*************** chart function & plotting the chart data  *****************/
 
-		loadDefaultGraph: function() {
-			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
-			var oListData = this.getOwnerComponent().getModel("listData").getData();
-			var defaultFilterChartData = oListData[0]; // Assuming default data is at index 0
-			var extractChartData = this.extractData(defaultFilterChartData);
+		generateColorMapByFiscalYearWise: function(data, selectedTabText) {
+			const colorMap = {};
+			let uniqueKeys = [];
 
-			// Set default chart data
-			this.getOwnerComponent().getModel("chartData").setData(extractChartData);
+			// Choose key format based on selected tab
+			if (selectedTabText === "Quarterly Wise Turnover") {
+				uniqueKeys = [...new Set(data.map(item => item.fiscalYear))];
+			} else {
+				uniqueKeys = [...new Set(data.map(item => `${item.CustomerNameShort} (${item.fiscalYear})`))];
+			}
 
-			// Set default panel visibility
-			oGlobalData.togglePanelVisibility = defaultFilterChartData.DET_FLAG === "X" ? "X" : "";
-			this.getOwnerComponent().getModel("globalData").setData(oGlobalData);
+			// Generate HSL colors based on index
+			uniqueKeys.forEach((key, i) => {
+				const color = `hsl(${(i * 43) % 360}, 70%, 50%)`;
+				colorMap[key] = color;
+			});
 
-			// highlight the default table 
-			/*var oTable = this.byId("dynamicTable");
-			var aItems = oTable.getItems();*/
-			this._highlightRow(0);
+			return {
+				colorMap
+			};
 		},
-		onChartButtonPress: function(oEvent) {
-			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
-			var oListData = this.getOwnerComponent().getModel("listData").getData();
-			var oChartDataModel = this.getOwnerComponent().getModel("chartData");
+		bindChartColorRulesByFiscalYearWise: function(sFragmentId, oData) {
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var oSelectedTabText = oGlobalModel.getProperty("/selectedTabText");
+			var oVizFrame = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idVizFrame");
 
-			var oButton = oEvent.getSource();
-			var oRow = oButton.getParent();
-			var oTable = this.byId("dynamicTable");
-			var iIndex = oTable.indexOfItem(oRow);
-			// Highlight the clicked row
-			this._highlightRow(iIndex);
+			if (!oVizFrame) {
+				console.warn("VizFrame not found for Fragment ID:", sFragmentId);
+				return;
+			}
 
-			var filterChartData = oListData[iIndex];
-			var extractChartData = this.extractData(filterChartData);
-			oChartDataModel.setData(extractChartData);
+			var {
+				colorMap
+			} = this.generateColorMapByFiscalYearWise(oData, oSelectedTabText);
 
-			// set the globaldata
-			oGlobalData.togglePanelVisibility = oListData[0].DET_FLAG === "X" ? "X" : "";
-			this.getOwnerComponent().getModel("globalData").setData(oGlobalData);
+			var rules = [];
 
-			// SplitterLayoutData elements
-			var oSplitterLayoutData1 = this.byId("splitterLayoutData1");
-			var oSplitterLayoutData2 = this.byId("splitterLayoutData2");
-
-			// set the split view switch state to true
-			/*this.byId("splitViewSwitch").setState(true);*/
-			this.byId("tabularDataSwitch").setState(false);
-			this.byId("chartDataSwitch").setState(true);
-
-			// Update SplitterLayoutData sizes for split view
-			oSplitterLayoutData1.setSize("0%");
-			oSplitterLayoutData2.setSize("100%");
-
-		},
-		extractData: function(obj) {
-			var result = [];
-			var months = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
-
-			// Combine incoming and outgoing balances for each month
-			for (var i = 0; i < 12; i++) {
-				var month = months[i];
-				var incomingKey = "I" + (i + 1 < 10 ? '0' + (i + 1) : i + 1);
-				var outgoingKey = "U" + (i + 1 < 10 ? '0' + (i + 1) : i + 1);
-				var incomingValue = parseFloat(obj[incomingKey]);
-				var outgoingValue = parseFloat(obj[outgoingKey]);
-
-				result.push({
-					Month: month,
-					IncomingBalance: incomingValue,
-					OutgoingBalance: outgoingValue
+			if (oSelectedTabText === "Quarterly Wise Turnover") {
+				rules = oData.map(item => ({
+					dataContext: {
+						"Fiscal Year": item.fiscalYear
+					},
+					properties: {
+						color: colorMap[item.fiscalYear]
+					}
+				}));
+			} else {
+				rules = oData.map(item => {
+					const customerYear = `${item.CustomerNameShort} (${item.fiscalYear})`;
+					return {
+						dataContext: {
+							"Customer Name": item.CustomerNameShort,
+							"Fiscal Year": item.fiscalYear
+						},
+						properties: {
+							color: colorMap[customerYear]
+						}
+					};
 				});
 			}
 
-			var oVizFrame = this.byId("oVizFrame");
 			oVizFrame.setVizProperties({
 				title: {
 					visible: true,
-					text: obj.GlText
-				},
-				legend: {
-					title: {
-						visible: true,
-						text: 'Months'
-					}
+					text: "Fiscal Year Wise Turnover"
 				},
 				plotArea: {
-					dataLabel: {
-						visible: true,
-						showTotal: true,
+					dataPointStyle: {
+						rules
 					},
-					colorPalette: ['#00e600', '#0000b3'] // Green for IncomingBalance, Orange for OutgoingBalance
+					dataLabel: {
+						visible: true
+					},
+					drawingEffect: "glossy"
+				},
+				tooltip: {
+					visible: true
+				},
+				interaction: {
+					selectability: {
+						mode: "multiple"
+					}
 				}
+			});
+		},
+		generateColorMapByQuarterlyWise: function(data, selectedTabText) {
+			var colorMap = {};
+			var uniqueKeys = [];
+
+			if (selectedTabText === "Quarterly Wise Turnover") {
+				uniqueKeys = [...new Set(data.map(item => `(${item.quater} ${item.quaterYear})`))];
+			} else {
+				uniqueKeys = [...new Set(data.map(item => `${item.CustomerNameShort} (${item.quater} ${item.quaterYear})`))];
+			}
+
+			uniqueKeys.forEach(function(key, i) {
+				var color = `hsl(${(i * 37) % 360}, 65%, 55%)`;
+				colorMap[key] = color;
 			});
 
-			return result;
+			return {
+				colorMap: colorMap
+			};
 		},
-		_highlightRow: function(iIndex) {
-			var oTable = this.byId("dynamicTable");
-			oTable.getItems().forEach(function(item, index) {
-				if (index === iIndex) {
-					item.addStyleClass("highlightedRow");
-				} else {
-					item.removeStyleClass("highlightedRow");
+		bindChartColorRulesByQuarterlyWise: function(sFragmentId, oData) {
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var oSelectedTabText = oGlobalModel.getProperty("/selectedTabText");
+			var oVizFrame = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idVizFrame");
+
+			if (!oVizFrame) {
+				console.warn("VizFrame not found for Fragment ID:", sFragmentId);
+				return;
+			}
+
+			var result = this.generateColorMapByQuarterlyWise(oData, oSelectedTabText);
+			var colorMap = result.colorMap;
+			var rules = [];
+
+			if (oSelectedTabText === "Quarterly Wise Turnover") {
+				rules = oData.map(function(item) {
+					var key = `(${item.quater} ${item.quaterYear})`;
+					return {
+						dataContext: {
+							"Quarter": item.quater,
+							"Quarter Year": item.quaterYear
+						},
+						properties: {
+							color: colorMap[key]
+						}
+					};
+				});
+			} else {
+				rules = oData.map(function(item) {
+					var key = `${item.CustomerNameShort} (${item.quater} ${item.quaterYear})`;
+					return {
+						dataContext: {
+							"Customer Name": item.CustomerNameShort,
+							"Quarter": item.quater,
+							"Quarter Year": item.quaterYear
+						},
+						properties: {
+							color: colorMap[key]
+						}
+					};
+				});
+			}
+
+			oVizFrame.setVizProperties({
+				title: {
+					visible: true,
+					text: "Quarterly Wise Turnover"
+				},
+				plotArea: {
+					dataPointStyle: {
+						rules: rules
+					},
+					dataLabel: {
+						visible: true
+					},
+					drawingEffect: "glossy"
+				},
+				tooltip: {
+					visible: true
+				},
+				interaction: {
+					selectability: {
+						mode: "multiple"
+					}
 				}
-			});
-		},
-		_removeHighlight: function() {
-			var oTable = this.byId("dynamicTable");
-			oTable.getItems().forEach(function(item) {
-				item.removeStyleClass("highlightedRow");
 			});
 		}
 

@@ -28,7 +28,7 @@ xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
 									<vizData:DimensionDefinition name="Fiscal Year" value="{top10listData>fiscalYear}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{top10listData>turnover}"/>
+									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{top10listData>turnOver}"/>
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
@@ -60,7 +60,7 @@ xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
 							<table:Column>
 								<m:Label text="Turn Over (Cr)"/>
 								<table:template>
-									<m:Text text="{top10listData>turnover}"/>
+									<m:Text text="{top10listData>turnOver}"/>
 								</table:template>
 							</table:Column>
 						</table:columns>

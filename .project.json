@@ -40,12 +40,12 @@
     "blockPushLevel": "Error"
   },
   "build": {
-    "buildRequired": true,
+    "buildRequired": false,
     "sourceFolder": "webapp",
     "targetFolder": "dist",
     "excludedFolders": [],
     "excludedFiles": [],
-    "lastBuildDateTime": "Fri, 04 Apr 2025 10:25:41 GMT",
+    "lastBuildDateTime": "Fri, 11 Apr 2025 13:04:17 GMT",
     "availableFoldersComboBox": [
       {
         "text": "localService"
@@ -153,6 +153,6 @@
   },
   "deploy": {
     "destination": "VML",
-    "name": "zsalesoverview"
+    "name": "ZSALESOVERVIEW"
   }
 }
