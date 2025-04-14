@@ -43,71 +43,61 @@ sap.ui.define([
 				console.error("Global data model is not available.");
 			}
 		},
-		_validateInputFields: function() {
-			var inputCompanyCode = this.byId("inputCompanyCode");
-			var datePickerFrom = this.byId("fromDate");
-			var datePickerTo = this.byId("toDate");
+		validateInputs: function() {
+			var oComponent = this.getOwnerComponent();
+			var oGlobalData = oComponent.getModel("globalData").getData();
+			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+			var oSelectedTabText = oGlobalData.selectedTabText;
+			var oView = this.getView();
 
-			var isValid = true;
-			var message = '';
+			// Map input IDs to friendly field names
+			var mFieldNames = {
+				"_customerInputId": "Customer",
+				"_financialYearInputId": "Fiscal Year",
+				"_quarterInputId": "Quarter",
+				"_quarterInputYearId": "Quarter Year"
+			};
 
-			// Validate company code
-			if (!inputCompanyCode.getValue()) {
-				inputCompanyCode.setValueState(sap.ui.core.ValueState.Error);
-				isValid = false;
-				message += 'Company Code, ';
-			} else {
-				inputCompanyCode.setValueState(sap.ui.core.ValueState.None);
+			var getInputIdsToValidate = function() {
+				var isSingleCustomer = oSelectedTabText === "Single Customer Quarterly Wise";
+
+				if (isSingleCustomer) {
+					return oSelectedIndex === 0 ? ["_customerInputId", "_financialYearInputId"] : ["_customerInputId", "_quarterInputId",
+						"_quarterInputYearId"
+					];
+				} else {
+					return oSelectedIndex === 0 ? ["_financialYearInputId"] : ["_quarterInputId", "_quarterInputYearId"];
+				}
+			};
+
+			var bAllValid = true;
+			var aEmptyFields = [];
+			var aInputIds = getInputIdsToValidate();
+
+			aInputIds.forEach(function(sId) {
+				var oInput = oView.byId(sId);
+				if (oInput && oInput.getVisible()) {
+					var sValue = oInput.getValue();
+					var sTrimmedValue = sValue ? sValue.trim() : "";
+
+					if (!sTrimmedValue) {
+						oInput.setValueState("Error");
+						oInput.setValueStateText("This field cannot be empty.");
+						bAllValid = false;
+
+						var sFieldName = mFieldNames[sId] || sId;
+						aEmptyFields.push(sFieldName);
+					} else {
+						oInput.setValueState("None");
+					}
+				}
+			});
+
+			if (aEmptyFields.length > 0) {
+				sap.m.MessageBox.error("Please fill the following fields:\n\n" + aEmptyFields.join("\n"));
 			}
 
-			// Validate from date
-			if (!datePickerFrom.getValue()) {
-				datePickerFrom.setValueState(sap.ui.core.ValueState.Error);
-				isValid = false;
-				message += 'From Date, ';
-			} else {
-				datePickerFrom.setValueState(sap.ui.core.ValueState.None);
-			}
-
-			// Validate to date
-			if (!datePickerTo.getValue()) {
-				datePickerTo.setValueState(sap.ui.core.ValueState.Error);
-				isValid = false;
-				message += 'To Date, ';
-			} else {
-				datePickerTo.setValueState(sap.ui.core.ValueState.None);
-			}
-
-			// Display error message if any field is invalid
-			if (!isValid) {
-				message = message.slice(0, -2); // Remove the trailing comma and space
-				sap.m.MessageBox.show("Please fill up the following fields: " + message);
-				return false;
-			}
-
-			// Log date values for debugging
-			console.log("From Date Value:", datePickerFrom.getValue());
-			console.log("To Date Value:", datePickerTo.getValue());
-
-			// Format dates
-			var fromDate = this.formatDate(datePickerFrom.getValue());
-			var toDate = this.formatDate(datePickerTo.getValue());
-
-			// Show error message if dates are invalid
-			if (!fromDate || !toDate) {
-				sap.m.MessageBox.show("Invalid date format. Please enter valid dates.");
-				return false;
-			}
-
-			// Set global data properties
-			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
-			if (oGlobalDataModel) {
-				oGlobalDataModel.setProperty("/cmpnyCode", inputCompanyCode.getValue());
-				oGlobalDataModel.setProperty("/fromDate", fromDate);
-				oGlobalDataModel.setProperty("/toDate", toDate);
-			}
-
-			return true;
+			return bAllValid;
 		},
 
 		/*************** get parameters data *****************/
@@ -518,6 +508,12 @@ sap.ui.define([
 		},
 
 		getBackendData: function() {
+
+			if (!this.validateInputs()) {
+				/*sap.m.MessageBox.error("Please fill all required fields.");*/
+				return;
+			}
+
 			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
 			var oSelectedTabText = oGlobalData.selectedTabText;
 
@@ -883,7 +879,7 @@ sap.ui.define([
 
 			sap.m.MessageBox.confirm("Are you sure you want to clear all data?", {
 				onClose: function(oAction) {
-				    var oGlobalDataModel = that.getOwnerComponent().getModel("globalData");
+					var oGlobalDataModel = that.getOwnerComponent().getModel("globalData");
 					if (oAction === sap.m.MessageBox.Action.OK) {
 
 						// Clear input fields
@@ -899,14 +895,13 @@ sap.ui.define([
 						});
 
 						// Clear the values bound to the input fields
-                        oGlobalDataModel.setProperty("/selectedCustomerNamesDisplay", "");
-                        oGlobalDataModel.setProperty("/selectedCustomerNames", "");
-                        oGlobalDataModel.setProperty("/selectedCustomerIDs", "");
-                        oGlobalDataModel.setProperty("/fiscalYears", "");
-                        oGlobalDataModel.setProperty("/selectedQuarters", "");
-                        oGlobalDataModel.setProperty("/selectedQuarterYears", ""); 
-						
-						
+						oGlobalDataModel.setProperty("/selectedCustomerNamesDisplay", "");
+						oGlobalDataModel.setProperty("/selectedCustomerNames", "");
+						oGlobalDataModel.setProperty("/selectedCustomerIDs", "");
+						oGlobalDataModel.setProperty("/fiscalYears", "");
+						oGlobalDataModel.setProperty("/selectedQuarters", "");
+						oGlobalDataModel.setProperty("/selectedQuarterYears", "");
+
 						// Reset RadioButtonGroup to default
 						const oRadioGroup = that.byId("radioBtnlist");
 						if (oRadioGroup) {

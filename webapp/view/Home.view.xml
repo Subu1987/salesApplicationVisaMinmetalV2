@@ -1,18 +1,14 @@
-<mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.salesApplication.controller.Home">
-	<Page 
-	id="page" 
-	enableScrolling="true" 
-	showNavButton="false" 
-	navButtonPress="onNavBack" 
-	showFooter="false"
-	titleLevel="H1">
-	    <customHeader>
-    <Bar>
-      <contentMiddle>
-        <Title text="Sales Dashboard" level="H1" titleStyle="H1" />
-      </contentMiddle>
-    </Bar>
-  </customHeader>
+<mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core"
+	xmlns:f="sap.ui.layout.form" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:chart="sap.suite.ui.commons" controllerName="com.infocus.salesApplication.controller.Home">
+	<Page id="page" enableScrolling="true" showNavButton="false" navButtonPress="onNavBack" showFooter="false" titleLevel="H1">
+		<customHeader>
+			<Bar>
+				<contentMiddle>
+					<Title text="Sales Dashboard" level="H1" titleStyle="H1"/>
+				</contentMiddle>
+			</Bar>
+		</customHeader>
 		<content>
 			<FlexBox id="panelFormBox" direction="Row" height="auto" justifyContent="Center" alignItems="Center" class="sapUiTinyMarginTop">
 				<items>
@@ -27,22 +23,29 @@
 					<FlexBox width="auto" id="inputBoxes" wrap="NoWrap" justifyContent="Center" alignItems="Center">
 						<HBox id="customerMasterBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
 							<!--<Label text="Customer" design="Bold"/>-->
-							<Input id="_customerInputId" type="Text" placeholder="Customer" class="boldText roundedInput" showValueHelp="true" showClearIcon="true" value="{globalData>/selectedCustomerNamesDisplay}" valueHelpRequest="handleValueCustomerMaster"  liveChange="onCustomerInputLiveChange" required="true"/>
+							<Input id="_customerInputId" type="Text" tooltip="Select from list" placeholder="Customer" class="boldText roundedInput" showValueHelp="true" showClearIcon="true"
+								value="{globalData>/selectedCustomerNamesDisplay}" valueHelpRequest="handleValueCustomerMaster" liveChange="onCustomerInputLiveChange"
+								required="true"/>
 						</HBox>
 						<!-- Financial Year Input -->
 						<HBox id="fiscalYearBox" direction="Column" alignItems="Center" visible="true" class="sapUiTinyMarginBegin">
 							<!--<Label text="Fiscal Year" design="Bold"/>-->
-							<Input id="_financialYearInputId" type="Text" placeholder="Fiscal Year" class="boldText roundedInput" showValueHelp="true" showClearIcon="true" value="{globalData>/fiscalYears}" valueHelpRequest="handleValueFiscalYear" required="true" liveChange="onFiscalYearInputLiveChange"/>
+							<Input id="_financialYearInputId" type="Text" tooltip="Select from list" placeholder="Fiscal Year" class="boldText roundedInput" showValueHelp="true"
+								showClearIcon="true" value="{globalData>/fiscalYears}" valueHelpRequest="handleValueFiscalYear" required="true"
+								liveChange="onFiscalYearInputLiveChange"/>
 						</HBox>
 						<!-- Financial Quarter Input -->
 						<HBox id="quarterBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
 							<!--<Label text="Fiscal Quarter" design="Bold"/>-->
-							<Input id="_quarterInputId" type="Text" placeholder="Fiscal Quarter" class="boldText roundedInput" showValueHelp="true" showClearIcon="true" value="{globalData>/selectedQuarters}" valueHelpRequest="handleValueQuarter" required="true" liveChange="onQuarterInputLiveChange"/>
+							<Input id="_quarterInputId" type="Text" tooltip="Select from list" placeholder="Fiscal Quarter" class="boldText roundedInput" showValueHelp="true" showClearIcon="true"
+								value="{globalData>/selectedQuarters}" valueHelpRequest="handleValueQuarter" required="true" liveChange="onQuarterInputLiveChange"/>
 						</HBox>
 						<!-- Quarter Year Input -->
 						<HBox id="quarterYearBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
 							<!--<Label text="Quarter Year" design="Bold"/>-->
-							<Input id="_quarterInputYearId" type="Text" placeholder="Quarter Year" class="boldText roundedInput" showValueHelp="true" showClearIcon="true" value="{globalData>/selectedQuarterYears}" valueHelpRequest="handleValueQuarterYear" required="true" liveChange="onQuarterYearInputLiveChange"/>
+							<Input id="_quarterInputYearId" type="Text" tooltip="Select from list" placeholder="Quarter Year" class="boldText roundedInput" showValueHelp="true"
+								showClearIcon="true" value="{globalData>/selectedQuarterYears}" valueHelpRequest="handleValueQuarterYear" required="true"
+								liveChange="onQuarterYearInputLiveChange"/>
 						</HBox>
 						<!-- Action Buttons (Search and Clear) -->
 						<HBox id="buttonBox" direction="Row" justifyContent="Center" alignItems="Center">
@@ -58,7 +61,8 @@
 					<IconTabBar id="iconTabBar" selectedKey="scenario1" select="onTabSelect" stretchContentHeight="true" class="beautifulTabBar">
 						<items>
 							<!-- Scenario 1 -->
-							<IconTabFilter key="scenario1" text="All Customer Quarterly Wise" icon="sap-icon://group" tooltip="All Customer Quarterly Wise" iconColor="Positive" design="Horizontal">
+							<IconTabFilter key="scenario1" text="All Customer Quarterly Wise" icon="sap-icon://group" tooltip="All Customer Quarterly Wise"
+								iconColor="Positive" design="Horizontal">
 								<content>
 									<VBox visible="{globalData>/isChartFragment1Visible}">
 										<core:Fragment id="chartFragment1" fragmentName="com.infocus.salesApplication.view.fragments.Charts.ChartFragment1" type="XML"/>
@@ -70,7 +74,8 @@
 							</IconTabFilter>
 							<!-- Scenario 2 -->
 							<IconTabSeparator/>
-							<IconTabFilter key="scenario2" text="Top 10 Customer Quarterly Wise" icon="sap-icon://customer" tooltip="Top 10 Customer Quarterly Wise" design="Horizontal">
+							<IconTabFilter key="scenario2" text="Top 10 Customer Quarterly Wise" icon="sap-icon://customer" tooltip="Top 10 Customer Quarterly Wise"
+								design="Horizontal">
 								<content>
 									<!--<VBox visible="{globalData>/isTableFragment3Visible}">
 										<core:Fragment id="tableFragment3" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment3" type="XML"/>
@@ -88,7 +93,8 @@
 							</IconTabFilter>
 							<!-- Scenario 3 -->
 							<IconTabSeparator/>
-							<IconTabFilter key="scenario3" text="Single Customer Quarterly Wise" icon="sap-icon://employee-lookup" tooltip="Single Customer Quarterly Wise" iconColor="Critical" design="Horizontal">
+							<IconTabFilter key="scenario3" text="Single Customer Quarterly Wise" icon="sap-icon://employee-lookup"
+								tooltip="Single Customer Quarterly Wise" iconColor="Critical" design="Horizontal">
 								<content>
 									<!--<VBox visible="{globalData>/isTableFragment5Visible}">
 										<core:Fragment id="tableFragment5" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment5" type="XML"/>
@@ -106,7 +112,8 @@
 							</IconTabFilter>
 							<!-- Scenario 4 -->
 							<IconTabSeparator/>
-							<IconTabFilter key="scenario4" text="Quarterly Wise Turnover" icon="sap-icon://customer-financial-fact-sheet" tooltip="Quarterly Wise Turnover" iconColor="Negative" design="Horizontal">
+							<IconTabFilter key="scenario4" text="Quarterly Wise Turnover" icon="sap-icon://customer-financial-fact-sheet"
+								tooltip="Quarterly Wise Turnover" iconColor="Negative" design="Horizontal">
 								<content>
 									<!--<VBox visible="{globalData>/isTableFragment7Visible}">
 										<core:Fragment id="tableFragment7" fragmentName="com.infocus.salesApplication.view.fragments.Tables.TableFragment7" type="XML"/>
