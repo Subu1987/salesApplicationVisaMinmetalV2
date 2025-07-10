@@ -1038,7 +1038,7 @@ sap.ui.define([
 				},
 				interaction: {
 					selectability: {
-						mode: "multiple"
+						mode: "EXCLUSIVE" // or "MULTIPLE"
 					}
 				}
 			});
@@ -1108,7 +1108,7 @@ sap.ui.define([
 			oVizFrame.setVizProperties({
 				title: {
 					visible: true,
-					text: "Turnover"
+					text: "Quaterly Wise Turnover"
 				},
 				plotArea: {
 					dataPointStyle: {
