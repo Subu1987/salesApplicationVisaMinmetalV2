@@ -10,14 +10,15 @@
 			</Bar>
 		</customHeader>
 		<content>
-			<FlexBox id="panelFormBox" direction="Row" height="auto" justifyContent="Center" alignItems="Center" class="sapUiTinyMarginTop">
+			<FlexBox id="panelFormBox" direction="Column" height="auto" justifyContent="Center" alignItems="Center" class="sapUiTinyMarginTop">
 				<items>
 					<!-- Radio Button Section -->
 					<FlexBox width="auto" id="RadioBtn" wrap="NoWrap" justifyContent="Center" alignItems="Center">
-						<RadioButtonGroup id="radioBtnlist" columns="3" select="onRadioButtonSelectList" class="styledRadioGroup">
+						<RadioButtonGroup id="radioBtnlist" columns="4" select="onRadioButtonSelectList" class="styledRadioGroup">
 							<RadioButton id="fiscalYearWise" text="Fiscal Year Wise"/>
 							<RadioButton id="quaterlyWise" text="Quaterly Wise"/>
 							<RadioButton id="customerDue" text="Customer Due"/>
+							<RadioButton id="customerDueQtrFY" text="Customer Due Qtr/FY"/>
 						</RadioButtonGroup>
 					</FlexBox>
 					<!-- Input Fields Section -->
@@ -151,7 +152,7 @@
 								design="Horizontal">
 								<content>
 									<VBox visible="{globalData>/isNewChartFragment1Visible}">
-										<core:Fragment id="newChartFragment1" fragmentName="com.infocus.salesApplication.view.fragments.Charts2.NewChartFragment1" type="XML"/>
+										<core:Fragment id="newChartFragment1" fragmentName="com.infocus.salesApplication.view.fragments.CustomerDueCharts2.NewChartFragment1" type="XML"/>
 									</VBox>
 								</content>
 							</IconTabFilter>
@@ -161,7 +162,7 @@
 								design="Horizontal">
 								<content>
 									<VBox visible="{globalData>/isNewChartFragment2Visible}">
-										<core:Fragment id="newChartFragment2" fragmentName="com.infocus.salesApplication.view.fragments.Charts2.NewChartFragment2" type="XML"/>
+										<core:Fragment id="newChartFragment2" fragmentName="com.infocus.salesApplication.view.fragments.CustomerDueCharts2.NewChartFragment2" type="XML"/>
 									</VBox>
 								</content>
 							</IconTabFilter>
@@ -171,7 +172,7 @@
 								design="Horizontal" iconColor="Critical" >
 								<content>
 									<VBox visible="{globalData>/isNewChartFragment3Visible}">
-										<core:Fragment id="newChartFragment3" fragmentName="com.infocus.salesApplication.view.fragments.Charts2.NewChartFragment3" type="XML"/>
+										<core:Fragment id="newChartFragment3" fragmentName="com.infocus.salesApplication.view.fragments.CustomerDueCharts2.NewChartFragment3" type="XML"/>
 									</VBox>
 								</content>
 							</IconTabFilter>
@@ -181,7 +182,7 @@
 								design="Horizontal">
 								<content>
 									<VBox visible="{globalData>/isNewChartFragment4Visible}">
-										<core:Fragment id="newChartFragment4" fragmentName="com.infocus.salesApplication.view.fragments.Charts2.NewChartFragment4" type="XML"/>
+										<core:Fragment id="newChartFragment4" fragmentName="com.infocus.salesApplication.view.fragments.CustomerDueCharts2.NewChartFragment4" type="XML"/>
 									</VBox>
 								</content>
 							</IconTabFilter>
