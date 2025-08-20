@@ -58,7 +58,7 @@
 						</HBox>
 						<!-- Action Buttons (Search and Clear) -->
 						<HBox id="buttonBox" direction="Row" justifyContent="Center" alignItems="Center">
-							<Button id="searchData" icon="sap-icon://sales-order" press="getBackendData" class="sapUiTinyMarginBegin" type="Accept"/>
+							<Button id="searchData" icon="sap-icon://sales-order" press="onSearchData" class="sapUiTinyMarginBegin" type="Accept"/>
 							<Button id="clearData" icon="sap-icon://delete" press="clearListData" class="sapUiTinyMarginBegin" type="Reject"/>
 						</HBox>
 					</FlexBox>
@@ -186,6 +186,35 @@
 									</VBox>
 								</content>
 							</IconTabFilter>
+						</items>
+					</IconTabBar>
+				</content>
+			</Panel>
+			<Panel id="panel3" visible="false" expandable="false" expanded="false" class="sapUiResponsiveMargin" backgroundDesign="Solid" width="auto" height="100%">
+				<content>
+					<!-- IconTabBar for switching between scenarios -->
+					<IconTabBar id="iconTabBarCustomerQtrFY" selectedKey="cus_qtrFY_scenario1" select="onTabSelect3" stretchContentHeight="true" class="beautifulTabBar">
+						<items>
+							<!-- Scenario 1 -->
+							<IconTabFilter key="cus_qtrFY_scenario1" text="Single Customer Outstanding" icon="sap-icon://employee-lookup" tooltip="Single Customer Outstanding"
+								design="Horizontal" iconColor="Critical" >
+								<content>
+									<VBox visible="{globalData>/isCusQtrFYFragment1Visible}">
+										<core:Fragment id="cusQtrFYFragment1" fragmentName="com.infocus.salesApplication.view.fragments.CustomerDueQtrFYCharts.CusQtrFyFragment1" type="XML"/>
+									</VBox>
+								</content>
+							</IconTabFilter>
+							<!-- Scenario 2 -->
+							<IconTabSeparator/>
+							<IconTabFilter key="cus_qtrFY_scenario2" text="Total Outstanding" icon="sap-icon://customer-financial-fact-sheet" tooltip="Total Outstanding" iconColor="Negative"
+								design="Horizontal">
+								<content>
+									<VBox visible="{globalData>/isCusQtrFYFragment2Visible}">
+										<core:Fragment id="cusQtrFYFragment2" fragmentName="com.infocus.salesApplication.view.fragments.CustomerDueQtrFYCharts.CusQtrFyFragment2" type="XML"/>
+									</VBox>
+								</content>
+							</IconTabFilter>
+							
 						</items>
 					</IconTabBar>
 				</content>

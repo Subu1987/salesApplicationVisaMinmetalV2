@@ -1,15 +1,15 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:table="sap.ui.table" xmlns:suite="sap.suite.ui.commons"
 	xmlns:viz="sap.viz.ui5.controls" xmlns:vizData="sap.viz.ui5.data" xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
 	<suite:ChartContainer id="chartContainer" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false"
-		title="{globalData>/selectedTabText2}" showLegendButton="false">
+		title="{globalData>/selectedTabText3}" showLegendButton="false">
 		<!-- Chart Content -->
 		<suite:content>
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
 				<suite:content>
-					<viz:VizFrame id="idVizFrame2" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
+					<viz:VizFrame id="idVizFrame3" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
 					     <!--Define dependents for Popover -->
 						<viz:dependents>
-							<viz:Popover id="idPopOverOutstanding"></viz:Popover>
+							<viz:Popover id="idPopOverOutstanding2"></viz:Popover>
 						</viz:dependents>
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{>/}">
