@@ -7,14 +7,16 @@
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
 				<suite:content>
 					<viz:VizFrame id="idVizFrame2" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
-					     <!--Define dependents for Popover -->
+						<!--Define dependents for Popover -->
 						<viz:dependents>
 							<viz:Popover id="idPopOverOutstanding"></viz:Popover>
 						</viz:dependents>
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{newAllCustomerOutstanding>/}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Customer Name" value="{newAllCustomerOutstanding>name1}"/>
+									<!--<vizData:DimensionDefinition name="Customer Name" value="{newAllCustomerOutstanding>name1}"/>-->
+									<!-- hidden unique key -->
+									<vizData:DimensionDefinition name="Customer Name" value="{newAllCustomerOutstanding>customerKey}" displayValue="{newAllCustomerOutstanding>name1}"/>
 									<!--<vizData:DimensionDefinition name="Fiscal Year" value="{newAllCustomerOutstanding>fiscalYear}"/>-->
 								</vizData:dimensions>
 								<vizData:measures>
@@ -24,6 +26,7 @@
 						</viz:dataset>
 						<viz:feeds>
 							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Outstanding Amount (₹ Cr)"/>
+							<!--<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Name"/>-->
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Name"/>
 							<!--<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Fiscal Year"/>-->
 						</viz:feeds>

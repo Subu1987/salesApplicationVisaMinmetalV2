@@ -14,7 +14,8 @@
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{newSingleCustomerOutstanding>/}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Customer Name" value="{newSingleCustomerOutstanding>name1}"/>
+									<!--<vizData:DimensionDefinition name="Customer Name" value="{newSingleCustomerOutstanding>name1}"/>-->
+									<vizData:DimensionDefinition name="Customer Name" value="{newSingleCustomerOutstanding>customerKey}" displayValue="{newSingleCustomerOutstanding>name1}"/>
 								</vizData:dimensions>
 								<vizData:measures>
 									<vizData:MeasureDefinition name="Outstanding Amount (₹ Cr)" value="{newSingleCustomerOutstanding>amount}"/>

@@ -1618,7 +1618,14 @@ sap.ui.define([
 			oNewChnageModel.read("/es_outstandingset", {
 				filters: filters,
 				success: function(response) {
-					var oData = response.results;
+					var aData = response.results;
+					var oData = aData.map(item => {
+					    return {
+					        ...item,
+					        customerKey: item.name1 + " (" + item.kunnr + ")"
+					    };
+					});
+
 					console.log("Unconverted Amount Data:",oData);
 					// sorting the oData
 					// var oData = that.sortByTurnOverDesc(response.results || []);
@@ -1700,7 +1707,13 @@ sap.ui.define([
 					"$top": 5
 				},
 				success: function(response) {
-					var oData = response.results;
+					var aData = response.results;
+					var oData = aData.map(item => {
+					    return {
+					        ...item,
+					        customerKey: item.name1 + " (" + item.kunnr + ")"
+					    };
+					});
 					console.log(oData);
 
 					// Convert Amount in Crore
@@ -1767,15 +1780,21 @@ sap.ui.define([
 			oNewChnageModel.read(sEntitySet, {
 				// filters: filters,
 				success: function(response) {
-					var oData = [];
+					var aData = [];
 
 					if (response.results) {
 						// Case: multiple records
-						oData = response.results;
+						aData = response.results;
 					} else {
 						// Case: single record
-						oData = [response];
+						aData = [response];
 					}
+					var oData = aData.map(item => {
+					    return {
+					        ...item,
+					        customerKey: item.name1 + " (" + item.kunnr + ")"
+					    };
+					});
 
 					console.log("Normalized Array:", oData);
 
@@ -1908,15 +1927,17 @@ sap.ui.define([
 			    // return; // exit early, no need for rules
 			} else {
 				rules = oData.map(item => {
-					// const customerYear = `${item.customerName} (${item.fiscalYear})`;
-					const customerMap = `${item.name1}`;
+					// const customerMap = `${item.name1}`;
+					// const customerKey = `${item.name1} (${item.kunnr})`; // hidden unique key
+					const customerKey = item.customerKey;
 					return {
 						dataContext: {
-							"Customer Name": item.name1
-								// "Fiscal Year": item.fiscalYear
+								// "Customer Name": item.name1
+								"Customer Name": customerKey   // match with dimension
 						},
 						properties: {
-							color: colorMap[customerMap]
+							// color: colorMap[customerMap]
+							 color: colorMap[customerKey]
 						}
 					};
 				});
@@ -1978,7 +1999,8 @@ sap.ui.define([
 			 if (selectedTabText === "Turnover") {
 				uniqueKeys = [...new Set(data.map(item => `(${item.quater} ${item.quaterYear})`))];
     		} else {
-				uniqueKeys = [...new Set(data.map(item => `${item.name1}`))];
+				// uniqueKeys = [...new Set(data.map(item => `${item.name1}`))];
+				uniqueKeys = [...new Set(data.map(item => `${item.name1} (${item.kunnr})`))];
 			}
 
 			// Generate HSL colors based on index
