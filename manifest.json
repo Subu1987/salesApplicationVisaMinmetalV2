@@ -172,6 +172,9 @@
 			},
 			"newSingleCustomerOutstanding": {
 				"type": "sap.ui.model.json.JSONModel"
+			},
+			"newTotalOutstanding": {
+				"type": "sap.ui.model.json.JSONModel"
 			}
 		},
 		"resources": {

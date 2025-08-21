@@ -78,6 +78,7 @@ sap.ui.define([
 			var oGlobalData = oComponent.getModel("globalData").getData();
 			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
 			var oSelectedTabText = oGlobalData.selectedTabText;
+			var oSelectedTabText3 = oGlobalData.selectedTabText3;  // For Customer Due Qtr/FY
 			var oView = this.getView();
 
 			// Map input IDs to friendly field names
@@ -89,14 +90,26 @@ sap.ui.define([
 			};
 
 			var getInputIdsToValidate = function() {
-				var isSingleCustomer = oSelectedTabText === "Single Customer Turnover";
-
-				if (isSingleCustomer) {
-					return oSelectedIndex === 0 ? ["_customerInputId", "_financialYearInputId"] : ["_customerInputId", "_quarterInputId",
-						"_quarterInputYearId"
-					];
-				} else {
-					return oSelectedIndex === 0 ? ["_financialYearInputId"] : ["_quarterInputId", "_quarterInputYearId"];
+				
+				if(oSelectedIndex === 3){
+					var isSingleCustomer = oSelectedTabText3 === "Single Customer Outstanding";
+	
+					if (isSingleCustomer) {
+						return ["_customerInputId", "_quarterInputId","_quarterInputYearId"];
+					} else {
+						return ["_quarterInputId", "_quarterInputYearId"];
+					}
+				}
+				else{
+					var isSingleCustomer = oSelectedTabText === "Single Customer Turnover";
+	
+					if (isSingleCustomer) {
+						return oSelectedIndex === 0 ? ["_customerInputId", "_financialYearInputId"] : ["_customerInputId", "_quarterInputId",
+							"_quarterInputYearId"
+						];
+					} else {
+						return oSelectedIndex === 0 ? ["_financialYearInputId"] : ["_quarterInputId", "_quarterInputYearId"];
+					}
 				}
 			};
 
@@ -681,11 +694,11 @@ sap.ui.define([
 			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
 
 			if (oGlobalData.isCustomerRadio === true) {
-				this.getBackendData2();
+				this.getBackendData2(); // Customer Due
 			} else if (oGlobalData.isCustomerQtrFyRadio === true) {
-				this.getBackendData3();
+				this.getBackendData3();  // Customer Due Qtr/FY
 			} else {
-				this.getBackendData();
+				this.getBackendData(); // Initial Fiscal Year / Quater Wise
 			}
 		},
 
@@ -1188,7 +1201,6 @@ sap.ui.define([
 				colorMap
 			};
 		},
-
 		bindChartColorRulesByFiscalYearWise: function(sFragmentId, oData) {
 			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
 			var oSelectedTabText = oGlobalModel.getProperty("/selectedTabText");
@@ -1276,7 +1288,6 @@ sap.ui.define([
 			// Use bind to pass sFragmentId and call _onChartSelect
 			oVizFrame.attachSelectData(this._onChartSelectFiscalYearWise.bind(this, sFragmentId));
 		},
-
 		_onChartSelectFiscalYearWise: function(sFragmentId, oEvent) {
 			var oVizFrame = oEvent.getSource();
 			var oPopover = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idPopOverFiscalYearWise");
@@ -1474,25 +1485,7 @@ sap.ui.define([
 		},
 
 		/*************** Customer Due Scenario Function  *****************/
-
-		getBackendData2: function() {
-			if (!this.validateInputs2()) {
-				/*sap.m.MessageBox.error("Please fill all required fields.");*/
-				return;
-			}
-			var that = this;
-			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
-
-			var oSelectedTabText = oGlobalData.selectedTabText2;
-
-			if (oSelectedTabText === "All Customer Outstanding") {
-				this.getAllCustomerOutstandingData();
-			} else if (oSelectedTabText === "Top 5 Customer Outstanding") {
-				this.getTop5OutstandingData();
-			} else if (oSelectedTabText === "Single Customer Outstanding") {
-				this.getSingleCustomerOutstandingData();
-			}
-		},
+		// For Customer Due
 		validateInputs2: function() {
 
 			var oComponent = this.getOwnerComponent();
@@ -1535,6 +1528,50 @@ sap.ui.define([
 			return true;
 
 		},
+		
+		// For Customer Due
+		getBackendData2: function() {
+			if (!this.validateInputs2()) {
+				/*sap.m.MessageBox.error("Please fill all required fields.");*/
+				return;
+			}
+			var that = this;
+			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
+
+			var oSelectedTabText = oGlobalData.selectedTabText2;
+
+			if (oSelectedTabText === "All Customer Outstanding") {
+				this.getAllCustomerOutstandingData();
+			} 
+			else if (oSelectedTabText === "Top 5 Customer Outstanding") {
+				this.getTop5OutstandingData();
+			} 
+			else if (oSelectedTabText === "Single Customer Outstanding") {
+				this.getSingleCustomerOutstandingData();
+			}
+			else if (oSelectedTabText === "Total Outstanding") {
+				this.getTotalOutstandingData();
+			}
+		},
+		
+		// For Customer Due Qtr/FY
+		getBackendData3: function() {
+			if (!this.validateInputs()) {
+				/*sap.m.MessageBox.error("Please fill all required fields.");*/
+				return;
+			}
+			var that = this;
+			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
+
+			var oSelectedTabText = oGlobalData.selectedTabText3;
+
+			if (oSelectedTabText === "Single Customer Outstanding") {
+				
+			} else if (oSelectedTabText === "Total Outstanding") {
+				
+			}
+		},
+		
 
 		convertAmountToCrore: function(oData) {
 			if (Array.isArray(oData)) {
@@ -1546,6 +1583,11 @@ sap.ui.define([
 				});
 			}
 			return oData; // return updated array
+		},
+		sortByAmountDesc: function(aData) {
+		    return (aData || []).sort(function(a, b) {
+		        return parseFloat(b.amount || 0) - parseFloat(a.amount || 0);
+		    });
 		},
 
 		getAllCustomerOutstandingData: function() {
@@ -1576,7 +1618,7 @@ sap.ui.define([
 				filters: filters,
 				success: function(response) {
 					var oData = response.results;
-					console.log(oData);
+					console.log("Unconverted Amount Data:",oData);
 					// sorting the oData
 					// var oData = that.sortByTurnOverDesc(response.results || []);
 					// console.log("Sorted Data:", oData);
@@ -1601,6 +1643,10 @@ sap.ui.define([
 
 					// Convert Amount in Crore
 					that.convertAmountToCrore(oData);
+					
+					// 🔹 Sort descending by amount using helper
+    				oData = that.sortByAmountDesc(oData);
+    				console.log("Converted & Sorted Data: ",oData);
 
 					var sFragmentId = "newChartFragment1";
 
@@ -1658,6 +1704,9 @@ sap.ui.define([
 
 					// Convert Amount in Crore
 					that.convertAmountToCrore(oData);
+					// 🔹 Sort descending by amount using helper
+    				oData = that.sortByAmountDesc(oData);
+    				console.log("Converted & Sorted Data: ",oData);
 
 					// Toggle visibility of chart fragments
 					oGlobalDataModel.setProperty("/isNewChartFragment2Visible", true);
@@ -1731,6 +1780,9 @@ sap.ui.define([
 
 					// Convert Amount in Crore
 					that.convertAmountToCrore(oData);
+					// 🔹 Sort descending by amount using helper
+    				oData = that.sortByAmountDesc(oData);
+    				console.log("Converted & Sorted Data: ",oData);
 
 					// Toggle visibility of chart fragments
 					oGlobalDataModel.setProperty("/isNewChartFragment3Visible", true);
@@ -1739,6 +1791,70 @@ sap.ui.define([
 
 					var oNewSingleCustomerOutstanding = that.getView().getModel("newSingleCustomerOutstanding");
 					oNewSingleCustomerOutstanding.setData(oData);
+
+					that.bindChartColorRulesByOutstanding(sFragmentId, oData);
+
+					// Check if data is available
+					sap.ui.core.BusyIndicator.hide();
+					if (!oData.length) {
+						sap.m.MessageBox.information("There are no data available!");
+					}
+				},
+				error: function(error) {
+					sap.ui.core.BusyIndicator.hide();
+					console.error(error);
+
+					try {
+						var errorObject = JSON.parse(error.responseText);
+						sap.m.MessageBox.error(errorObject.error.message.value);
+					} catch (e) {
+						sap.m.MessageBox.error("An unexpected error occurred.");
+					}
+				}
+			});
+		},
+		getTotalOutstandingData: function() {
+			var that = this;
+			// Retrieve models once to avoid redundant calls
+			var oComponent = this.getOwnerComponent();
+			var oNewChnageModel = oComponent.getModel("quarterlyTurnoverModel");
+			var oGlobalDataModel = oComponent.getModel("globalData");
+			var oGlobalData = oGlobalDataModel.getData();
+			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+
+			var oDate = this.byId("DatePickerId").getDateValue();
+			var sDate = this.formatDateToYYYYMMDD(oDate);
+
+			var filters = [];
+			// 🔹 Add "datum" filter
+			filters.push(new sap.ui.model.Filter("datum", sap.ui.model.FilterOperator.EQ, sDate));
+			
+			// 🔹 Add "total_outstanding" filter
+			filters.push(new sap.ui.model.Filter("total_outstanding", sap.ui.model.FilterOperator.EQ, "X"));
+
+			// Show busy indicator
+			sap.ui.core.BusyIndicator.show();
+
+			// OData call to fetch data
+			oNewChnageModel.read("/es_outstandingset", {
+				filters: filters,
+				success: function(response) {
+					var oData = response.results;
+					console.log(oData);
+
+					// Convert Amount in Crore
+					that.convertAmountToCrore(oData);
+					// 🔹 Sort descending by amount using helper
+    				oData = that.sortByAmountDesc(oData);
+    				console.log("Converted & Sorted Data: ",oData);
+
+					// Toggle visibility of chart fragments
+					oGlobalDataModel.setProperty("/isNewChartFragment4Visible", true);
+
+					var sFragmentId = "newChartFragment4";
+
+					var oTotalOutstanding = that.getView().getModel("newTotalOutstanding");
+					oTotalOutstanding.setData(oData);
 
 					that.bindChartColorRulesByOutstanding(sFragmentId, oData);
 
@@ -1778,26 +1894,28 @@ sap.ui.define([
 
 			var rules = [];
 
-			if (oSelectedTabText === "Turnover") {
-				rules = oData.map(item => ({
-					dataContext: {
-						"Fiscal Year": item.fiscalYear
-					},
-					properties: {
-						color: colorMap[item.fiscalYear]
-					}
-				}));
+			if (oSelectedTabText === "Total Outstanding") {
+			    // No dimension, just set a single bright color globally
+			    oVizFrame.setVizProperties({
+			        plotArea: {
+			            colorPalette: ["hsl(200, 90%, 55%)"], // bright blue
+			            dataLabel: { visible: true },
+			            drawingEffect: "glossy"
+			        },
+			        title: { visible: true, text: "Due As on Date" },
+			    });
+			    // return; // exit early, no need for rules
 			} else {
 				rules = oData.map(item => {
 					// const customerYear = `${item.customerName} (${item.fiscalYear})`;
-					const customerYear = `${item.name1}`;
+					const customerMap = `${item.name1}`;
 					return {
 						dataContext: {
 							"Customer Name": item.name1
 								// "Fiscal Year": item.fiscalYear
 						},
 						properties: {
-							color: colorMap[customerYear]
+							color: colorMap[customerMap]
 						}
 					};
 				});
@@ -1806,7 +1924,7 @@ sap.ui.define([
 			oVizFrame.setVizProperties({
 				title: {
 					visible: true,
-					text: "Date Wise Outstanding"
+					text: "Due As on Date"
 				},
 				plotArea: {
 					dataPointStyle: {
@@ -1856,9 +1974,9 @@ sap.ui.define([
 			let uniqueKeys = [];
 
 			// Choose key format based on selected tab
-			if (selectedTabText === "Turnover") {
-				uniqueKeys = [...new Set(data.map(item => item.fiscalYear))];
-			} else {
+			 if (selectedTabText === "Turnover") {
+				uniqueKeys = [...new Set(data.map(item => `(${item.quater} ${item.quaterYear})`))];
+    		} else {
 				uniqueKeys = [...new Set(data.map(item => `${item.name1}`))];
 			}
 
@@ -1894,10 +2012,26 @@ sap.ui.define([
 
 			// Directly get the data from the selected item
 			var oDataContext = oSelectedItem.data; // Directly access the data (it may not need 'data.data')
+			
+			// 🔹 Get which tab is active
+		    var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+		    var sSelectedTabText = oGlobalModel.getProperty("/selectedTabText2");
+		    
+		    var sCustomer, sAmount;
+
+		    if (sSelectedTabText === "Total Outstanding") {
+		        // Only one measure, no customer dimension
+		        sCustomer = "Total Outstanding";   // fixed label
+		        sAmount   = oDataContext["Outstanding Amount (₹ Cr)"];
+		    } else {
+		        // Normal case with Customer Name dimension
+		        sCustomer = oDataContext["Customer Name"];
+		        sAmount   = oDataContext["Outstanding Amount (₹ Cr)"];
+		    }
 
 			// Assuming you are accessing Supplier Name, Fiscal Year, and Turnover
-			var sCustomer = oDataContext["Customer Name"];
-			var sAmount = oDataContext["Outstanding Amount (Cr)"];
+			// var sCustomer = oDataContext["Customer Name"];
+			// var sAmount = oDataContext["Outstanding Amount (Cr)"];
 			// var sFiscalYear = oDataContext["Fiscal Year"];
 			// var sTurnover = oDataContext["Turn Over (Cr)"]; // Adjust the field name as necessary
 
