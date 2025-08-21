@@ -1163,7 +1163,8 @@ sap.ui.define([
 						var aModels = [
 							"newAllCustomerOutstanding",
 							"newTop5Outstanding",
-							"newSingleCustomerOutstanding"
+							"newSingleCustomerOutstanding",
+							"newTotalOutstanding"
 						];
 
 						aModels.forEach(function(sModelName) {
