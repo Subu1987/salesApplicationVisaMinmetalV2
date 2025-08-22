@@ -7,7 +7,7 @@
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
 				<suite:content>
 					<viz:VizFrame id="idVizFrame2" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
-					     <!--Define dependents for Popover -->
+						<!--Define dependents for Popover -->
 						<viz:dependents>
 							<viz:Popover id="idPopOverOutstanding"></viz:Popover>
 						</viz:dependents>
@@ -40,16 +40,22 @@
 							<!--		<Text text="{newTotalOutstanding>name1}"/>-->
 							<!--	</table:template>-->
 							<!--</table:Column>-->
+							<table:Column width="200px">
+								<Label text="Metric"/>
+								<table:template>
+									<Text text="Total Outstanding"/>
+								</table:template>
+							</table:Column>
 							<table:Column>
 								<Label text="Amonut (₹ Cr)"/>
 								<table:template>
 									<Text text="{newTotalOutstanding>amount}"/>
 								</table:template>
 							</table:Column>
-							<!--<table:Column>-->
-							<!--	<Label text="Turn Over (₹ Cr)"/>-->
+							<!--<table:Column hAlign="Center" width="100%">-->
+							<!--	<Label text="Total Outstanding (₹ Cr)"/>-->
 							<!--	<table:template>-->
-							<!--		<Text text="{allCustlistData>turnOver}"/>-->
+							<!--		<Text text="{newTotalOutstanding>amount}" design="Bold"/>-->
 							<!--	</table:template>-->
 							<!--</table:Column>-->
 						</table:columns>

@@ -1567,6 +1567,7 @@ sap.ui.define([
 			var oSelectedTabText = oGlobalData.selectedTabText3;
 
 			if (oSelectedTabText === "Single Customer Outstanding") {
+				this.getSingleCustomerData_CustomeDueQtrFY()
 				
 			} else if (oSelectedTabText === "Total Outstanding") {
 				
@@ -1590,7 +1591,8 @@ sap.ui.define([
 		        return parseFloat(b.amount || 0) - parseFloat(a.amount || 0);
 		    });
 		},
-
+		
+		// Customer Due
 		getAllCustomerOutstandingData: function() {
 			var that = this;
 
@@ -1618,15 +1620,7 @@ sap.ui.define([
 			oNewChnageModel.read("/es_outstandingset", {
 				filters: filters,
 				success: function(response) {
-					var aData = response.results;
-					var oData = aData.map(item => {
-					    return {
-					        ...item,
-					        customerKey: item.name1 + " (" + item.kunnr + ")"
-					    };
-					});
 
-					console.log("Unconverted Amount Data:",oData);
 					// sorting the oData
 					// var oData = that.sortByTurnOverDesc(response.results || []);
 					// console.log("Sorted Data:", oData);
@@ -1641,13 +1635,26 @@ sap.ui.define([
 
 					// oAllCustListDataModel.setProperty(sPropertyPath, oData);
 
-					// Toggle visibility of chart fragments
-					oGlobalDataModel.setProperty("/isNewChartFragment1Visible", true);
+					// // Toggle visibility of chart fragments
+					// oGlobalDataModel.setProperty("/isNewChartFragment1Visible", true);
 					// oGlobalDataModel.setProperty("/isChartFragment2Visible", !isSelectedIndex);
 
 					// Bind chart
 					// isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
 					// 	sFragmentId, oData);
+					
+					var aData = response.results;
+					console.log("Unconverted Amount Data:",aData);
+					
+					var oData = aData.map(item => {
+					    return {
+					        ...item,
+					        customerKey: item.name1 + " (" + item.kunnr + ")"
+					    };
+					});
+					
+					// Toggle visibility of chart fragments
+					oGlobalDataModel.setProperty("/isNewChartFragment1Visible", true);
 
 					// Convert Amount in Crore
 					that.convertAmountToCrore(oData);
@@ -1708,6 +1715,8 @@ sap.ui.define([
 				},
 				success: function(response) {
 					var aData = response.results;
+					console.log("Unconverted Amount Data:",aData);
+					
 					var oData = aData.map(item => {
 					    return {
 					        ...item,
@@ -1761,6 +1770,9 @@ sap.ui.define([
 			var oSelectedTabText = oGlobalData.selectedTabText;
 			var aSelectedCustomerMasterData = oGlobalData.selectedCustomerIDs || [];
 			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+			
+			// var aSelectedCustomerIDs = oGlobalDataModel.getProperty("/selectedCustomerIDs") || [];
+			// var aSelectedCustomerNames = oGlobalDataModel.getProperty("/selectedCustomerNames") || [];
 
 			var oDate = this.byId("DatePickerId").getDateValue();
 			var sDate = this.formatDateToYYYYMMDD(oDate);
@@ -1789,6 +1801,8 @@ sap.ui.define([
 						// Case: single record
 						aData = [response];
 					}
+					console.log("Unconverted Amount Data:",aData);
+					
 					var oData = aData.map(item => {
 					    return {
 					        ...item,
@@ -1806,6 +1820,8 @@ sap.ui.define([
 
 					// Toggle visibility of chart fragments
 					oGlobalDataModel.setProperty("/isNewChartFragment3Visible", true);
+					// oGlobalDataModel.setProperty("/selectedCustomerNames", []);
+					// oGlobalDataModel.setProperty("/selectedCustomerIDs", []);
 
 					var sFragmentId = "newChartFragment3";
 
@@ -1897,6 +1913,70 @@ sap.ui.define([
 				}
 			});
 		},
+		
+		// Customer Due QTR/FY
+		getSingleCustomerData_CustomeDueQtrFY: function() {
+			var that = this;
+
+			// Retrieve models once to avoid redundant calls
+			var oComponent = this.getOwnerComponent();
+			var oSingleCustomerModel = oComponent.getModel("singleCustomerModel");
+			var oGlobalDataModel = oComponent.getModel("globalData");
+			var oGlobalData = oGlobalDataModel.getData();
+			var oSingleCustListDataModel = oComponent.getModel("singleCustlistData");
+			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+
+			// reusable filter function 
+			var filters = this._buildFilters(oGlobalData, oSelectedIndex);
+
+			// Show busy indicator
+			sap.ui.core.BusyIndicator.show();
+
+			// OData call to fetch data
+			oSingleCustomerModel.read("/CUSTSet", {
+				filters: filters,
+				success: function(response) {
+					// sorting the oData
+					var oData = that.sortByTurnOverDesc(response.results || []);
+					console.log("Sorted Data:", oData);
+
+					// format customer data function
+					that.formatCustomerData(oData);
+
+					// Update models based on selection
+					var isSelectedIndex = oSelectedIndex === 0;
+					var sPropertyPath = isSelectedIndex ? "/singleCustlistDataFiscalYearWise" : "/singleCustlistDataQuaterlyWise";
+					var sFragmentId = isSelectedIndex ? "chartFragment5" : "chartFragment6";
+
+					oSingleCustListDataModel.setProperty(sPropertyPath, oData);
+
+					// Toggle visibility of chart fragments
+					oGlobalDataModel.setProperty("/isChartFragment5Visible", isSelectedIndex);
+					oGlobalDataModel.setProperty("/isChartFragment6Visible", !isSelectedIndex);
+
+					// Bind chart
+					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
+						sFragmentId, oData);
+
+					// Check if data is available
+					sap.ui.core.BusyIndicator.hide();
+					if (!oData.length) {
+						sap.m.MessageBox.information("There are no data available!");
+					}
+				},
+				error: function(error) {
+					sap.ui.core.BusyIndicator.hide();
+					console.error(error);
+
+					try {
+						var errorObject = JSON.parse(error.responseText);
+						sap.m.MessageBox.error(errorObject.error.message.value);
+					} catch (e) {
+						sap.m.MessageBox.error("An unexpected error occurred.");
+					}
+				}
+			});
+		},
 
 		bindChartColorRulesByOutstanding: function(sFragmentId, oData) {
 			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
@@ -1907,6 +1987,8 @@ sap.ui.define([
 				console.warn("VizFrame not found for Fragment ID:", sFragmentId);
 				return;
 			}
+			
+			// this._adjustVizFrameWidth(sFragmentId, "idVizFrame2", oData);  // For VizFrame Width increase
 
 			var {
 				colorMap
@@ -2069,6 +2151,39 @@ sap.ui.define([
 
 			// Connect the Popover to the VizFrame
 			oPopover.connect(oVizFrame.getVizUid());
+		},
+		_adjustVizFrameWidth: function (sFragmentId, sVizFrameId, oData) {
+			
+		    if (!Array.isArray(oData)) {
+		        console.warn("oData is not an array for chart resizing");
+		        return;
+		    }
+		
+			// var iBarWidth = 200, iMinWidth = 1000;
+			//   var iNumBars = oData.length;
+			//   var iChartWidth = Math.max(iNumBars * iBarWidth, iMinWidth);
+			 
+			// 🔹 Dynamic bar width rules
+			var iNumBars = oData.length;
+		    var iBarWidth;
+		    if (iNumBars < 6) {
+		        iBarWidth = 400; // fewer bars → give extra width
+		    } else if (iNumBars < 20) {
+		        iBarWidth = 250; // medium bars
+		    } else {
+		        iBarWidth = 120; // large dataset → smaller width per bar
+		    }
+		
+		    var iMinWidth = 1000; // fallback minimum
+		    var iChartWidth = Math.max(iNumBars * iBarWidth, iMinWidth);
+				
+		    // ✅ Access VizFrame inside fragment
+		    var oVizFrame = sap.ui.core.Fragment.byId(this.createId(sFragmentId), sVizFrameId);
+		    if (oVizFrame) {
+		        oVizFrame.setWidth(iChartWidth + "px");
+		    } else {
+		        console.warn("VizFrame with ID", sVizFrameId, "not found in fragment", sFragmentId);
+		    }
 		},
 
 	});
