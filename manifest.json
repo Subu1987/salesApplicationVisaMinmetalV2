@@ -175,6 +175,9 @@
 			},
 			"newTotalOutstanding": {
 				"type": "sap.ui.model.json.JSONModel"
+			},
+			"newSingleCustomerOutstandingQtrFY": {
+				"type": "sap.ui.model.json.JSONModel"
 			}
 		},
 		"resources": {

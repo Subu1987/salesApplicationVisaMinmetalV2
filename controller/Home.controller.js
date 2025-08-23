@@ -91,16 +91,6 @@ sap.ui.define([
 
 			var getInputIdsToValidate = function() {
 				
-				if(oSelectedIndex === 3){
-					var isSingleCustomer = oSelectedTabText3 === "Single Customer Outstanding";
-	
-					if (isSingleCustomer) {
-						return ["_customerInputId", "_quarterInputId","_quarterInputYearId"];
-					} else {
-						return ["_quarterInputId", "_quarterInputYearId"];
-					}
-				}
-				else{
 					var isSingleCustomer = oSelectedTabText === "Single Customer Turnover";
 	
 					if (isSingleCustomer) {
@@ -110,7 +100,7 @@ sap.ui.define([
 					} else {
 						return oSelectedIndex === 0 ? ["_financialYearInputId"] : ["_quarterInputId", "_quarterInputYearId"];
 					}
-				}
+				
 			};
 
 			var bAllValid = true;
@@ -1164,7 +1154,8 @@ sap.ui.define([
 							"newAllCustomerOutstanding",
 							"newTop5Outstanding",
 							"newSingleCustomerOutstanding",
-							"newTotalOutstanding"
+							"newTotalOutstanding",
+							"newSingleCustomerOutstandingQtrFY"
 						];
 
 						aModels.forEach(function(sModelName) {
@@ -1485,8 +1476,10 @@ sap.ui.define([
 			oPopover.connect(oVizFrame.getVizUid());
 		},
 
-		/*************** Customer Due Scenario Function  *****************/
-		// For Customer Due
+		/*************** Customer Due & Customer Due QTR/FY Scenario Functions  *****************/
+		
+		// Validation & Get Function Call For Customer Due
+		
 		validateInputs2: function() {
 
 			var oComponent = this.getOwnerComponent();
@@ -1529,8 +1522,6 @@ sap.ui.define([
 			return true;
 
 		},
-		
-		// For Customer Due
 		getBackendData2: function() {
 			if (!this.validateInputs2()) {
 				/*sap.m.MessageBox.error("Please fill all required fields.");*/
@@ -1555,9 +1546,124 @@ sap.ui.define([
 			}
 		},
 		
-		// For Customer Due Qtr/FY
+		// Validation & Get Function Call For Customer Due Qtr/FY
+		
+		validateInputs3: function() {
+			
+			var oComponent = this.getOwnerComponent();
+			var oGlobalData = oComponent.getModel("globalData").getData();
+			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+			var oSelectedTabText3 = oGlobalData.selectedTabText3;  // For Customer Due Qtr/FY
+			var oView = this.getView();
+
+			// Map input IDs to friendly field names
+			var mFieldNames = {
+				"_customerInputId": "Customer",
+				"_financialYearInputId": "Fiscal Year",
+				"_quarterInputId": "Quarter",
+				"_quarterInputYearId": "Quarter Year"
+			};
+
+			var getInputIdsToValidate = function() {
+				
+				if(oSelectedIndex === 3){
+					var isSingleCustomer = oSelectedTabText3 === "Single Customer Outstanding";
+	
+					if (isSingleCustomer) {
+						return ["_customerInputId","_quarterInputYearId"];
+					} else {
+						return [ "_quarterInputYearId"];
+					}
+				}
+			};
+
+			var bAllValid = true;
+			var aEmptyFields = [];
+			var aInputIds = getInputIdsToValidate();
+
+			aInputIds.forEach(function(sId) {
+				var oInput = oView.byId(sId);
+				if (oInput && oInput.getVisible()) {
+					var sValue = oInput.getValue();
+					var sTrimmedValue = sValue ? sValue.trim() : "";
+
+					if (!sTrimmedValue) {
+						oInput.setValueState("Error");
+						oInput.setValueStateText("This field cannot be empty.");
+						bAllValid = false;
+
+						var sFieldName = mFieldNames[sId] || sId;
+						aEmptyFields.push(sFieldName);
+					} else {
+						oInput.setValueState("None");
+					}
+				}
+			});
+
+			if (aEmptyFields.length > 0) {
+				sap.m.MessageBox.error("Please fill the following fields:\n\n" + aEmptyFields.join("\n"));
+			}
+
+			return bAllValid;
+		},
+		_buildFiltersForCustomerQtrFY: function(oGlobalData, oSelectedIndex) {
+			var filters = [];
+
+			var oSelectedTabText = oGlobalData.selectedTabText;
+			var oSelectedTabText3 = oGlobalData.selectedTabText3;
+			
+			var aFiscalYears = oGlobalData.fiscalYears || [];
+			var aSelectedCustomerMasterData = oGlobalData.selectedCustomerIDs || [];
+			var aQuarters = oGlobalData.selectedQuarters || [];
+			var aQuarterYears = oGlobalData.selectedQuarterYears || [];
+
+			if(oSelectedIndex === 3){   // // For Customer Due QTR/FY
+				// var quarterFilters = aQuarters.map(function(quarter) {
+				// 	return new Filter("poper", FilterOperator.EQ, quarter); // double-check spelling
+				// });
+				
+				// ✅ If no quarter selected, default to '' filter
+			    var quarterFilters = (aQuarters.length > 0) ? 
+			        aQuarters.map(function(quarter) {
+			            return new Filter("poper", FilterOperator.EQ, quarter);
+			        }) :	[new Filter("poper", FilterOperator.EQ, "")];  
+			        
+				var quarterYearFilters = aQuarterYears.map(function(year) {
+					return new Filter("gjahr", FilterOperator.EQ, year); // double-check spelling
+				});
+				
+				if (quarterFilters.length || quarterYearFilters.length) {
+					filters.push(new Filter({
+						filters: [
+							new Filter({
+								filters: quarterFilters,
+								and: false
+							}),
+							new Filter({
+								filters: quarterYearFilters,
+								and: false
+							})
+						],
+						and: true
+					}));
+				}
+				
+			}
+			
+			// For Customer Due QTR/FY
+			if ((oSelectedTabText3 === "Single Customer Outstanding") && aSelectedCustomerMasterData.length > 0) {
+				filters.push(new Filter({
+					filters: aSelectedCustomerMasterData.map(function(cust) {
+						return new Filter("kunnr", FilterOperator.EQ, cust);
+					}),
+					and: false
+				}));
+			}
+
+			return filters;
+		},
 		getBackendData3: function() {
-			if (!this.validateInputs()) {
+			if (!this.validateInputs3()) {
 				/*sap.m.MessageBox.error("Please fill all required fields.");*/
 				return;
 			}
@@ -1592,7 +1698,7 @@ sap.ui.define([
 		    });
 		},
 		
-		// Customer Due
+		// Get Backend Data For Customer Due
 		getAllCustomerOutstandingData: function() {
 			var that = this;
 
@@ -1914,49 +2020,45 @@ sap.ui.define([
 			});
 		},
 		
-		// Customer Due QTR/FY
+		// Get Backend Data For Customer Due QTR/FY
 		getSingleCustomerData_CustomeDueQtrFY: function() {
 			var that = this;
 
 			// Retrieve models once to avoid redundant calls
 			var oComponent = this.getOwnerComponent();
-			var oSingleCustomerModel = oComponent.getModel("singleCustomerModel");
+			var oNewChnageModel = oComponent.getModel("quarterlyTurnoverModel");
 			var oGlobalDataModel = oComponent.getModel("globalData");
 			var oGlobalData = oGlobalDataModel.getData();
-			var oSingleCustListDataModel = oComponent.getModel("singleCustlistData");
 			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
 
 			// reusable filter function 
-			var filters = this._buildFilters(oGlobalData, oSelectedIndex);
+			var filters = this._buildFiltersForCustomerQtrFY(oGlobalData, oSelectedIndex);
 
 			// Show busy indicator
 			sap.ui.core.BusyIndicator.show();
 
 			// OData call to fetch data
-			oSingleCustomerModel.read("/CUSTSet", {
+			oNewChnageModel.read("/es_outstanding_yearset", {
 				filters: filters,
 				success: function(response) {
-					// sorting the oData
-					var oData = that.sortByTurnOverDesc(response.results || []);
-					console.log("Sorted Data:", oData);
+					console.log("Normalized Array:", response.results);
+					var aData=response.results;
 
-					// format customer data function
-					that.formatCustomerData(oData);
-
-					// Update models based on selection
-					var isSelectedIndex = oSelectedIndex === 0;
-					var sPropertyPath = isSelectedIndex ? "/singleCustlistDataFiscalYearWise" : "/singleCustlistDataQuaterlyWise";
-					var sFragmentId = isSelectedIndex ? "chartFragment5" : "chartFragment6";
-
-					oSingleCustListDataModel.setProperty(sPropertyPath, oData);
+					// Convert Amount in Crore
+					var oData=that.convertAmountToCrore(aData);
+					// 🔹 Sort descending by amount using helper
+    				that.sortByAmountDesc(oData);
+    				console.log("Converted & Sorted Data: ",oData);
 
 					// Toggle visibility of chart fragments
-					oGlobalDataModel.setProperty("/isChartFragment5Visible", isSelectedIndex);
-					oGlobalDataModel.setProperty("/isChartFragment6Visible", !isSelectedIndex);
+					oGlobalDataModel.setProperty("/isCusQtrFYFragment1Visible", true);
 
-					// Bind chart
-					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
-						sFragmentId, oData);
+					var sFragmentId = "cusQtrFYFragment1";
+
+					var oNewSingleCustomerOutstandingQtrFY = that.getView().getModel("newSingleCustomerOutstandingQtrFY");
+					oNewSingleCustomerOutstandingQtrFY.setData(oData);
+
+					that.bindChartColorRulesByQuarterlyWise_Outstanding(sFragmentId, oData);
 
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();
@@ -1977,7 +2079,8 @@ sap.ui.define([
 				}
 			});
 		},
-
+		
+		// Chart View For Customer Due
 		bindChartColorRulesByOutstanding: function(sFragmentId, oData) {
 			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
 			var oSelectedTabText = oGlobalModel.getProperty("/selectedTabText2");
@@ -2152,6 +2255,167 @@ sap.ui.define([
 			// Connect the Popover to the VizFrame
 			oPopover.connect(oVizFrame.getVizUid());
 		},
+		
+		// Chart View For Customer Due Qtr/FY
+		generateColorMapByQuarterlyWise_Outstanding: function(data, selectedTabText) {
+			var colorMap = {};
+			var uniqueKeys = [];
+
+			if (selectedTabText === "Total Outstanding") {
+				uniqueKeys = [...new Set(data.map(item => `(${item.quater} ${item.quaterYear})`))];
+			} else {
+				uniqueKeys = [...new Set(data.map(item => `${item.name1} (${item.poper} ${item.gjahr})`))];
+			}
+
+			uniqueKeys.forEach(function(key, i) {
+				var color = `hsl(${(i * 37) % 360}, 65%, 55%)`;
+				colorMap[key] = color;
+			});
+
+			return {
+				colorMap: colorMap
+			};
+		},
+		bindChartColorRulesByQuarterlyWise_Outstanding: function(sFragmentId, oData) {
+			
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var oSelectedTabText = oGlobalModel.getProperty("/selectedTabText3");
+			var oVizFrame = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idVizFrame3");
+
+			if (!oVizFrame) {
+				console.warn("VizFrame not found for Fragment ID:", sFragmentId);
+				return;
+			}
+
+			var result = this.generateColorMapByQuarterlyWise_Outstanding(oData, oSelectedTabText);
+			var colorMap = result.colorMap;
+			var rules = [];
+
+			if (oSelectedTabText === "Total Outstanding") {
+				rules = oData.map(function(item) {
+					var key = `(${item.quater} ${item.quaterYear})`;
+					return {
+						dataContext: {
+							"Quarter": item.quater,
+							"Quarter Year": item.quaterYear
+						},
+						properties: {
+							color: colorMap[key]
+						}
+					};
+				});
+			} else {
+				rules = oData.map(function(item) {
+					var key = `${item.name1} (${item.poper} ${item.gjahr})`;
+					return {
+						dataContext: {
+							"Customer Name": item.name1,
+							"Quarter": item.poper,
+							"Quarter Year": item.gjahr
+						},
+						properties: {
+							color: colorMap[key]
+						}
+					};
+				});
+			}
+
+			oVizFrame.setVizProperties({
+				title: {
+					visible: true,
+					text: "Quaterly Wise Outstanding Amount"
+				},
+				plotArea: {
+					dataPointStyle: {
+						rules: rules
+					},
+					dataLabel: {
+						visible: true
+					},
+					drawingEffect: "glossy"
+				},
+				tooltip: {
+					visible: true
+				},
+				interaction: {
+					selectability: {
+						mode: "multiple"
+					}
+				},
+				categoryAxis: {
+					label: {
+						visible: true,
+						allowMultiline: true,
+						linesOfWrap: 4,
+						overlapBehavior: "wrap",
+						rotation: 0,
+						angle: 0,
+						maxWidth: 200,
+						truncatedLabelRatio: 0.9,
+						style: {
+							fontSize: "10px"
+						}
+					}
+				},
+				valueAxis: {
+					label: {
+						visible: true
+					}
+				},
+				xAxis: {
+			        sortOrder: "asc"  // But again, will sort alphabetically by default
+			    }
+			});
+
+			// Use bind to pass sFragmentId and call _onChartSelect
+			oVizFrame.attachSelectData(this._onChartSelectQuarterlyWise_Outstanding.bind(this, sFragmentId));
+
+		},
+		_onChartSelectQuarterlyWise_Outstanding: function(sFragmentId, oEvent) {
+			
+			var oVizFrame = oEvent.getSource();
+			var oPopover = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idPopOverOutstanding2");
+
+			if (!oPopover) {
+				console.warn("Popover not found for Fragment ID:", sFragmentId);
+				return;
+			}
+
+			// Get selected data from the event (it will be in the 'data' parameter of the event)
+			var aSelectedData = oEvent.getParameter("data");
+
+			if (!aSelectedData || aSelectedData.length === 0) {
+				console.warn("No data selected");
+				return;
+			}
+
+			// We assume single selection and access the first item in the selected data array
+			var oSelectedItem = aSelectedData[0];
+
+			// Directly get the data from the selected item
+			var oDataContext = oSelectedItem.data; // Directly access the data (it may not need 'data.data')
+
+			// Assuming you are accessing Supplier Name, Quarter, Quarter Year, and Turnover
+			var sCustomer = oDataContext["Customer Name"];
+			var sQuarter = oDataContext["Quarter"];
+			var sQuarterYear = oDataContext["Quarter Year"];
+			var sAmount = oDataContext["Amount (Cr)"]; // Adjust the field name as necessary
+
+			// Create a JSON model to hold the data for the Popover
+			var oPopoverModel = new sap.ui.model.json.JSONModel({
+				customer: sCustomer,
+				quarter: sQuarter,
+				quarterYear: sQuarterYear,
+				amount: sAmount
+			});
+
+			// Set the model on the Popover
+			oPopover.setModel(oPopoverModel);
+
+			// Connect the Popover to the VizFrame
+			oPopover.connect(oVizFrame.getVizUid());
+		},
+		
 		_adjustVizFrameWidth: function (sFragmentId, sVizFrameId, oData) {
 			
 		    if (!Array.isArray(oData)) {
