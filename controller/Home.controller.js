@@ -1155,7 +1155,8 @@ sap.ui.define([
 							"newTop5Outstanding",
 							"newSingleCustomerOutstanding",
 							"newTotalOutstanding",
-							"newSingleCustomerOutstandingQtrFY"
+							"newSingleCustomerOutstandingQtrFY",
+							"new_Total_Outstanding_QtrFY"
 						];
 
 						aModels.forEach(function(sModelName) {
@@ -1608,6 +1609,8 @@ sap.ui.define([
 		},
 		_buildFiltersForCustomerQtrFY: function(oGlobalData, oSelectedIndex) {
 			var filters = [];
+			
+			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
 
 			var oSelectedTabText = oGlobalData.selectedTabText;
 			var oSelectedTabText3 = oGlobalData.selectedTabText3;
@@ -1623,11 +1626,27 @@ sap.ui.define([
 				// });
 				
 				// ✅ If no quarter selected, default to '' filter
-			    var quarterFilters = (aQuarters.length > 0) ? 
-			        aQuarters.map(function(quarter) {
-			            return new Filter("poper", FilterOperator.EQ, quarter);
-			        }) :	[new Filter("poper", FilterOperator.EQ, "")];  
-			        
+			    // var quarterFilters = (aQuarters.length > 0) ? 
+			    //     aQuarters.map(function(quarter) {
+			    //         return new Filter("poper", FilterOperator.EQ, quarter);
+			    //     }) :	[new Filter("poper", FilterOperator.EQ, "")] 
+			    
+			    var quarterFilters;
+
+				if (aQuarters.length > 0) {
+				    // Set flag because quarters are selected
+				    oGlobalDataModel.setProperty("/isQuarterSelected", true);
+				
+				    quarterFilters = aQuarters.map(function(quarter) {
+				        return new Filter("poper", FilterOperator.EQ, quarter);
+				    });
+				} else {
+				    // No quarters selected → reset flag
+				    oGlobalDataModel.setProperty("/isQuarterSelected", false);
+				
+				    quarterFilters = [new Filter("poper", FilterOperator.EQ, "")];
+				}
+			        	
 				var quarterYearFilters = aQuarterYears.map(function(year) {
 					return new Filter("gjahr", FilterOperator.EQ, year); // double-check spelling
 				});
@@ -1673,10 +1692,10 @@ sap.ui.define([
 			var oSelectedTabText = oGlobalData.selectedTabText3;
 
 			if (oSelectedTabText === "Single Customer Outstanding") {
-				this.getSingleCustomerData_CustomeDueQtrFY()
+				this.getSingleCustomerData_CustomeDueQtrFY();
 				
 			} else if (oSelectedTabText === "Total Outstanding") {
-				
+				this.getTotalOutstandingData_CustomeDueQtrFY();
 			}
 		},
 		
@@ -2079,6 +2098,64 @@ sap.ui.define([
 				}
 			});
 		},
+		getTotalOutstandingData_CustomeDueQtrFY: function() {
+			var that = this;
+
+			// Retrieve models once to avoid redundant calls
+			var oComponent = this.getOwnerComponent();
+			var oNewChnageModel = oComponent.getModel("quarterlyTurnoverModel");
+			var oGlobalDataModel = oComponent.getModel("globalData");
+			var oGlobalData = oGlobalDataModel.getData();
+			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+
+			// reusable filter function 
+			var filters = this._buildFiltersForCustomerQtrFY(oGlobalData, oSelectedIndex);
+
+			// Show busy indicator
+			sap.ui.core.BusyIndicator.show();
+
+			// OData call to fetch data
+			oNewChnageModel.read("/es_outstanding_yearset", {
+				filters: filters,
+				success: function(response) {
+					console.log("Normalized Array:", response.results);
+					var aData=response.results;
+
+					// Convert Amount in Crore
+					var oData=that.convertAmountToCrore(aData);
+					// 🔹 Sort descending by amount using helper
+    				that.sortByAmountDesc(oData);
+    				console.log("Converted & Sorted Data: ",oData);
+
+					// Toggle visibility of chart fragments
+					oGlobalDataModel.setProperty("/isCusQtrFYFragment2Visible", true);
+
+					var sFragmentId = "cusQtrFYFragment2";
+
+					var oNewTotalOutstandingQtrFY = that.getView().getModel("new_Total_Outstanding_QtrFY");
+					oNewTotalOutstandingQtrFY.setData(oData);
+
+					that.bindChartColorRulesByQuarterlyWise_Outstanding(sFragmentId, oData);
+
+					// Check if data is available
+					sap.ui.core.BusyIndicator.hide();
+					if (!oData.length) {
+						sap.m.MessageBox.information("There are no data available!");
+					}
+				},
+				error: function(error) {
+					sap.ui.core.BusyIndicator.hide();
+					console.error(error);
+
+					try {
+						var errorObject = JSON.parse(error.responseText);
+						sap.m.MessageBox.error(errorObject.error.message.value);
+					} catch (e) {
+						sap.m.MessageBox.error("An unexpected error occurred.");
+					}
+				}
+			});
+		},
 		
 		// Chart View For Customer Due
 		bindChartColorRulesByOutstanding: function(sFragmentId, oData) {
@@ -2262,7 +2339,7 @@ sap.ui.define([
 			var uniqueKeys = [];
 
 			if (selectedTabText === "Total Outstanding") {
-				uniqueKeys = [...new Set(data.map(item => `(${item.quater} ${item.quaterYear})`))];
+				uniqueKeys = [...new Set(data.map(item => `(${item.poper} ${item.gjahr})`))];
 			} else {
 				uniqueKeys = [...new Set(data.map(item => `${item.name1} (${item.poper} ${item.gjahr})`))];
 			}
@@ -2293,11 +2370,11 @@ sap.ui.define([
 
 			if (oSelectedTabText === "Total Outstanding") {
 				rules = oData.map(function(item) {
-					var key = `(${item.quater} ${item.quaterYear})`;
+					var key = `(${item.poper} ${item.gjahr})`;
 					return {
 						dataContext: {
-							"Quarter": item.quater,
-							"Quarter Year": item.quaterYear
+							"Quarter": item.poper,
+							"Quarter Year": item.gjahr
 						},
 						properties: {
 							color: colorMap[key]
@@ -2399,7 +2476,7 @@ sap.ui.define([
 			var sCustomer = oDataContext["Customer Name"];
 			var sQuarter = oDataContext["Quarter"];
 			var sQuarterYear = oDataContext["Quarter Year"];
-			var sAmount = oDataContext["Amount (Cr)"]; // Adjust the field name as necessary
+			var sAmount = oDataContext["Outstanding Amount (₹ Cr)"]; // Adjust the field name as necessary
 
 			// Create a JSON model to hold the data for the Popover
 			var oPopoverModel = new sap.ui.model.json.JSONModel({

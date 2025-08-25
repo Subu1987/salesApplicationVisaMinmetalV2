@@ -10,6 +10,10 @@
 			<StandardListItem title="2024" type="Active"/>
 			<StandardListItem title="2025" type="Active"/>
 			<StandardListItem title="2026" type="Active"/>
+			<StandardListItem title="2027" type="Active"/>
+			<StandardListItem title="2028" type="Active"/>
+			<StandardListItem title="2029" type="Active"/>
+			<StandardListItem title="2030" type="Active"/>
 		</items>
 	</SelectDialog>
 </core:FragmentDefinition>

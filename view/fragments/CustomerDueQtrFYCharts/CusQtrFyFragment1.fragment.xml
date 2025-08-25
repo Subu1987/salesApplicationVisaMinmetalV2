@@ -16,15 +16,15 @@
 								<vizData:dimensions>
 									<vizData:DimensionDefinition name="Customer Name" value="{newSingleCustomerOutstandingQtrFY>name1}"/>
 									<vizData:DimensionDefinition name="Quarter Year" value="{newSingleCustomerOutstandingQtrFY>gjahr}"/>
-									<vizData:DimensionDefinition name="Quarter" value="{newSingleCustomerOutstandingQtrFY>poper}" sortOrder="ascending"/>
+									<vizData:DimensionDefinition name="Quarter" value="{newSingleCustomerOutstandingQtrFY>poper}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Amount (₹ Cr)" value="{newSingleCustomerOutstandingQtrFY>amount}"/>
+									<vizData:MeasureDefinition name="Outstanding Amount (₹ Cr)" value="{newSingleCustomerOutstandingQtrFY>amount}"/>
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
 						<viz:feeds>
-							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Amount (₹ Cr)"/>
+							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Outstanding Amount (₹ Cr)"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Name"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter Year"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter"/>
@@ -43,7 +43,7 @@
 									<Text text="{newSingleCustomerOutstandingQtrFY>name1}"/>
 								</table:template>
 							</table:Column>
-							<table:Column>
+							<table:Column visible="{globalData>/isQuarterSelected}">
 								<Label text="Quarter"/>
 								<table:template>
 									<Text text="{newSingleCustomerOutstandingQtrFY>poper}"/>
