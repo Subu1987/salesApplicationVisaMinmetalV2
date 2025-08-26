@@ -1716,6 +1716,27 @@ sap.ui.define([
 		        return parseFloat(b.amount || 0) - parseFloat(a.amount || 0);
 		    });
 		},
+		sortByQuarterAndYear: function(aData) {
+	    // Quarter order mapping
+	    var quarterOrder = { "Q1": 1, "Q2": 2, "Q3": 3, "Q4": 4 };
+	
+	    return aData.sort(function(a, b) {
+	        // Convert gjahr to number (safety)
+	        var yearA = parseInt(a.gjahr, 10);
+	        var yearB = parseInt(b.gjahr, 10);
+	
+	        if (yearA !== yearB) {
+	            return yearA - yearB; // ascending year
+	        }
+	
+	        // Handle quarter values like "Q1"/"1"
+	        var qA = a.poper.startsWith("Q") ? quarterOrder[a.poper] : parseInt(a.poper, 10);
+	        var qB = b.poper.startsWith("Q") ? quarterOrder[b.poper] : parseInt(b.poper, 10);
+	
+	        return qA - qB; // ascending quarter
+	    });
+	},
+
 		
 		// Get Backend Data For Customer Due
 		getAllCustomerOutstandingData: function() {
@@ -2066,7 +2087,9 @@ sap.ui.define([
 					// Convert Amount in Crore
 					var oData=that.convertAmountToCrore(aData);
 					// 🔹 Sort descending by amount using helper
-    				that.sortByAmountDesc(oData);
+    				// that.sortByAmountDesc(oData);
+    				// ✅ Sort by Year + Quarter
+    				oData = that.sortByQuarterAndYear(oData);
     				console.log("Converted & Sorted Data: ",oData);
 
 					// Toggle visibility of chart fragments
@@ -2124,7 +2147,9 @@ sap.ui.define([
 					// Convert Amount in Crore
 					var oData=that.convertAmountToCrore(aData);
 					// 🔹 Sort descending by amount using helper
-    				that.sortByAmountDesc(oData);
+    				// that.sortByAmountDesc(oData);
+    				// ✅ Sort by Year + Quarter
+					oData = that.sortByQuarterAndYear(oData);
     				console.log("Converted & Sorted Data: ",oData);
 
 					// Toggle visibility of chart fragments
@@ -2356,6 +2381,9 @@ sap.ui.define([
 		bindChartColorRulesByQuarterlyWise_Outstanding: function(sFragmentId, oData) {
 			
 			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var isQuarterSelected=oGlobalModel.getProperty("/isQuarterSelected");
+			var chartViewText= isQuarterSelected ? "Quater And Fiscal Year Wise Outstanding Amount" : "Fiscal Year Wise Outstanding Amount";
+			
 			var oSelectedTabText = oGlobalModel.getProperty("/selectedTabText3");
 			var oVizFrame = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idVizFrame3");
 
@@ -2400,7 +2428,7 @@ sap.ui.define([
 			oVizFrame.setVizProperties({
 				title: {
 					visible: true,
-					text: "Quaterly Wise Outstanding Amount"
+					text: chartViewText
 				},
 				plotArea: {
 					dataPointStyle: {
